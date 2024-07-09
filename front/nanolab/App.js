@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Alert, Image, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Button } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 function LoginPage({ navigation }) {
   const [form, setForm] = useState({
-    email:'',
-    password:'',
+    email: '',
+    password: '',
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -29,32 +29,32 @@ function LoginPage({ navigation }) {
 
           <View style={styles.form}>
             <View style={styles.inputlogin}>
-              <Text style={styles.inputLabel}>Email address</Text>
+              <Text style={styles.inputLabel}>이메일</Text>
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="email-address"
                 style={styles.inputControl}
-                placeholder="konkuk@kku.ac.kr"
+                placeholder="학교 이메일을 입력하세요"
                 placeholderTextColor="#6b7280"
                 value={form.email}
-                onChangeText={email => setForm({...form, email})}
+                onChangeText={email => setForm({ ...form, email })}
               />
             </View>
-            <View style={styles.input}>
-              <Text style={styles.inputLabel}>Password</Text>
-              <TextInput 
+            <View style={styles.inputlogin}>
+              <Text style={styles.inputLabel}>비밀번호</Text>
+              <TextInput
                 secureTextEntry
                 style={styles.inputControl}
-                placeholder="******"
+                placeholder="비밀번호를 입력하세요"
                 placeholderTextColor="#6b7280"
                 value={form.password}
-                onChangeText={password => setForm({...form, password})}
+                onChangeText={password => setForm({ ...form, password })}
               />
             </View>
 
             <View style={styles.formAction}>
-              <TouchableOpacity onPress={() => {navigation.navigate('Main');}}>
+              <TouchableOpacity onPress={() => { navigation.navigate('Main'); }}>
                 <View style={styles.btn}>
                   <Text style={styles.btnText}>로그인</Text>
                 </View>
@@ -82,16 +82,36 @@ function LoginPage({ navigation }) {
 }
 
 function EnterPage({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    validateForm(text, password);
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    validateForm(email, text);
+  };
+
+  const validateForm = (email, password) => {
+    const emailValid = email.endsWith('@kku.ac.kr');
+    const passwordValid = password.length >= 6;
+    setIsFormValid(emailValid && passwordValid);
+  };
+
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
+    <KeyboardAvoidingView
+      style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         <View style={styles.innerContainer}>
           <View style={styles.closeButtonContainer}>
-            <TouchableOpacity style={styles.closeButton} onPress={() => {navigation.navigate('Login');}}>
+            <TouchableOpacity style={styles.closeButton} onPress={() => { navigation.navigate('Login'); }}>
               <Text style={styles.closeButtonText}>&lt;</Text>
             </TouchableOpacity>
           </View>
@@ -100,13 +120,28 @@ function EnterPage({ navigation }) {
           </View>
           <View style={styles.inputContainer}>
             <Text>이메일</Text>
-            <TextInput style={styles.input} placeholder="이메일을 입력" />
+            <TextInput
+              style={styles.input}
+              placeholder="학교 이메일을 입력하세요"
+              value={email}
+              onChangeText={handleEmailChange}
+            />
             <Text>비밀번호</Text>
-            <TextInput style={styles.input} placeholder="비밀번호를 입력하세요" secureTextEntry={true} />
+            <TextInput
+              style={styles.input}
+              placeholder="6자 이상 입력하세요"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={handlePasswordChange}
+            />
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate('Login');}}>
-              <Text style={styles.buttonText}>가입하기</Text>
+            <TouchableOpacity
+              style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
+              onPress={() => { if (isFormValid) navigation.navigate('Login'); }}
+              disabled={!isFormValid}
+            >
+              <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -133,16 +168,16 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginPage} options={{ headerShown: false }}/>
-        <Stack.Screen name="Enter" component={EnterPage} options={{ headerShown: false }}/>
-        <Stack.Screen name="Main" component={MainPage} options={{ headerShown: false }}/>
+        <Stack.Screen name="Login" component={LoginPage} options={{ headerShown: false }} />
+        <Stack.Screen name="Enter" component={EnterPage} options={{ headerShown: false }} />
+        <Stack.Screen name="Main" component={MainPage} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  //login
+  // login
   containerlogin: {
     marginTop: 100,
     padding: 24,
@@ -178,10 +213,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#222',
     marginBottom: 8,
+    marginLeft: 5,
   },
   inputControl: {
-    height: 44,
-    backgroundColor: '#fff',
+    height: 50,
+    backgroundColor: '#E0E0E0',
     paddingHorizontal: 16,
     borderRadius: 12,
     fontSize: 15,
@@ -203,14 +239,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.15,
   },
   btn: {
-    backgroundColor: '#006400',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#006400',
+    backgroundColor: '#9DC284',
+    borderRadius: 30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 15,
     paddingHorizontal: 20,
     marginTop: 10,
   },
@@ -220,7 +254,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  //enter
+  // enter
   container: {
     flex: 1,
   },
@@ -271,7 +305,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#9DC284',
     padding: 15,
     borderRadius: 30,
-    flex:1,
+    flex: 1,
     alignItems: 'center',
     width: '100%',
     shadowColor: '#000',
@@ -279,15 +313,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
-    
+  },
+  buttonInactive: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: 'gray',
+  },
+  buttonActive: {
+    backgroundColor: '#9DC284',
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    
   },
-
+  buttonTextInactive: {
+    color: '#A9A9A9',
+  },
+  buttonTextActive: {
+    color: '#FFF',
+  },
 });
 
 export default App;
