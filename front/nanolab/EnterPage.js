@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 
 function EnterPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -23,7 +23,7 @@ function EnterPage({ navigation }) {
   };
 
   const handleRegister = async () => {
-    console.log('Register button pressed'); // 로그 추가
+    console.log('Register button pressed');
     try {
       const response = await fetch('http://localhost:5000/auth/register', {
         method: 'POST',
@@ -35,12 +35,20 @@ function EnterPage({ navigation }) {
 
       if (response.ok) {
         console.log('Registration successful:', data.message);
-        navigation.navigate('Login');
+        Alert.alert('회원가입 완료', '회원가입이 정상적으로 완료되었습니다.', [
+          { text: '확인', onPress: () => navigation.navigate('Login') }
+        ]);
       } else {
+        if (data.message === 'Email already exists') {
+          Alert.alert('회원가입 실패', '이미 존재하는 이메일입니다.');
+        } else {
+          Alert.alert('회원가입 실패', data.message);
+        }
         console.error('Registration failed:', data.message);
       }
     } catch (error) {
       console.error('Registration error:', error);
+      Alert.alert('회원가입 실패', '서버와의 통신 중 오류가 발생했습니다.');
     }
   };
 
@@ -80,7 +88,7 @@ function EnterPage({ navigation }) {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
-              onPress={handleRegister} // 함수 연결
+              onPress={handleRegister}
               disabled={!isFormValid}
             >
               <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
