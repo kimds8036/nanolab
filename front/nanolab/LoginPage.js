@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 
 function LoginPage({ navigation }) {
   const [form, setForm] = useState({
@@ -8,8 +8,9 @@ function LoginPage({ navigation }) {
   });
 
   const handleLogin = async () => {
+    console.log('Login button pressed');  // 로그인 버튼 클릭 로깅
     try {
-      const response = await fetch('http://localhost:5000/auth/login', {
+      const response = await fetch('http://172.20.10.11:5000/auth/login', {  // 서버 IP 주소 사용
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, password: form.password })
@@ -20,12 +21,16 @@ function LoginPage({ navigation }) {
       if (response.ok) {
         console.log('Login successful:', data.token);
         // Save the token and navigate to the main page
-        navigation.navigate('Main');
+        // 예: AsyncStorage를 사용하여 토큰 저장
+        // await AsyncStorage.setItem('token', data.token);
+        navigation.navigate('MainPage');  // MainPage로 이동
       } else {
         console.error('Login failed:', data.message);
+        Alert.alert('로그인 실패', data.message);
       }
     } catch (error) {
       console.error('Login error:', error);
+      Alert.alert('로그인 오류', '서버와의 통신 중 오류가 발생했습니다.');
     }
   };
 

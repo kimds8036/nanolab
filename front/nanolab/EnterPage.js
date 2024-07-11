@@ -25,7 +25,7 @@ function EnterPage({ navigation }) {
   const handleRegister = async () => {
     console.log('Register button pressed');
     try {
-      const response = await fetch('http://39.7.28.119:5000/auth/register', {
+      const response = await fetch('http://172.20.10.11:5000/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

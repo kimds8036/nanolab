@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // mongoose 모듈 가져오기
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -18,6 +18,19 @@ const userSchema = new Schema({
   },
   updated_at: {
     type: Date
+  },
+  ipAddress: {
+    type: String,
+    required: true
+  },
+  userAgent: String,
+  operatingSystem: String,
+  browser: String,
+  platform: String,
+  referrer: String,
+  language: String,
+  location: {
+    type: String
   }
 });
 
