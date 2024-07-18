@@ -6,6 +6,7 @@ const Header = () => {
     <View style={styles.header}>
       <View>
         <Text style={styles.headerTitle}>공지사항</Text>
+        <Text style={styles.headerSubtitle}>최근 공지사항</Text>
       </View>
       <View style={styles.headerIcons}>
         <Image source={require('C:/Users/sage6/nanolab/nanolab/front/nanolab/assets/search.png')} style={styles.icon} />
