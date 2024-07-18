@@ -44,7 +44,7 @@ function LoginPage({ navigation }) {
         <View style={styles.containerlogin}>
           <View style={styles.header}>
             <Image
-              source={require('front/nanolab/assets/qqqq.png')}
+              source={requir('front/nanolab/assets/qqqq.png')}
               style={styles.headerImg}
               accessibilityLabel="Logo"
             />
