@@ -8,7 +8,11 @@ const Header = () => {
         <Text style={styles.headerTitle}>공지사항</Text>
         <Text style={styles.headerSubtitle}>최근 공지사항</Text>
       </View>
-      
+      <View style={styles.headerIcons}>
+        <Image source={require('C:/Users/sage6/nanolab/nanolab/front/nanolab/assets/search.png')} style={styles.icon} />
+        <Image source={require('C:/Users/sage6/nanolab/nanolab/front/nanolab/assets/alert.png')} style={styles.icon} />
+        <Image source={require('C:/Users/sage6/nanolab/nanolab/front/nanolab/assets/menu.png')} style={styles.icon} />
+      </View>
     </View>
   );
 };
@@ -31,24 +35,12 @@ const RecentNotices = () => {
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.noticeContainer}>
         <View style={styles.notice}>
           <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-          <Text style={styles.noticeText}>2024년도 8월 졸업예정자 대상 졸업유예 신청기간을 안내하오니 해당 학생들은 기한 내에 신청하시기 바랍니다.</Text>
-          <Text style={styles.noticeText}>1. 신청기간: 2024. 7. 22.(월) 9:00 - 7. 24.(수) 17:00</Text>
-          <Text style={styles.noticeText}>2. 신청방법: 학사행정시스템 내 온라인 신청</Text>
-          <Text style={styles.noticeText}>더보기...</Text>
         </View>
         <View style={styles.notice}>
           <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-          <Text style={styles.noticeText}>2024년도 8월 졸업예정자 대상 졸업유예 신청기간을 안내하오니 해당 학생들은 기한 내에 신청하시기 바랍니다.</Text>
-          <Text style={styles.noticeText}>1. 신청기간: 2024. 7. 22.(월) 9:00 - 7. 24.(수) 17:00</Text>
-          <Text style={styles.noticeText}>2. 신청방법: 학사행정시스템 내 온라인 신청</Text>
-          <Text style={styles.noticeText}>더보기...</Text>
         </View>
         <View style={styles.notice}>
           <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-          <Text style={styles.noticeText}>2024년도 8월 졸업예정자 대상 졸업유예 신청기간을 안내하오니 해당 학생들은 기한 내에 신청하시기 바랍니다.</Text>
-          <Text style={styles.noticeText}>1. 신청기간: 2024. 7. 22.(월) 9:00 - 7. 24.(수) 17:00</Text>
-          <Text style={styles.noticeText}>2. 신청방법: 학사행정시스템 내 온라인 신청</Text>
-          <Text style={styles.noticeText}>더보기...</Text>
         </View>
       </ScrollView>
     </View>
@@ -61,7 +53,7 @@ const PopularNotices = () => {
     <View style={styles.Container2}>
       <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>인기 공지</Text>
-      <View style={styles.popularNotices}>
+      <View>
         <Announcement title="[장학 공지] 장학금 수혜/수혜증명서 발급 안내" date="D-12" details="조회수: 125" />
         <Announcement title="[학사공지] 금융감독원 총체제의 대학생 금융교육 봉사단 추가 모집 안내" date="D-5" details="조회수: 125" />
         <Announcement title="[학사공지] 금융감독원 총체제의 대학생 금융교육 봉사단 추가 모집 안내" date="D-3" details="조회수: 125" />
@@ -75,7 +67,7 @@ const PopularNotices = () => {
   );
 };
 
-const HomeScreen = () => {
+const MainPage = () => {
   return (
     <ScrollView style={styles.container}>
       <Header />
@@ -104,11 +96,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
+    marginTop: 40,
     borderBottomColor: '#ddd',
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
   },
   headerSubtitle: {
@@ -119,9 +111,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   icon: {
-    width: 24,
-    height: 24,
-    marginLeft: 10,
+    width: 35,
+    height: 35,
+    marginLeft: 5,
   },
   sectionContainer: {
     margin: 10,
@@ -133,23 +125,35 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
+    width:100,
+    height:30,
+    textAlign:'center',
+    backgroundColor:'#ddd',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   noticeContainer: {
     flexDirection: 'row',
     marginTop: 10,
   },
   notice: {
-    backgroundColor: '#d9ead3',
+    backgroundColor: '#9DC284',
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 20,
     width: 300,
     marginRight: 10,
+    height: 300,
     shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 10,
+    
   },
   noticeTitle: {
     fontSize: 20,
@@ -186,6 +190,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
-
-  
+export default MainPage;
