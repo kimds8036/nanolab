@@ -18,20 +18,20 @@
     "mongoose": "^8.5.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-<<<<<<< HEAD
+
     "react-native": "0.74.3",
     "react-native-safe-area-context": "^4.10.8",
     "react-native-screens": "^3.32.0",
     "react-native-web": "^0.19.12",
-    "@expo/metro-runtime": "~3.2.1"
-=======
+    "@expo/metro-runtime": "~3.2.1",
+
     "react-native": "^0.74.3",
     "react-native-safe-area-context": "^4.10.5",
     "react-native-screens": "^3.31.1",
     "react-native-typescript-transformer": "^1.2.13",
     "react-native-web": "^0.19.12",
     "@types/react": "~18.2.79"
->>>>>>> 12264c9c0928d5d96457d9d6bda81fc27c808d54
+
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
