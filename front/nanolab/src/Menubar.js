@@ -8,7 +8,7 @@ const App = () => {
 
   useEffect(() => {
     Animated.timing(slideAnim, {
-      toValue: width * 1 / 6,
+      toValue: width * 1 / 4,
       duration: 300,
       useNativeDriver: true,
     }).start();
@@ -26,45 +26,30 @@ const App = () => {
         <ScrollView style={styles.menu}>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>학과 공지</Text>
-            <TouchableOpacity style={styles.plusButton}>
-              <Text style={styles.plusButtonText}>+</Text>
-            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>학사 공지</Text>
-            <TouchableOpacity style={styles.plusButton}>
-              <Text style={styles.plusButtonText}>+</Text>
-            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>장학 공지</Text>
-            <TouchableOpacity style={styles.plusButton}>
-              <Text style={styles.plusButtonText}>+</Text>
-            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>일반 공지</Text>
-            <TouchableOpacity style={styles.plusButton}>
-              <Text style={styles.plusButtonText}>+</Text>
-            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>취업 / 창업</Text>
-            <TouchableOpacity style={styles.plusButton}>
-              <Text style={styles.plusButtonText}>+</Text>
-            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>공모전</Text>
-            <TouchableOpacity style={styles.plusButton}>
-              <Text style={styles.plusButtonText}>+</Text>
-            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>국제 교류</Text>
-            <TouchableOpacity style={styles.plusButton}>
-              <Text style={styles.plusButtonText}>+</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem}>
+            <Text style={styles.menuItemText}>모시래 식단</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem}>
+            <Text style={styles.menuItemText}>해오름 식단</Text>
           </TouchableOpacity>
         </ScrollView>
       </Animated.View>
@@ -78,14 +63,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#D5E8D4',
   },
   slideContainer: {
-    width: width * 2 / 3,
+    width: width * 5 / 6,
     backgroundColor: 'rgba(255, 255, 255, 0.9)', // 반투명 백그라운드
     flex: 1,
     position: 'absolute',
     right: 0,
+    height: "100%",
   },
   header: {
-    height: 80,
+    height: 120, // 상단 여유 공간
     backgroundColor: '#6AA84F',
     flexDirection: 'row',
     alignItems: 'center',
@@ -93,8 +79,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 40,
     color: '#FFFFFF',
+    marginTop: 50, // 상단 여유 공간
   },
   iconContainer: {
     flexDirection: 'row',
@@ -122,23 +109,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 4,
     elevation: 2,
+    width: width * 5 / 6 - 32, // 이게 아닌 것 가틈 씨벌~!
   },
   menuItemText: {
     fontSize: 18,
     color: '#000000',
-  },
-  plusButton: {
-    backgroundColor: '#38761D',
-    borderRadius: 12,
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  plusButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    lineHeight: 22,
   },
 });
 
