@@ -3,6 +3,17 @@ const Notice = require('../models/Notice');
 
 mongoose.connect('mongodb://localhost:27017/university_notices', { useNewUrlParser: true, useUnifiedTopology: true });
 
+const getNoticesByCategory = async (category) => {
+  try {
+    const notices = await Notice.find({ category: category });
+    console.log(`Notices in category ${category}:`, notices);
+  } catch (error) {
+    console.error(`Error fetching notices in category ${category}:`, error);
+  } finally {
+    mongoose.connection.close();
+  }
+};
+
 async function removeOldNotices(days) {
   const dateThreshold = new Date();
   dateThreshold.setDate(dateThreshold.getDate() - days);

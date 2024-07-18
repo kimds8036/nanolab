@@ -9,9 +9,8 @@ const NoticeLinkSchema = new Schema({
   date: { type: String, required: true },
   views: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
-  type: { type: String, required: true } // 공지 유형 필드 추가
+  type: { type: String, required: true }
 });
 
 const NoticeLink = mongoose.model('NoticeLink', NoticeLinkSchema);
-
 module.exports = NoticeLink;

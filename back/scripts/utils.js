@@ -1,34 +1,29 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
 const { fetchPage, cleanContent } = require('./utils'); // fetchPage 및 cleanContent 함수 가져오기
 
-const noticeSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  date: { type: String, required: true },
-  views: { type: String, required: false },
-  content: { type: String, required: false },
-  files: { type: [String], required: false },
-  dDay: { type: String, required: false },
-  extractedText: { type: String, required: false },
-  category: { type: String, required: true } // 카테고리 추가
+// MongoDB 연결
+const mongoose = require('mongoose');
+
+(async () => {
+    try {
+        await mongoose.connect('mongodb://localhost:27017/university_notices');
+        // Your code for scraping and saving notices
+    } catch (error) {
+        console.error('Error:', error);
+    } finally {
+        await mongoose.connection.close();
+    }
+})();
+
+
+// NoticeLink 모델 정의
+const noticeLinkSchema = new mongoose.Schema({
+  link: { type: String, required: true },
+  category: { type: String, required: true }
 });
+const NoticeLink = mongoose.model('NoticeLink', noticeLinkSchema);
 
-const Notice = mongoose.model('Notice', noticeSchema);
-
-mongoose.connect('mongodb://localhost:27017/university_notices', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000 // 5초 후에 서버 선택 타임아웃 설정
-});
-
-mongoose.connection.once('open', () => {
-  console.log('Successfully connected to MongoDB');
-}).on('error', (error) => {
-  console.error('Connection error:', error);
-});
-
-// 동적 모델 생성 함수
+// 공지사항 모델 정의
 const createDynamicModel = (collectionName) => {
   const schema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -42,6 +37,7 @@ const createDynamicModel = (collectionName) => {
   return mongoose.model(collectionName, schema, collectionName);
 };
 
+// 공지사항을 카테고리별 컬렉션에 저장
 const saveNoticeToCategoryCollection = async (category, noticeData) => {
   try {
     const collectionName = `notices_${category}`;
@@ -56,26 +52,7 @@ const saveNoticeToCategoryCollection = async (category, noticeData) => {
   }
 };
 
-const scrapeAndSaveNotices = async () => {
-  try {
-    // 모든 공지사항을 카테고리별로 조회
-    const notices = await Notice.find({});
-    const categories = new Set(notices.map(notice => notice.category)); // 카테고리 목록 생성
-
-    // 공지사항을 각 카테고리별 컬렉션에 저장
-    for (const notice of notices) {
-      await saveNoticeToCategoryCollection(notice.category, notice);
-    }
-
-    console.log('All notices have been saved to their respective category collections.');
-  } catch (error) {
-    console.error('Error during notice saving process:', error);
-  } finally {
-    mongoose.connection.close();
-  }
-};
-
-// 페이지 스크레이핑 함수
+// 페이지에서 공지사항 내용 스크래핑
 const scrapeNoticeContent = async (link) => {
   try {
     const $ = await fetchPage(link);
@@ -191,4 +168,33 @@ const scrapeNoticeContent = async (link) => {
   }
 };
 
-scrapeAndSaveNotices();
+// 공지사항 링크에서 공지사항을 스크래핑하고 저장
+const scrapeAndSaveNotices = async () => {
+  try {
+    // noticeLinks 컬렉션에서 모든 링크 조회
+    const noticeLinks = await NoticeLink.find({}).exec(); // exec()를 추가하여 쿼리 실행
+    if (noticeLinks.length === 0) {
+      console.log('No notice links found.');
+      return;
+    }
+    
+    for (const noticeLink of noticeLinks) {
+      const link = noticeLink.link;
+      const category = noticeLink.category;
+
+      console.log(`Processing link: ${link}`);
+
+      const noticeData = await scrapeNoticeContent(link);
+      await saveNoticeToCategoryCollection(category, noticeData);
+    }
+
+    console.log('All notices have been saved to their respective category collections.');
+  } catch (error) {
+    console.error('Error during notice saving process:', error);
+  } finally {
+    mongoose.connection.close(); // 종료 처리
+  }
+};
+
+// MongoDB 연결 및 스크래핑 시작
+connectToMongoDB().then(scrapeAndSaveNotices);
