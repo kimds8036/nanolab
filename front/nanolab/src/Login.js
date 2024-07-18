@@ -44,11 +44,7 @@ function LoginPage({ navigation }) {
         <View style={styles.containerlogin}>
           <View style={styles.header}>
             <Image
-<<<<<<< HEAD
-              source={require('C:/Users/sage6/nanolab/nanolab/front/nanolab/assets/qqqq.png')}
-=======
               source={require('../assets/image/qqqq.png')}
->>>>>>> 79f1123450ef0151b96b25ae9d5c6584dcaf1b27
               style={styles.headerImg}
               accessibilityLabel="Logo"
             />
