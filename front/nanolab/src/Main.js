@@ -179,6 +179,8 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+
+  //menu
   menuOverlay: {
     position: 'absolute',
     top: 0,
@@ -189,7 +191,8 @@ const styles = StyleSheet.create({
   },
   slideContainer: {
     width: width * 2 / 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // 반투명 백그라운드
+    height: '100%',
+    backgroundColor: '#fff', // 반투명 백그라운드
     flex: 1,
     position: 'absolute',
     right: 0,
@@ -213,7 +216,7 @@ const styles = StyleSheet.create({
   homeIcon: {
     width: 24,
     height: 24,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#000',
     borderRadius: 12,
   },
   menu: {
@@ -249,6 +252,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     lineHeight: 22,
+  },
+
+  //main
+  Container1:{
+    width:"100%",
+    height: 300,
+  },
+  Container2:{
+    width:"100%",
+    height: "100%",
   },
   header: {
     padding: 20,
