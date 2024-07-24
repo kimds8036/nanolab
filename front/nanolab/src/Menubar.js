@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Anima
 
 const { width } = Dimensions.get('window');
 
-const App = () => {
+const Menubar = () => {
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
@@ -75,7 +75,8 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#D5E8D4',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    
   },
   slideContainer: {
     width: width * 2 / 3,
@@ -142,4 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default Menubar;
