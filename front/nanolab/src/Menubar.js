@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: "100%",
   },
-  header: {
+  menuheader: {
     height: 80, // 상단 여유 공간 줄이기
     backgroundColor: '#6AA84F',
     flexDirection: 'row',
