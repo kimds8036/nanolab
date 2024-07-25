@@ -77,7 +77,7 @@ const RecentNotices = () => {
 
 
 const PopularNotices = () => {
-  const daysLeft = 0; // 디데이까지 남은 일수 (예시로 10일 설정)
+  const daysLeft = 1; // 디데이까지 남은 일수 (예시로 10일 설정)
 
   // 날짜에 따른 색상 결정 함수
   const getDateStyle = () => {
@@ -190,12 +190,12 @@ const PopularNotices = () => {
   );
 };
 
-const MenuBar = () => {
+const MenuBar = ({ onClose }) => {
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
     Animated.timing(slideAnim, {
-      toValue: width * 1 / 4,
+      toValue: width * 1/4,
       duration: 300,
       useNativeDriver: true,
     }).start();
@@ -210,20 +210,19 @@ const MenuBar = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Menu</Text>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={handleHomePress} style={styles.iconButton}>
-              <Text style={styles.iconText}>⌂</Text>
-            </TouchableOpacity>
+    <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
+      <View style={styles.menuheader}>
+        <Text style={styles.headerText}>Menu</Text>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => alert('Details')}>
+            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />  
+          </TouchableOpacity>
             <TouchableOpacity onPress={handleBackPress} style={styles.iconButton}>
               <Text style={styles.iconText}>←</Text>
             </TouchableOpacity>
           </View>
-        </View>
-        <ScrollView style={styles.menu}>
+      </View>
+      <ScrollView style={styles.menu}>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>학과 공지</Text>
           </TouchableOpacity>
@@ -252,8 +251,7 @@ const MenuBar = () => {
             <Text style={styles.menuItemText}>해오름 식단</Text>
           </TouchableOpacity>
         </ScrollView>
-      </Animated.View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -286,20 +284,24 @@ const MainPage = () => {
 
 const styles = StyleSheet.create({
   //menu
-  menucontainer: {
-    flex: 1,
-    backgroundColor: '#D5E8D4',
+  menuOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
   },
   slideContainer: {
     width: width * 5 / 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // 반투명 백그라운드
+    backgroundColor: '#edf0f2', // 반투명 백그라운드
     flex: 1,
     position: 'absolute',
     right: 0,
     height: "100%",
   },
   menuheader: {
-    height: 80, // 상단 여유 공간 줄이기
+    height: 100, // 상단 여유 공간 줄이기
     backgroundColor: '#6AA84F',
     flexDirection: 'row',
     alignItems: 'center',
@@ -307,9 +309,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   headerText: {
-    fontSize: 40,
+    fontSize: 30,
     color: '#FFFFFF',
-    marginTop: 10, // 상단 여유 공간 줄이기
+    marginTop: 30, // 상단 여유 공간 줄이기
   },
   iconContainer: {
     flexDirection: 'row',
@@ -317,11 +319,10 @@ const styles = StyleSheet.create({
     marginTop: 10, // 아이콘 상단 여유 공간 추가
   },
   iconButton: {
-    marginLeft: 16,
-  },
-  iconText: {
-    fontSize: 24,
-    color: '#FFFFFF',
+    marginLeft: 100,
+    marginTop:30,
+    width: 25,
+    height: 30,
   },
   menu: {
     paddingHorizontal: 16,
@@ -523,7 +524,6 @@ const styles = StyleSheet.create({
     textAlign:'center',
     height:20,
     lineHeight:15,
-    borderColor:'#777',
   },
   nextbutton:{
     width: 25,
