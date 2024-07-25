@@ -430,13 +430,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 20,
-    width: 120,
-    height: 40,
+    width: 100,
+    height: 35,
     textAlign: 'center',
-    lineHeight: 40,  // 텍스트가 가운데 오도록 조정
+    lineHeight: 35,  // 텍스트가 가운데 오도록 조정
     backgroundColor: '#DDDDDD',
     borderRadius: 20,
     overflow: 'hidden',
@@ -471,15 +471,15 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   noticeTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   noticeText: {
-    fontSize: 16,
+    fontSize: 14,
     marginTop:10,
   },
   category:{
-    top:150,
+    top:155,
     color: '#45553A',
   },
   popularNotices:{
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     borderBottomWidth:1,
   },
   title: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   dotted:{
@@ -510,8 +510,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   date: {
-    fontSize: 14,
-    color: '#555',
     marginTop: 5,
     left:70,
     backgroundColor:'red',
@@ -523,6 +521,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color:'white',
     lineHeight:20,
+    fontSize:12,
   },
   dateLightGreen: {
     backgroundColor: '#9DC284',
