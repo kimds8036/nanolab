@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Animated, Alert } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -14,13 +14,26 @@ const App = () => {
     }).start();
   }, [slideAnim]);
 
+  const handleHomePress = () => {
+    Alert.alert('Home button pressed');
+  };
+
+  const handleBackPress = () => {
+    Alert.alert('Back button pressed');
+  };
+
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Menu</Text>
           <View style={styles.iconContainer}>
-            <View style={styles.homeIcon} />
+            <TouchableOpacity onPress={handleHomePress} style={styles.iconButton}>
+              <Text style={styles.iconText}>⌂</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleBackPress} style={styles.iconButton}>
+              <Text style={styles.iconText}>←</Text>
+            </TouchableOpacity>
           </View>
         </View>
         <ScrollView style={styles.menu}>
@@ -71,7 +84,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   header: {
-    height: 120, // 상단 여유 공간
+    height: 80, // 상단 여유 공간 줄이기
     backgroundColor: '#6AA84F',
     flexDirection: 'row',
     alignItems: 'center',
@@ -81,17 +94,19 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 40,
     color: '#FFFFFF',
-    marginTop: 50, // 상단 여유 공간
+    marginTop: 10, // 상단 여유 공간 줄이기
   },
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 10, // 아이콘 상단 여유 공간 추가
   },
-  homeIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+  iconButton: {
+    marginLeft: 16,
+  },
+  iconText: {
+    fontSize: 24,
+    color: '#FFFFFF',
   },
   menu: {
     paddingHorizontal: 16,
@@ -109,7 +124,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 4,
     elevation: 2,
-    width: width * 5 / 6 - 32, // 이게 아닌 것 가틈 씨벌~!
+    width: width * 5 / 6 - 32,
   },
   menuItemText: {
     fontSize: 18,
