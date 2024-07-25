@@ -36,39 +36,165 @@ const Announcement = ({ title, date, details }) => {
 };
 
 const RecentNotices = () => {
+  const category = '학사공지';
   return (
     <View style={styles.Container1}>
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>최근 공지</Text>
+      <View style={styles.sectionContainer1}>
+        <View style={styles.sectionTitleWrapper}>
+          <Text style={styles.sectionTitle}>최근 공지</Text>
+        </View>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.noticeContainer}>
-          <View style={styles.notice}>
-            <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-          </View>
-          <View style={styles.notice}>
-            <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-          </View>
-          <View style={styles.notice}>
-            <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-          </View>
+            <View style={styles.noticeWrapper}>
+              <View style={styles.notice}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </View>
+            </View>
+            <View style={styles.noticeWrapper}>
+              <View style={styles.notice}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </View>
+            </View>
+            <View style={styles.noticeWrapper}>
+              <View style={styles.notice}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </View>
+            </View>
+            <View style={styles.noticeWrapper}>
+              <View style={styles.notice}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </View>
+            </View>
+            <View style={styles.noticeWrapper}>
+              <View style={styles.notice}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </View>
+            </View>
         </ScrollView>
       </View>
     </View>
   );
 };
 
+
+
 const PopularNotices = () => {
+  const daysLeft = 1; // 디데이까지 남은 일수 (예시로 10일 설정)
+
+  // 날짜에 따른 색상 결정 함수
+  const getDateStyle = () => {
+    if (daysLeft <= 0) {
+      return styles.dateBlack;
+    } else if (daysLeft <= 3) {
+      return styles.dateRed;
+    } else if (daysLeft <= 5) {
+      return styles.dateGreen;
+    } else {
+      return styles.dateLightGreen;
+    }
+  };
+
+  const getDateText = () => {
+    if (daysLeft <= 0) {
+      return '마감';
+    } else {
+      return `D-${daysLeft}`;
+    }
+  };
+
   return (
     <View style={styles.Container2}>
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>인기 공지</Text>
-        <View>
-          <Announcement title="[장학 공지] 장학금 수혜/수혜증명서 발급 안내" date="D-12" details="조회수: 125" />
-          <Announcement title="[학사공지] 금융감독원 총체제의 대학생 금융교육 봉사단 추가 모집 안내" date="D-5" details="조회수: 125" />
-          <Announcement title="[학사공지] 금융감독원 총체제의 대학생 금융교육 봉사단 추가 모집 안내" date="D-3" details="조회수: 125" />
-          <Announcement title="[장학 공지] 장학금 수혜/수혜증명서 발급 안내" date="마감" details="조회수: 125" />
-          <Announcement title="[장학 공지] 장학금 수혜/수혜증명서 발급 안내" date="마감" details="조회수: 125" />
-          <Announcement title="[장학 공지] 장학금 수혜/수혜증명서 발급 안내" date="마감" details="조회수: 125" />
-          <Announcement title="[장학 공지] 장학금 수혜/수혜증명서 발급 안내" date="마감" details="조회수: 125" />
+      <View style={styles.sectionContainer2}>
+        <View style={styles.sectionTitleWrapper}>
+          <Text style={styles.sectionTitle}>인기 공지</Text>
+        </View>
+        <View style={styles.popularNotices}>
+          <View style={styles.announcement}>
+            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+            <View style={styles.dotted}></View>
+            <View style={styles.dcontainer}>
+              <Text style={styles.details}>조회수: 125</Text>
+              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
+              <TouchableOpacity onPress={() => alert('Details')}>
+                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.announcement}>
+            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+            <View style={styles.dotted}></View>
+            <View style={styles.dcontainer}>
+              <Text style={styles.details}>조회수: 125</Text>
+              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
+              <TouchableOpacity onPress={() => alert('Details')}>
+                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.announcement}>
+            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+            <View style={styles.dotted}></View>
+            <View style={styles.dcontainer}>
+              <Text style={styles.details}>조회수: 125</Text>
+              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
+              <TouchableOpacity onPress={() => alert('Details')}>
+                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.announcement}>
+            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+            <View style={styles.dotted}></View>
+            <View style={styles.dcontainer}>
+              <Text style={styles.details}>조회수: 125</Text>
+              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
+              <TouchableOpacity onPress={() => alert('Details')}>
+                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.announcement}>
+            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+            <View style={styles.dotted}></View>
+            <View style={styles.dcontainer}>
+              <Text style={styles.details}>조회수: 125</Text>
+              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
+              <TouchableOpacity onPress={() => alert('Details')}>
+                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.announcement}>
+            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+            <View style={styles.dotted}></View>
+            <View style={styles.dcontainer}>
+              <Text style={styles.details}>조회수: 125</Text>
+              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
+              <TouchableOpacity onPress={() => alert('Details')}>
+                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.announcement}>
+            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+            <View style={styles.dotted}></View>
+            <View style={styles.dcontainer}>
+              <Text style={styles.details}>조회수: 125</Text>
+              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
+              <TouchableOpacity onPress={() => alert('Details')}>
+                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </View>
     </View>
@@ -257,11 +383,13 @@ const styles = StyleSheet.create({
   //main
   Container1:{
     width:"100%",
-    height: 300,
+    height: 350,
+    
   },
   Container2:{
     width:"100%",
     height: "100%",
+    
   },
   header: {
     padding: 20,
@@ -270,7 +398,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 40,
-    borderBottomColor: '#ddd',
+    height:70,
+    marginLeft:5,
   },
   headerTitle: {
     fontSize: 30,
@@ -288,77 +417,146 @@ const styles = StyleSheet.create({
     height: 35,
     marginLeft: 5,
   },
-  sectionContainer: {
+  sectionContainer1: {
     margin: 10,
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
-    borderColor: '#ddd',
+  },
+  sectionContainer2: {
+    margin: 10,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
-    width: 100,
-    height: 30,
+    width: 120,
+    height: 40,
     textAlign: 'center',
-    backgroundColor: '#ddd',
+    lineHeight: 40,  // 텍스트가 가운데 오도록 조정
+    backgroundColor: '#DDDDDD',
     borderRadius: 20,
-    shadowColor: '#000',
+    overflow: 'hidden',
+  },
+  sectionTitleWrapper: {
+    shadowColor: '#CACACA',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 1,
+    shadowRadius: 2,
     elevation: 5,
+    borderRadius: 20, 
   },
   noticeContainer: {
     flexDirection: 'row',
-    marginTop: 10,
+    
+  },
+  noticeWrapper: {
+    paddingBottom: 10,
+    overflow: 'visible',
   },
   notice: {
     backgroundColor: '#9DC284',
     padding: 20,
     borderRadius: 20,
-    width: 300,
+    width: 250,
     marginRight: 10,
-    height: 300,
+    height: 250,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.35,
+    shadowRadius: 3,
     elevation: 10,
   },
   noticeTitle: {
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: 'bold',
   },
   noticeText: {
     fontSize: 16,
-    marginTop: 5,
+    marginTop:10,
   },
-  popularNotices: {
-    marginTop: 10,
+  category:{
+    top:150,
+    color: '#45553A',
+  },
+  popularNotices:{
+    width:"100%",
   },
   announcement: {
     backgroundColor: '#fff',
     padding: 15,
-    marginVertical: 5,
-    borderRadius: 10,
     borderColor: '#ddd',
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth:1,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
   },
+  dotted:{
+    height:10,
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderColor: '#CCCCCC',
+  },
+  dcontainer:{
+    flexDirection: 'row',
+    alignItems: 'center', // 수직 정렬
+    justifyContent: 'space-between', // 수평 간격 조절
+    paddingHorizontal: 10, // 양옆에 여백 추가
+    paddingVertical: 5,
+  },
   date: {
     fontSize: 14,
     color: '#555',
     marginTop: 5,
+    left:70,
+    backgroundColor:'red',
+    borderRadius:10,
+    width:60,
+    height:20,
+  },
+  datetext:{
+    textAlign: 'center',
+    color:'white',
+    lineHeight:20,
+  },
+  dateLightGreen: {
+    backgroundColor: '#9DC284',
+    
+  },
+  dateGreen: {
+    backgroundColor: '#0E664F',
+    
+  },
+  dateRed: {
+    backgroundColor: '#C28484',
+    
+  },
+  dateBlack: {
+    backgroundColor: 'black',
+    
   },
   details: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#777',
     marginTop: 5,
+    borderWidth:1,
+    borderRadius:10,
+    width: 90,
+    right: 10,
+    textAlign:'center',
+    height:20,
+    lineHeight:15,
+  },
+  nextbutton:{
+    width: 25,
+    height: 25,
+    marginTop: 5,
+    left:20,
   },
 });
 
