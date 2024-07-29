@@ -1,12 +1,8 @@
-const jwt = require('jsonwebtoken');
+const express = require('express');
+const { register, login } = require('../controllers/authController');
+const router = express.Router();
 
-module.exports = (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-  try {
-    const decoded = jwt.verify(token, 'YOUR_SECRET_KEY');
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(401).send({ error: 'Please authenticate.' });
-  }
-};
+router.post('/register', register);
+router.post('/login', login);
+
+module.exports = router;
