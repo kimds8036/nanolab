@@ -108,7 +108,7 @@ function LoginPage({ navigation }) {
 
 const styles = StyleSheet.create({
   containerlogin: {
-    marginTop: 100,
+    marginTop: 50,
     padding: 24,
     flex: 1,
   },

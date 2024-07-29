@@ -89,8 +89,7 @@ function EnterPage({ navigation }) {
             <TouchableOpacity
               style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
               onPress={handleRegister}
-              disabled={!isFormValid}
-            >
+              disabled={!isFormValid}>
               <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
             </TouchableOpacity>
           </View>
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     padding: 10,
-    width: 420,
+    width: 350,
     alignSelf: 'center',
   },
   button: {

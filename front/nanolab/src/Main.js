@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Navigation, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const Header = ({ onMenuPress }) => {
   return (
     <View style={styles.header}>
-      <View>
+      <View>  
         <Text style={styles.headerTitle}>공지사항</Text>
       </View>
       <View style={styles.headerIcons}>
@@ -191,22 +192,19 @@ const PopularNotices = () => {
 };
 
 const MenuBar = ({ onClose }) => {
+  const navigation = useNavigation(); // 네비게이션 훅 호출
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
     Animated.timing(slideAnim, {
-      toValue: width * 1/4,
+      toValue: width * 1 / 4,
       duration: 300,
       useNativeDriver: true,
     }).start();
   }, [slideAnim]);
 
   const handleHomePress = () => {
-    Alert.alert('Home button pressed');
-  };
-
-  const handleBackPress = () => {
-    Alert.alert('Back button pressed');
+    navigation.navigate('Mypage'); // 네비게이션 객체를 이용하여 화면 전환
   };
 
   return (
@@ -214,43 +212,43 @@ const MenuBar = ({ onClose }) => {
       <View style={styles.menuheader}>
         <Text style={styles.headerText}>Menu</Text>
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => alert('Details')}>
-            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />  
+          <TouchableOpacity onPress={handleHomePress}>
+            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />
           </TouchableOpacity>
-            <TouchableOpacity onPress={handleBackPress} style={styles.iconButton}>
-              <Text style={styles.iconText}>←</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={handleHomePress}>
+            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />
+          </TouchableOpacity>
+        </View>
       </View>
       <ScrollView style={styles.menu}>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>학과 공지</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>학사 공지</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>장학 공지</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>일반 공지</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>취업 / 창업</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>공모전</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>국제 교류</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>모시래 식단</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>해오름 식단</Text>
-          </TouchableOpacity>
-        </ScrollView>
+        <TouchableOpacity style={styles.menuItem} onPress={handleHomePress}>
+          <Text style={styles.menuItemText}>학과 공지</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>학사 공지</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>장학 공지</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>일반 공지</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>취업 / 창업</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>공모전</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>국제 교류</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>모시래 식단</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>해오름 식단</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </Animated.View>
   );
 };
@@ -316,13 +314,13 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10, // 아이콘 상단 여유 공간 추가
+    marginTop: 5, // 아이콘 상단 여유 공간 추가
   },
   iconButton: {
     marginLeft: 100,
-    marginTop:30,
+    marginTop:25,
     width: 25,
-    height: 30,
+    height: 25,
   },
   menu: {
     paddingHorizontal: 16,
