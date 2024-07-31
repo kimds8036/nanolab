@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -21,16 +20,6 @@ const Header = ({ onMenuPress }) => {
           <Image source={require('../assets/image/menu.png')} style={styles.icon} />  
         </TouchableOpacity>
       </View>
-    </View>
-  );
-};
-
-const Announcement = ({ title, date, details }) => {
-  return (
-    <View style={styles.announcement}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.date}>{date}</Text>
-      <Text style={styles.details}>{details}</Text>
     </View>
   );
 };
