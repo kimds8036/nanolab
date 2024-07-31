@@ -62,23 +62,102 @@ const createDynamicModel = (collectionName) => {
   return mongoose.model(collectionName, schema, collectionName);
 };
 
-// 공지사항을 카테고리별 컬렉션에 저장
-const saveNoticeToCategoryCollection = async (category, noticeData) => {
+// 공지사항을 카테고리별 컬렉션에 저장 또는 업데이트
+const saveOrUpdateNotice = async (category, noticeData) => {
   try {
     const collectionName = `notices_${category}`;
     const DynamicModel = createDynamicModel(collectionName);
 
-    // 데이터 저장
-    const notice = new DynamicModel(noticeData);
-    await notice.save();
-    console.log(`Notice saved to ${collectionName}:`, notice);
+    // 중복된 데이터가 있을 경우 업데이트하고, 없을 경우 새로 삽입
+    await DynamicModel.updateOne(
+      { title: noticeData.title, date: noticeData.date },
+      { $set: noticeData },
+      { upsert: true } // upsert: true로 설정하면 조건에 맞는 데이터가 없을 때 새로 삽입
+    );
+    console.log(`Notice saved or updated in ${collectionName}:`, noticeData);
   } catch (error) {
-    console.error('Error saving notice to category collection:', error);
+    console.error('Error saving or updating notice in category collection:', error);
   }
 };
 
-// 공지사항 내용 스크랩
-const scrapeNoticeContent = async (link) => {
+// 공지사항 링크 스크랩 및 저장
+const scrapeAndSaveNotices = async () => {
+  await connectToMongoDB();
+
+  const noticeLinks = await NoticeLink.find({});
+
+  const firstCategory = ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'];
+  const secondCategoryKeywords = ['학과', '혁신공유대학', '의예과'];
+
+  for (const noticeLink of noticeLinks) {
+    const { link, category } = noticeLink;
+    let noticeData;
+
+    const isSecondCategory = secondCategoryKeywords.some(keyword => category.includes(keyword));
+
+    if (isSecondCategory) {
+      // 두 번째 종류의 공지사항 스크래핑 함수 호출
+      noticeData = await scrapeSecondCategoryNoticeContent(link);
+    } else if (firstCategory.includes(category)) {
+      // 첫 번째 종류의 공지사항 스크래핑 함수 호출
+      noticeData = await scrapeFirstCategoryNoticeContent(link);
+    } else {
+      console.warn(`Unrecognized category: ${category}`);
+      continue;
+    }
+
+    await saveOrUpdateNotice(category, noticeData);
+  }
+
+  mongoose.connection.close(); // MongoDB 연결 종료
+};
+
+// 두 번째 종류의 공지사항 내용 스크래핑
+const scrapeSecondCategoryNoticeContent = async (link) => {
+  try {
+    const $ = await fetchPage(link);
+
+    // HTML 구조 식별
+    const title = $('table.grid .subject').text().trim() || '제목 없음';
+    console.log(`Title extracted: ${title}`);
+
+    const date = $('table.grid th:contains("작성일")').next('td').text().trim() || '날짜 없음';
+    console.log(`Date extracted: ${date}`);
+
+    const views = $('table.grid th:contains("조회수")').next('td').text().trim() || '조회수 없음';
+    console.log(`Views extracted: ${views}`);
+
+    const contentElement = $('#post_view_txt');
+    cleanContent($, contentElement);
+    const content = contentElement.html() ? contentElement.html().trim() : '내용 없음';
+    console.log(`Content extracted: ${content}`);
+
+    const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ').trim();
+    console.log(`Extracted Text: ${extractedText}`);
+
+    const files = [];
+    $('a[href*="/file/fileDownLoad.do"]').each((index, element) => {
+      const url = 'https://m.kku.ac.kr' + $(element).attr('href');
+      files.push(url);
+    });
+    console.log(`Files extracted: ${files}`);
+
+    return { title, date, views, content, files, extractedText };
+  } catch (error) {
+    console.error('Error scraping second category notice content:', error);
+    return {
+      title: 'Error',
+      date: 'Error',
+      views: 'Error',
+      content: 'Error',
+      files: [],
+      extractedText: 'Error'
+    };
+  }
+};
+
+// 첫 번째 종류의 공지사항 내용 스크래핑
+const scrapeFirstCategoryNoticeContent = async (link) => {
   try {
     const $ = await fetchPage(link);
 
@@ -107,83 +186,19 @@ const scrapeNoticeContent = async (link) => {
     });
     console.log(`Files extracted: ${files}`);
 
-    // dDay 계산 로직
-    const datePatterns = [
-      /\d{4}\.\s*\d{1,2}\.\s*\d{1,2}\s*~\s*\d{1,2}\.\s*\d{1,2}/g,
-      /\d{4}\.\s*\d{1,2}\.\s*\d{1,2}/g,
-      /\d{4}년\s*\d{1,2}월\s*\d{1,2}일/g
-    ];
-
-    const keywords = [
-      '신청기간', '모집기간', '접수기간', '기한', '마감기한', '신청기한', '모집기한',
-      '기간', '확인기간', '이의신청기간'
-    ];
-
-    const dDayList = [];
-    keywords.forEach(keyword => {
-      const keywordIndex = extractedText.indexOf(keyword);
-      if (keywordIndex !== -1) {
-        const contentSubstring = extractedText.substring(keywordIndex, keywordIndex + 500);
-        datePatterns.forEach(pattern => {
-          const matches = contentSubstring.match(pattern);
-          if (matches) {
-            matches.forEach(match => {
-              console.log('Matched Date:', match);
-              const endDate = match.split('~').pop().trim();
-              dDayList.push(endDate);
-            });
-          }
-        });
-      }
-    });
-
-    console.log('dDayList:', dDayList);
-
-    const dDay = dDayList.length > 0 ? dDayList[dDayList.length - 1] : '마감기한 없음';
-    console.log(`Final dDay: ${dDay}`);
-
-    return { title, date, views, content, files, dDay, extractedText };
+    return { title, date, views, content, files, extractedText };
   } catch (error) {
-    console.error('Error scraping notice content:', error);
+    console.error('Error scraping first category notice content:', error);
     return {
       title: 'Error',
       date: 'Error',
       views: 'Error',
       content: 'Error',
       files: [],
-      dDay: 'Error',
       extractedText: 'Error'
     };
   }
 };
 
-// 공지사항 링크에서 공지사항을 스크래핑하고 저장
-const scrapeAndSaveNotices = async () => {
-  try {
-    // noticeLinks 컬렉션에서 모든 링크 조회
-    const noticeLinks = await NoticeLink.find({}).exec();
-    if (noticeLinks.length === 0) {
-      console.log('No notice links found.');
-      return;
-    }
-    
-    for (const noticeLink of noticeLinks) {
-      const link = noticeLink.link;
-      const category = noticeLink.category;
-
-      console.log(`Processing link: ${link}`);
-
-      const noticeData = await scrapeNoticeContent(link);
-      await saveNoticeToCategoryCollection(category, noticeData);
-    }
-
-    console.log('All notices have been saved to their respective category collections.');
-  } catch (error) {
-    console.error('Error during notice saving process:', error);
-  } finally {
-    mongoose.connection.close(); // 종료 처리
-  }
-};
-
-// MongoDB 연결 및 스크래핑 시작
-connectToMongoDB().then(scrapeAndSaveNotices);
+// 스크래핑 및 저장 실행
+scrapeAndSaveNotices();
