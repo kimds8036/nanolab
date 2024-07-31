@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Alert } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -207,22 +207,30 @@ const MenuBar = ({ onClose }) => {
 
   const handleBackPress = () => {
     Alert.alert('Back button pressed');
+    Animated.timing(slideAnim, {
+      toValue: width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      if (onClose) onClose();
+    });
   };
 
   return (
-    <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
-      <View style={styles.menuheader}>
-        <Text style={styles.headerText}>Menu</Text>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => alert('Details')}>
+    <View style={styles.container}>
+      <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
+        <View style={styles.menuheader}>
+          <Text style={styles.headerText}>Menu</Text>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={() => alert('Details')}>
             <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />  
-          </TouchableOpacity>
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleBackPress} style={styles.iconButton}>
               <Text style={styles.iconText}>←</Text>
             </TouchableOpacity>
           </View>
-      </View>
-      <ScrollView style={styles.menu}>
+        </View>
+        <ScrollView style={styles.menu}>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>학과 공지</Text>
           </TouchableOpacity>
@@ -251,7 +259,8 @@ const MenuBar = ({ onClose }) => {
             <Text style={styles.menuItemText}>해오름 식단</Text>
           </TouchableOpacity>
         </ScrollView>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 };
 
@@ -323,6 +332,10 @@ const styles = StyleSheet.create({
     marginTop:30,
     width: 25,
     height: 30,
+  },
+  iconText: {
+    fontSize: 24,
+    color: '#FFFFFF',
   },
   menu: {
     paddingHorizontal: 16,
@@ -524,6 +537,7 @@ const styles = StyleSheet.create({
     textAlign:'center',
     height:20,
     lineHeight:15,
+    borderColor:'#777',
   },
   nextbutton:{
     width: 25,
