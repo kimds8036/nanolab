@@ -16,6 +16,7 @@ const categories = [
   { name: '국제/교류공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=35358&siteId=wwwkr&page=1&id=wwwkr_070109000000'] },
   { name: '일반공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=1481&siteId=wwwkr&page=1&id=wwwkr_070101000000'] },
   { name: '채용공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=97694&siteId=wwwkr&page=1&id=wwwkr_070112000000'] },
+  { name: '외부행사/공모전', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=1584&siteId=wwwkr&page=1&id=wwwkr_070306000000'] },
   { name: '신문방송학과', urls: ['https://masscom.kku.ac.kr/noticeList.do?siteId=MASSCOM&boardSeq=19&menuSeq=154&curPage=30&page=1'] },
   { name: '동화.한국어문화학과', urls: ['https://dongwha.kku.ac.kr/noticeList.do?siteId=DONGWHA&boardSeq=215&menuSeq=4579&curPage=30&page=1'] },
   { name: '영어문화학과', urls: ['https://kuell.kku.ac.kr/noticeList.do?siteId=KUELL2&boardSeq=235&menuSeq=1697&curPage=30&page=1'] },
@@ -55,7 +56,7 @@ async function extractNoticeLinks(url, category) {
   const $ = await fetchPage(url);
   const noticeLinks = [];
 
-  if (['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지'].includes(category)) {
+  if (['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지' ,'외부행사/공모전'].includes(category)) {
     // 중요 공지사항 추출
     $('td.b_num .box_notice').closest('tr').each((index, element) => {
       const linkElement = $(element).find('td.ta_left.b_title a');
@@ -113,7 +114,7 @@ async function scrapeNoticeLinks() {
   for (const category of categories) {
     createCategoryFolder(category.name);  // 폴더 생성
     for (const url of category.urls) {
-      const maxPage = ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지'].includes(category.name) ? 3 : 1;
+      const maxPage = ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'].includes(category.name) ? 3 : 1;
       for (let page = 1; page <= maxPage; page++) {
         const pageUrl = url.includes('page=') ? `${url.split('page=')[0]}page=${page}` : `${url}&page=${page}`;
         const noticeLinks = await extractNoticeLinks(pageUrl, category.name); // 여기서 noticeLinks 변수를 선언합니다.

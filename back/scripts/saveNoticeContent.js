@@ -21,13 +21,20 @@ function cleanContent($, $element) {
       $(el).replaceWith($(el).html());
     }
   });
+
+  // 하이퍼링크 추출 및 포함
+  $element.find('a').each((index, element) => {
+    const linkText = $(element).text();
+    const linkHref = $(element).attr('href');
+    $(element).text(`${linkText} [${linkHref}]`);
+  });
 }
 
 // MongoDB 연결
 const connectToMongoDB = async () => {
   try {
     await mongoose.connect('mongodb://localhost:27017/university_notices', {
-      useNewUrlParser: true, 
+      useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000 // 연결 타임아웃 설정
     });
@@ -128,8 +135,13 @@ const scrapeSecondCategoryNoticeContent = async (link) => {
     console.log(`Views extracted: ${views}`);
 
     const contentElement = $('#post_view_txt');
+
+    contentElement.find('*').each((index, element) => {
+      $(element).css('font-family', '한컴말랑말랑');
+    });
+
     cleanContent($, contentElement);
-    const content = contentElement.html() ? contentElement.html().trim() : '내용 없음';
+    const content = contentElement.html() ? contentElement.html().trim().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ') : '내용 없음';
     console.log(`Content extracted: ${content}`);
 
     const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ').trim();
@@ -172,6 +184,11 @@ const scrapeFirstCategoryNoticeContent = async (link) => {
     console.log(`Views extracted: ${views}`);
 
     const contentElement = $('#board_contents');
+
+    contentElement.find('*').each((index, element) => {
+      $(element).css('font-family', '한컴말랑말랑');
+    });
+
     cleanContent($, contentElement);
     const content = contentElement.html() ? contentElement.html().trim() : '내용 없음';
     console.log(`Content extracted: ${content}`);
