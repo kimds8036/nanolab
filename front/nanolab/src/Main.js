@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Navigation, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Navigation, onClose } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
@@ -191,8 +191,7 @@ const PopularNotices = () => {
   );
 };
 
-const MenuBar = ({ onClose }) => {
-  const navigation = useNavigation(); // 네비게이션 훅 호출
+const MenuBar = ({ onClose, navigation }) => {
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
@@ -204,7 +203,7 @@ const MenuBar = ({ onClose }) => {
   }, [slideAnim]);
 
   const handleHomePress = () => {
-    navigation.navigate('Mypage'); // 네비게이션 객체를 이용하여 화면 전환
+    navigation.navigate('Mypage');
   };
 
   return (
@@ -224,28 +223,28 @@ const MenuBar = ({ onClose }) => {
         <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>학과 공지</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>학사 공지</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>장학 공지</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>일반 공지</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>취업 / 창업</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>공모전</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>국제 교류</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>모시래 식단</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>해오름 식단</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -253,8 +252,10 @@ const MenuBar = ({ onClose }) => {
   );
 };
 
-const MainPage = () => {
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+const MainPage = ({ route }) => {
+  const navigation = useNavigation(); // 네비게이션 훅 호출
+  const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
 
   const handleMenuPress = () => {
     setIsMenuVisible(true);
@@ -273,12 +274,13 @@ const MainPage = () => {
       </ScrollView>
       {isMenuVisible && (
         <View style={styles.menuOverlay}>
-          <MenuBar onClose={handleCloseMenu} />
+          <MenuBar onClose={handleCloseMenu} navigation={navigation} />
         </View>
       )}
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   //menu
