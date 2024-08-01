@@ -221,7 +221,7 @@ const MenuBar = ({ onClose }) => {
         </View>
       </View>
       <ScrollView style={styles.menu}>
-        <TouchableOpacity style={styles.menuItem} onPress={handleHomePress}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
           <Text style={styles.menuItemText}>학과 공지</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>

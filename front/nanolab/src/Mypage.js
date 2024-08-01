@@ -21,8 +21,10 @@ const MyPage = () => {
       <View style={styles.rectangle2}></View>
       <View style={styles.rectangle3}></View>
       <View style={styles.rectangle5}></View>
-      <View style={styles.rectangle6}></View>
-      <Image source={{ uri: 'https://via.placeholder.com/116' }} style={styles.image1} />
+      <View style={styles.container1}>
+        <View style={styles.rectangle6}></View>
+      </View>
+      <Image source={require('../assets/image/profile.png')} style={styles.image1} />
       <Text style={styles.myPage}>마이페이지</Text>
       <Text style={styles.user}>{userData.nickname}</Text>
       <Text style={styles.userId}>{userData.email}</Text>
@@ -86,60 +88,71 @@ const styles = StyleSheet.create({
   },
   rectangle1: {
     position: 'absolute',
-    width: 430,
+    width: "100%",
     height: 53,
     left: 0,
     top: 0,
     backgroundColor: '#9DC284',
+    alignItems:'center',
+    justifyContent:'center',
   },
   rectangle2: {
     position: 'absolute',
-    width: 430,
+    width: "100%",
     height: 608,
     left: 0,
     top: 324,
     backgroundColor: '#0E664F',
+    alignItems:'center',
+    justifyContent:'center',
   },
   rectangle3: {
     position: 'absolute',
-    width: 371,
+    width: 345,
     height: 75,
     left: 29,
     top: 357,
     backgroundColor: '#FCFCFC',
     borderRadius: 15,
+    alignItems:'center',
+    justifyContent:'center',
   },
   rectangle5: {
     position: 'absolute',
-    width: 371,
+    width:100,
     height: 440,
-    left: 31,
+    left: 3,
     top: 457,
     backgroundColor: '#FCFCFC',
     borderRadius: 15,
   },
+  container1: {
+    flex: 1,
+    justifyContent: 'center', // 세로축 가운데 정렬
+    alignItems: 'center', // 가로축 가운데 정렬
+  },
   rectangle6: {
-    position: 'absolute',
     width: 125,
     height: 33,
-    left: 152,
     top: 308,
     backgroundColor: '#9DC284',
     borderRadius: 15,
+    // 이미 가로축 가운데 정렬되어 있으므로 필요 없음
   },
   image1: {
     position: 'absolute',
     width: 116,
     height: 117,
-    left: 157,
+    left: 152,
     top: 133,
     borderRadius: 200,
+    
   },
   myPage: {
     position: 'absolute',
     width: 74,
     height: 18,
-    left: 176,
+    left: 157,
     top: 67,
     fontFamily: 'Handjet',
     fontStyle: 'normal',
