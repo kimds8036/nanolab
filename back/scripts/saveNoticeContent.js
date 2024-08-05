@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { fetchPage } = require('./utils'); // fetchPage 함수 가져오기
+const moment = require('moment'); // moment 라이브러리 가져오기
 
-// cleanContent 함수 정의
 function cleanContent($, $element) {
   $element.contents().each((index, el) => {
     if (el.type === 'comment') {
@@ -15,47 +15,38 @@ function cleanContent($, $element) {
   htmlContent = htmlContent.replace(/\n/g, '');
   $element.html(htmlContent);
 
-  const allowedTags = ['p', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'span', 'div'];
+  const allowedTags = ['p', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'span', 'div', 'a'];
   $element.find('*').each((index, el) => {
     if (!allowedTags.includes(el.tagName.toLowerCase())) {
       $(el).replaceWith($(el).html());
     }
-  });
+  });}
 
-  // 하이퍼링크 추출 및 포함
-  $element.find('a').each((index, element) => {
-    const linkText = $(element).text();
-    const linkHref = $(element).attr('href');
-    $(element).text(`${linkText} [${linkHref}]`);
-  });
-}
 
-// MongoDB 연결
+
 const connectToMongoDB = async () => {
   try {
     await mongoose.connect('mongodb://localhost:27017/university_notices', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000 // 연결 타임아웃 설정
+      serverSelectionTimeoutMS: 5000
     });
     console.log('Successfully connected to MongoDB');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
-    process.exit(1); // 연결 실패 시 프로세스 종료
+    process.exit(1);
   }
 };
 
-// NoticeLink 모델 정의
 const noticeLinkSchema = new mongoose.Schema({
   link: { type: String, required: true },
   category: { type: String, required: true }
 });
 const NoticeLink = mongoose.model('NoticeLink', noticeLinkSchema);
 
-// 공지사항 모델 정의
 const createDynamicModel = (collectionName) => {
   if (mongoose.models[collectionName]) {
-    return mongoose.models[collectionName]; // 이미 정의된 모델이 있으면 반환
+    return mongoose.models[collectionName];
   }
   const schema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -64,22 +55,21 @@ const createDynamicModel = (collectionName) => {
     content: { type: String, required: false },
     files: { type: [String], required: false },
     dDay: { type: String, required: false },
-    extractedText: { type: String, required: false }
+    extractedText: { type: String, required: false },
+    deadline: { type: String, required: false } // 마감기한 필드 추가
   });
   return mongoose.model(collectionName, schema, collectionName);
 };
 
-// 공지사항을 카테고리별 컬렉션에 저장 또는 업데이트
 const saveOrUpdateNotice = async (category, noticeData) => {
   try {
     const collectionName = `notices_${category}`;
     const DynamicModel = createDynamicModel(collectionName);
 
-    // 중복된 데이터가 있을 경우 업데이트하고, 없을 경우 새로 삽입
     await DynamicModel.updateOne(
       { title: noticeData.title, date: noticeData.date },
       { $set: noticeData },
-      { upsert: true } // upsert: true로 설정하면 조건에 맞는 데이터가 없을 때 새로 삽입
+      { upsert: true }
     );
     console.log(`Notice saved or updated in ${collectionName}:`, noticeData);
   } catch (error) {
@@ -87,7 +77,18 @@ const saveOrUpdateNotice = async (category, noticeData) => {
   }
 };
 
-// 공지사항 링크 스크랩 및 저장
+const extractDeadline = (text) => {
+  const deadlinePattern = /(?:신청기간|기간|등록기간|접수기간|지원서 접수|지원서 접수기간)\s*:\s*[^~]+~\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\s*\([^)]+\)\s*[0-9]{1,2}:[0-9]{2})/g;
+  let match;
+  const deadlines = [];
+
+  while ((match = deadlinePattern.exec(text)) !== null) {
+    deadlines.push(match[1]);
+  }
+
+  return deadlines.length > 0 ? deadlines[0] : 'No deadline found';
+};
+
 const scrapeAndSaveNotices = async () => {
   await connectToMongoDB();
 
@@ -103,28 +104,28 @@ const scrapeAndSaveNotices = async () => {
     const isSecondCategory = secondCategoryKeywords.some(keyword => category.includes(keyword));
 
     if (isSecondCategory) {
-      // 두 번째 종류의 공지사항 스크래핑 함수 호출
       noticeData = await scrapeSecondCategoryNoticeContent(link);
     } else if (firstCategory.includes(category)) {
-      // 첫 번째 종류의 공지사항 스크래핑 함수 호출
       noticeData = await scrapeFirstCategoryNoticeContent(link);
     } else {
       console.warn(`Unrecognized category: ${category}`);
       continue;
     }
 
+    if (noticeData.extractedText) {
+      noticeData.deadline = extractDeadline(noticeData.extractedText);
+    }
+
     await saveOrUpdateNotice(category, noticeData);
   }
 
-  mongoose.connection.close(); // MongoDB 연결 종료
+  mongoose.connection.close();
 };
 
-// 두 번째 종류의 공지사항 내용 스크래핑
 const scrapeSecondCategoryNoticeContent = async (link) => {
   try {
     const $ = await fetchPage(link);
 
-    // HTML 구조 식별
     const title = $('table.grid .subject').text().trim() || '제목 없음';
     console.log(`Title extracted: ${title}`);
 
@@ -168,12 +169,10 @@ const scrapeSecondCategoryNoticeContent = async (link) => {
   }
 };
 
-// 첫 번째 종류의 공지사항 내용 스크래핑
 const scrapeFirstCategoryNoticeContent = async (link) => {
   try {
     const $ = await fetchPage(link);
 
-    // HTML 구조 식별
     const title = $('h4').text().trim().replace('제목\t :', '').trim() || '제목 없음';
     console.log(`Title extracted: ${title}`);
 
@@ -217,5 +216,4 @@ const scrapeFirstCategoryNoticeContent = async (link) => {
   }
 };
 
-// 스크래핑 및 저장 실행
 scrapeAndSaveNotices();

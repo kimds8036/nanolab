@@ -1,7 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const mongoose = require('mongoose');
-const createCategoryFolder = require('./createFolder');
 const NoticeLink = require('../models/noticelink'); // 경로 수정
 
 mongoose.connect('mongodb://localhost:27017/university_notices', {
@@ -112,7 +111,7 @@ async function extractNoticeLinks(url, category) {
 
 async function scrapeNoticeLinks() {
   for (const category of categories) {
-    createCategoryFolder(category.name);  // 폴더 생성
+    //createCategoryFolder(category.name);  // 폴더 생성
     for (const url of category.urls) {
       const maxPage = ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'].includes(category.name) ? 3 : 1;
       for (let page = 1; page <= maxPage; page++) {
