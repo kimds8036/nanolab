@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
 
 function EnterPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -58,43 +58,43 @@ function EnterPage({ navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <View style={styles.innerContainer}>
-          <View style={styles.closeButtonContainer}>
-            <TouchableOpacity style={styles.closeButton} onPress={() => { navigation.navigate('Login'); }}>
-              <Text style={styles.closeButtonText}>&lt;</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>회원가입</Text>
-          </View>
-          <View style={styles.inputContainer}>
-            <Text>이메일</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="학교 이메일을 입력하세요"
-              value={email}
-              onChangeText={handleEmailChange}
-            />
-            <Text>비밀번호</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="6자 이상 입력하세요"
-              secureTextEntry={true}
-              value={password}
-              onChangeText={handlePasswordChange}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
-              onPress={handleRegister}
-              disabled={!isFormValid}>
-              <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.header}></View>
+      <View style={styles.innerContainer}>
+        <View>
+          <TouchableOpacity onPress={() => { navigation.navigate('Login'); }}>
+            <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>회원가입</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <Text>이메일</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="학교 이메일을 입력하세요"
+            value={email}
+            onChangeText={handleEmailChange}
+          />
+          <Text>비밀번호</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="6자 이상 입력하세요"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={handlePasswordChange}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
+            onPress={handleRegister}
+            disabled={!isFormValid}>
+            <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
+          </TouchableOpacity>
+        </View>
+        <Image source={require('../assets/image/konkuk.png')} style={styles.logo}/>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -103,27 +103,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  header: {
+    backgroundColor:'#9DC284',
+    width:'100%',
+    height:50,
+  },
   innerContainer: {
     flex: 1,
-    justifyContent: 'center',
     padding: 10,
   },
-  closeButtonContainer: {
-    position: 'absolute',
-    top: 40,
-    left: 5,
-    padding: 10,
-  },
-  closeButton: {
-    paddingHorizontal: 10,
-  },
-  closeButtonText: {
-    fontSize: 30,
-    fontWeight: '200',
-    transform: [{ scaleY: 2 }],
+  backButton: {
+    width:25,
+    height:25,
+    left:5,
+    top:10,
   },
   titleContainer: {
-    marginTop: 230,
+    marginTop: 50,
     marginBottom: 20,
     padding: 20,
   },
@@ -143,14 +139,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     padding: 10,
-    width: 350,
+    width: "100%",
     alignSelf: 'center',
   },
   button: {
     backgroundColor: '#9DC284',
     padding: 15,
     borderRadius: 30,
-    flex: 1,
     alignItems: 'center',
     width: '100%',
     shadowColor: '#000',
@@ -176,6 +171,12 @@ const styles = StyleSheet.create({
   },
   buttonTextActive: {
     color: '#FFF',
+  },
+  logo:{
+    left:50,
+    width:450,
+    height:450,
+    opacity: 0.3,
   },
 });
 

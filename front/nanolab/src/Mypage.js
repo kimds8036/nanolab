@@ -77,22 +77,13 @@ const MyPage = () => {
               <Image style={styles.menuIcon} source={require('../assets/image/question.png')} />
             </TouchableOpacity>
           </View>
-          <View style={styles.menuItem}>
+          <View style={styles.menuItem1}>
             <Text style={styles.menuText}>로그아웃</Text>
             <TouchableOpacity>
               <Image style={styles.menuIcon} source={require('../assets/image/logout.png')} />
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-      <View style={styles.container1}>
-        <View style={styles.line1}></View>
-        <View style={styles.line2}></View>
-        <View style={styles.line3}></View>
-        <View style={styles.line4}></View>
-        <View style={styles.line5}></View>
-        <View style={styles.line6}></View>
-        <View style={styles.line7}></View>
       </View>
     </ScrollView>
   );
@@ -102,6 +93,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    height:'100%',
   },
   header:{
     flexDirection: 'row',
@@ -115,20 +107,18 @@ const styles = StyleSheet.create({
     left:10,
   },
   rectangle1: {
-    position: 'absolute',
-    width: "100%",
-    height: 800,
-    left: 0,
-    top: -740,
+    width: '100%',
+    height: 50,
     backgroundColor: '#9DC284',
+    position: 'absolute',
+    top: 0,
   },
   rectangle2: {
-    position: 'absolute',
-    width: "100%",
-    height:1000,
-    left: 0,
-    top: 324,
+    width: '100%',
+    height: 5000,
     backgroundColor: '#0E664F',
+    position: 'absolute',
+    top: 325,
   },
   rectangle3: {
     position: 'absolute',
@@ -222,17 +212,31 @@ const styles = StyleSheet.create({
   menuContainer: {
     position: 'absolute',
     width: "90%",
-    height: 470,
-    top: 407,
+    height: 500,
+    top: 400,
     backgroundColor: '#fff',
     borderRadius: 15,
-    paddingTop:20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   menuItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical:16.5,
+    paddingVertical:15.5,
+    borderTopWidth:2,
+    borderColor:'#D5D5D5',
+    width:"90%"
+  },
+  menuItem1:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical:15.5,
+    borderTopWidth:2,
+    borderBottomWidth:2,
+    borderColor:'#D5D5D5',
+    width:"90%"
   },
   menuText: {
     fontSize: 16,
@@ -249,56 +253,6 @@ const styles = StyleSheet.create({
   },
   toggle:{
     right: 20,
-    
-  },
-  line1: {
-    position: 'absolute',
-    width: 317,
-    top: 427,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
-    borderWidth: 2,
-  },
-  line2: {
-    position: 'absolute',
-    width: 317,
-    top: 497,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
-    borderWidth: 2,
-  },
-  line3: {
-    position: 'absolute',
-    width: 317,
-    top: 567,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
-    borderWidth: 2,
-  },
-  line4: {
-    position: 'absolute',
-    width: 317,
-    top: 637,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
-    borderWidth: 2,
-  },
-  line5: {
-    position: 'absolute',
-    width: 317,
-    top: 707,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
-    borderWidth: 2,
-  },
-  line6: {
-    position: 'absolute',
-    width: 317,
-    top: 777,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
-    borderWidth: 2,
-  },
-  line7: {
-    position: 'absolute',
-    width: 317,
-    top: 847,
-    borderColor: 'rgba(0, 0, 0, 0.25)',
-    borderWidth: 2,
   },
 });
 

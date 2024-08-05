@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http://192.168.0.58:5000';
 
 function KeywordAlertPage({ navigation }) {
   const [keyword, setKeyword] = useState('');
@@ -10,7 +10,6 @@ function KeywordAlertPage({ navigation }) {
   const [recentKeywords, setRecentKeywords] = useState(["+", "+", "+", "+", "+", "+"]);
 
   useEffect(() => {
-    // 여기에서 유저의 등록된 키워드를 불러오는 로직을 추가합니다.
     const fetchKeywords = async () => {
       try {
         const response = await axios.get(`${API_URL}/keywords`, {
@@ -40,6 +39,18 @@ function KeywordAlertPage({ navigation }) {
               });
               setRegisteredKeywords([...registeredKeywords, keyword]);
               setKeyword('');
+              // 최근 본 키워드 업데이트
+              setRecentKeywords(prevRecentKeywords => {
+                const newRecentKeywords = [...prevRecentKeywords];
+                const index = newRecentKeywords.indexOf("+");
+                if (index !== -1) {
+                  newRecentKeywords[index] = keyword;
+                } else {
+                  newRecentKeywords.unshift(keyword);
+                  newRecentKeywords.pop();
+                }
+                return newRecentKeywords;
+              });
             } catch (error) {
               console.error(error);
             }
@@ -55,65 +66,67 @@ function KeywordAlertPage({ navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-      >
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
-          <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-              <Text style={styles.backButtonText}>{"<"}</Text>
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>키워드 알림 설정</Text>
-            <TouchableOpacity style={styles.iconButton}>
-              <Text style={styles.iconButtonText}>?</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TextInput
-            style={styles.input}
-            placeholder="알림 받을 키워드를 입력해 주세요"
-            placeholderTextColor="#6b7280"
-            value={keyword}
-            onChangeText={setKeyword}
-            onSubmitEditing={handleAddKeyword}
-          />
-
-          {registeredKeywords.length === 0 ? (
-            <View style={styles.noKeywordView}>
-              <Text style={styles.noKeywordText}>아직 등록된 키워드가 없어요</Text>
-              <TouchableOpacity>
-                <Text style={styles.howToUseText}>어떻게 사용하나요?</Text>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+          >
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
+                <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>키워드 알림 설정</Text>
+              <TouchableOpacity style={styles.iconButton}>
+                <Text style={styles.iconButtonText}>?</Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.keywordView}>
-              <Text style={styles.keywordTitle}>등록된 키워드 :</Text>
-              <ScrollView style={styles.keywordList}>
-                {registeredKeywords.map((kw, index) => (
-                  <Text key={index} style={styles.keywordItem}>{kw}</Text>
-                ))}
-              </ScrollView>
-            </View>
-          )}
 
-          <View style={styles.recentKeywords}>
-            <Text style={styles.recentKeywordsTitle}>USER님이 최근 본 키워드에요.</Text>
-            <View style={styles.keywordListContainer}>
-              {recentKeywords.map((kw, index) => (
-                <TouchableOpacity key={index} style={styles.keywordButton}>
-                  <Text style={styles.plusText}>{kw}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="알림 받을 키워드를 입력해 주세요"
+              placeholderTextColor="#6b7280"
+              value={keyword}
+              onChangeText={setKeyword}
+              onSubmitEditing={handleAddKeyword}
+            />
+
+            {registeredKeywords.length === 0 ? (
+              <View style={styles.noKeywordView}>
+                <Text style={styles.noKeywordText}>아직 등록된 키워드가 없어요</Text>
+                <TouchableOpacity>
+                  <Text style={styles.howToUseText}>어떻게 사용하나요?</Text>
                 </TouchableOpacity>
-              ))}
+              </View>
+            ) : (
+              <View style={styles.keywordView}>
+                <Text style={styles.keywordTitle}>등록된 키워드 :</Text>
+                <ScrollView style={styles.keywordList}>
+                  {registeredKeywords.map((kw, index) => (
+                    <Text key={index} style={styles.keywordItem}>{kw}</Text>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
+            <View style={styles.recentKeywords}>
+              <Text style={styles.recentKeywordsTitle}>USER님이 최근 본 키워드에요.</Text>
+              <View style={styles.keywordListContainer}>
+                {recentKeywords.map((kw, index) => (
+                  <TouchableOpacity key={index} style={styles.keywordButton}>
+                    <Text style={styles.plusText}>{kw}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>알림 받는 키워드 {registeredKeywords.length} 개</Text>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
@@ -128,16 +141,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#a5c585',
-    paddingTop: 40, // 상태바 높이를 고려해 패딩 추가
+    paddingTop: 10, // 상태바 높이를 고려해 패딩 추가
     paddingHorizontal: 10,
     paddingBottom: 10,
   },
   backButton: {
-    padding: 10,
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: 'black',
+    width:20,
+    height:20,
+    left:5,
   },
   headerTitle: {
     fontSize: 18,

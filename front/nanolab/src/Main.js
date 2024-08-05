@@ -206,16 +206,28 @@ const MenuBar = ({ onClose, navigation }) => {
     navigation.navigate('Mypage');
   };
 
+  const handleBackPress = () => {
+    
+    Animated.timing(slideAnim, {
+      toValue: width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      if (onClose) onClose();
+    });
+  };
+
+
   return (
     <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
       <View style={styles.menuheader}>
         <Text style={styles.headerText}>Menu</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />
+            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton1} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />
+          <TouchableOpacity onPress={handleBackPress}>
+            <Image source={require('../assets/image/back2.png')} style={styles.iconButton2} />
           </TouchableOpacity>
         </View>
       </View>
@@ -318,11 +330,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 5, // 아이콘 상단 여유 공간 추가
   },
-  iconButton: {
-    marginLeft: 100,
-    marginTop:25,
+  iconButton1: {
+    right:120,
+    marginTop: 30,
     width: 25,
     height: 25,
+  },
+  iconButton2: {
+    right:100,
+    marginTop: 30,
+    width: 20,
+    height: 20,
   },
   menu: {
     paddingHorizontal: 16,
