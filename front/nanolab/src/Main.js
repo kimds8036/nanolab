@@ -217,6 +217,10 @@ const MenuBar = ({ onClose, navigation }) => {
     });
   };
 
+  const handleMenuItemPress = (tabIndex) => {
+    navigation.navigate('Noticelist', { activeTab: tabIndex });
+    if (onClose) onClose(); // 메뉴가 닫히면서 이동
+  };
 
   return (
     <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
@@ -232,33 +236,15 @@ const MenuBar = ({ onClose, navigation }) => {
         </View>
       </View>
       <ScrollView style={styles.menu}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>학과 공지</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>학사 공지</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>장학 공지</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>일반 공지</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>취업 / 창업</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>공모전</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>국제 교류</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>모시래 식단</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Noticelist'); }}>
-          <Text style={styles.menuItemText}>해오름 식단</Text>
-        </TouchableOpacity>
+        {['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업 / 창업', '공모전', '국제 교류', '모시래 식단', '해오름 식단'].map((text, index) => (
+          <TouchableOpacity
+            key={text}
+            style={styles.menuItem}
+            onPress={() => handleMenuItemPress(index)}
+          >
+            <Text style={styles.menuItemText}>{text}</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </Animated.View>
   );

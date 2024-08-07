@@ -1,27 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 function EnterPage({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
   const handleEmailChange = (text) => {
     setEmail(text);
-    validateForm(text, password);
+    validateForm(text, password, passwordConfirmation);
+  };
+
+  const handleEmailVerification = () => {
+    // 이메일 인증 로직을 여기에 추가
+    Alert.alert('이메일 인증', '이메일 인증 버튼이 클릭되었습니다.');
   };
 
   const handlePasswordChange = (text) => {
     setPassword(text);
-    validateForm(email, text);
+    validateForm(email, text, passwordConfirmation);
   };
 
-  const validateForm = (email, password) => {
+  const handlePasswordConfirmationChange = (text) => {
+    setPasswordConfirmation(text);
+    validateForm(email, password, text);
+  };
+
+  const validateForm = (email, password, passwordConfirmation) => {
     const emailValid = email.endsWith('@kku.ac.kr');
     const passwordValid = password.length >= 6;
-    setIsFormValid(emailValid && passwordValid);
+    const passwordsMatch = password === passwordConfirmation;
+    setIsFormValid(emailValid && passwordValid && passwordsMatch);
   };
-
+  
   const handleRegister = async () => {
     console.log('Register button pressed');
     try {
@@ -53,49 +65,64 @@ function EnterPage({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-    >
-      <View style={styles.header}></View>
-      <View style={styles.innerContainer}>
-        <View>
-          <TouchableOpacity onPress={() => { navigation.navigate('Login'); }}>
-            <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
-          </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        <View style={styles.header}></View>
+        <View style={styles.innerContainer}>
+          <View>
+            <TouchableOpacity onPress={() => { navigation.navigate('Login'); }}>
+              <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>회원가입</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <Text>이메일</Text>
+            <View style={styles.emailContainer}>
+              <TextInput
+                style={styles.emailinput}
+                placeholder="학교 이메일을 입력하세요"
+                value={email}
+                onChangeText={handleEmailChange}
+              />
+              <TouchableOpacity style={styles.emailbutton} onPress={handleEmailVerification}>
+                <Text style={styles.emailbuttonText}>인증하기</Text>
+              </TouchableOpacity>
+            </View>
+            <Text>비밀번호</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="6자 이상 입력하세요"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={handlePasswordChange}
+            />
+            <Text>비밀번호 확인</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="비밀번호 확인을 위해 한 번 더 입력하세요"
+              secureTextEntry={true}
+              value={passwordConfirmation}
+              onChangeText={handlePasswordConfirmationChange}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
+              onPress={handleRegister}
+              disabled={!isFormValid}>
+              <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
+            </TouchableOpacity>
+          </View>
+          <Image source={require('../assets/image/konkuk.png')} style={styles.logo}/>
         </View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>회원가입</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <Text>이메일</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="학교 이메일을 입력하세요"
-            value={email}
-            onChangeText={handleEmailChange}
-          />
-          <Text>비밀번호</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="6자 이상 입력하세요"
-            secureTextEntry={true}
-            value={password}
-            onChangeText={handlePasswordChange}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
-            onPress={handleRegister}
-            disabled={!isFormValid}>
-            <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
-          </TouchableOpacity>
-        </View>
-        <Image source={require('../assets/image/konkuk.png')} style={styles.logo}/>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -120,12 +147,41 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     marginTop: 50,
-    marginBottom: 20,
+    marginBottom: 10,
     padding: 20,
   },
   title: {
     fontSize: 35,
     fontWeight: 'bold',
+  },
+  emailContainer:{
+    flexDirection:'row',
+    justifyContent:'space-between'
+  },
+  emailbutton:{
+    width:70,
+    height:35,
+    backgroundColor: '#9DC284',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+    elevation: 5,
+    alignItems: 'center',
+    justifyContent:'center',
+  },
+  emailbuttonText:{
+    fontSize:15,
+    color:'white',
+    fontWeight:'bold',
+  },
+  emailinput: {
+    width: "75%",
+    height: 40,
+    borderColor: 'gray',
+    borderBottomWidth: 1,
+    marginBottom: 15,
   },
   inputContainer: {
     width: '100%',
@@ -135,7 +191,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: 'gray',
     borderBottomWidth: 1,
-    marginBottom: 20,
+    marginBottom: 15,
   },
   buttonContainer: {
     padding: 10,

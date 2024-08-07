@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useFonts } from 'expo-font';
 
-const Noticelist = () => {
-  const [activeTab, setActiveTab] = useState(0);
+const Noticelist = ({route}) => {
+  const [activeTab, setActiveTab] = useState(route.params.activeTab || 0);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const tabs = ['학과 공지', '학사 공지', '장학 공지', '취업/창업', '공모전', '국제 교류'];
+  const tabs = ['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업/창업', '공모전', '국제 교류', '모시래 식단', '해오름 식단'];
 
   const noticesData = [
     [
@@ -47,12 +47,23 @@ const Noticelist = () => {
     [
       { title: '[국제교류] 2024학년도 1학기 교환학생 프로그램 안내', date: '2023.11.05' },
       { title: '[국제교류] 해외 인턴십 프로그램 참가자 모집', date: '2023.12.08' },
+    ],
+    [
+      { title: '[국제교류] 2024학년도 1학기 교환학생 프로그램 안내', date: '2023.11.05' },
+      { title: '[국제교류] 해외 인턴십 프로그램 참가자 모집', date: '2023.12.08' },
       { title: '[국제교류] 해외 대학 방문단 초청 특강', date: '2023.12.18' },
     ],
     [
       { title: '[일반] 도서관 이용 시간 변경 안내', date: '2023.12.01' },
       { title: '[일반] 학생회관 시설 개선 공사 안내', date: '2023.11.28' },
       { title: '[일반] 겨울방학 특별 프로그램 안내', date: '2023.12.12' },
+    ],
+    [
+      { title: '[일반] 도서관 이용 시간 변경 안내', date: '2023.12.01' },
+      { title: '[일반] 학생회관 시설 개선 공사 안내', date: '2023.11.28' },
+    ],
+    [
+      { title: '[일반] 도서관 이용 시간 변경 안내', date: '2023.12.01' },
     ],
   ];
 
