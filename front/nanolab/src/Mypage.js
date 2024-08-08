@@ -74,7 +74,7 @@ const MyPage = () => {
       </View>
       <View style={styles.container1}>
         <View style={styles.rectangle4}>
-          <TouchableOpacity style={styles.editButton}>
+          <TouchableOpacity style={styles.editButton} onPress={() => { navigation.navigate('Myinform'); }}>
             <Text style={styles.editButtonText}>내 정보 수정</Text>
           </TouchableOpacity>
         </View>

@@ -80,32 +80,31 @@ function LoginPage({ navigation }) {
               </View>
 
               <View style={styles.formAction}>
-                <TouchableOpacity onPress={handleLogin}>
-                  <View style={styles.btn}>
-                    <Text style={styles.btnText}>로그인</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity onPress={handleLogin}>
+                <View style={styles.btn}>
+                  <Text style={styles.btnText}>로그인</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ alignItems: 'center', marginBottom: 24 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Enter');
+                }}
+              >
+                <Text style={styles.formFooter}>
+                  계정이 없으신가요?{' '}
+                  <Text style={styles.signupText}>회원가입</Text>
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </KeyboardAvoidingView>
-
-        {/* 푸터 */}
-        <View style={{ alignItems: 'center', marginBottom: 24 }}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Enter');
-            }}
-          >
-            <Text style={styles.formFooter}>
-              계정이 없으신가요?{' '}
-              <Text style={{ textDecorationLine: 'underline' }}>회원가입</Text>
-            </Text>
-          </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
-  );
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  </TouchableWithoutFeedback>
+ );
 }
 
 const styles = StyleSheet.create({
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     marginBottom: 36,
   },
   titlelogin: {
-    fontSize: 27,
+    fontSize: 40,
     fontWeight: '700',
     color: '#1e1e1e',
     marginBottom: 6,
@@ -154,6 +153,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
     color: '#222',
+    borderWidth: 1,
+    borderColor: '#000',
   },
   form: {
     marginBottom: 24,
@@ -169,6 +170,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.15,
   },
+  signupText: {
+    fontWeight: '700',
+    color: '#0E664F',
+    textDecorationLine: 'underline',
+  },
   btn: {
     backgroundColor: '#9DC284',
     borderRadius: 30,
@@ -178,6 +184,16 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#000',
+    shadowColor: '#000',
+    shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 1.25,
+  shadowRadius: 3.84,
+  elevation: 5,
   },
   btnText: {
     color: '#fff',

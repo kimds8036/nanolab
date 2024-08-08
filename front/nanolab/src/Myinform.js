@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* 프로필 영역 */}
@@ -37,7 +37,7 @@ const ProfileScreen = () => {
       </TouchableOpacity>
 
       {/* 학과 등록 버튼 */}
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('Department'); }}>
         <Text style={styles.buttonText}>학과 등록</Text>
       </TouchableOpacity>
     </View>
