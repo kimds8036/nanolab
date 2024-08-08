@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Navigation, onClose } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
@@ -251,7 +251,7 @@ const MenuBar = ({ onClose, navigation }) => {
 };
 
 
-const Main = ({ route }) => {
+const Keywordhelp = ({ route }) => {
   const navigation = useNavigation(); // 네비게이션 훅 호출
   const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
 
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   menuheader: {
     height: 100, // 상단 여유 공간 줄이기
-    backgroundColor: '#9BC178',
+    backgroundColor: '#6AA84F',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -310,7 +310,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: '#FFFFFF',
     marginTop: 30, // 상단 여유 공간 줄이기
-    fontWeight:'bold',
   },
   iconContainer: {
     flexDirection: 'row',
@@ -328,10 +327,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     width: 20,
     height: 20,
-  },
-  iconText: {
-    fontSize: 24,
-    color: '#FFFFFF',
   },
   menu: {
     paddingHorizontal: 16,
@@ -533,7 +528,6 @@ const styles = StyleSheet.create({
     textAlign:'center',
     height:20,
     lineHeight:15,
-    borderColor:'#777',
   },
   nextbutton:{
     width: 25,
@@ -543,4 +537,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Main;
+export default Keywordhelp;

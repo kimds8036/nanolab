@@ -80,32 +80,31 @@ function LoginPage({ navigation }) {
               </View>
 
               <View style={styles.formAction}>
-                <TouchableOpacity onPress={handleLogin}>
-                  <View style={styles.btn}>
-                    <Text style={styles.btnText}>로그인</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity onPress={handleLogin}>
+                <View style={styles.btn}>
+                  <Text style={styles.btnText}>로그인</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ alignItems: 'center', marginBottom: 24 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Enter');
+                }}
+              >
+                <Text style={styles.formFooter}>
+                  계정이 없으신가요?{' '}
+                  <Text style={styles.signupText}>회원가입</Text>
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </KeyboardAvoidingView>
-
-        {/* 푸터 */}
-        <View style={{ alignItems: 'center', marginBottom: 24 }}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Enter');
-            }}
-          >
-            <Text style={styles.formFooter}>
-              계정이 없으신가요?{' '}
-              <Text style={{ textDecorationLine: 'underline' }}>회원가입</Text>
-            </Text>
-          </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
-  );
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  </TouchableWithoutFeedback>
+ );
 }
 
 const styles = StyleSheet.create({

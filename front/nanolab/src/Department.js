@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+// ParentComponent.js
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Assuming you use react-native-vector-icons
 
 const Department = ({ navigation }) => {
+  const [isDepartmentRegistered, setIsDepartmentRegistered] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState();
   const [selectedDepartment, setSelectedDepartment] = useState();
   const [showCollegePicker, setShowCollegePicker] = useState(false);
   const [showDepartmentPicker, setShowDepartmentPicker] = useState(false);
 
   const colleges = {
-    design: ['산업디자인학과', '시각영상디자인학과', '실내디자인학과','패션디자인학과'],
-    business: ['경영학과', '경제통상학과','경찰학과','동화•한국어문화학과','문헌정보학과','사회복지학과','소방방재융합학과','신문방송학과','영어문화학과','유아교육과'], 
-    engineering: ['녹색기술융합학과', '메카트로닉스공학과','바이오메디컬공학과','에너지신소재공학과','컴퓨터공학과'],
-    biomedical: ['골프산업학과','바이오의약학과','뷰티화장품학과','생명공학과','식품영양학과','스포츠건강학과'],
+    design: ['산업디자인학과', '시각영상디자인학과', '실내디자인학과', '패션디자인학과'],
+    business: [
+      '경영학과', '경제통상학과', '경찰학과', '동화•한국어문화학과', '문헌정보학과',
+      '사회복지학과', '소방방재융합학과', '신문방송학과', '영어문화학과', '유아교육과'
+    ],
+    engineering: ['녹색기술융합학과', '메카트로닉스공학과', '바이오메디컬공학과', '에너지신소재공학과', '컴퓨터공학과'],
+    biomedical: ['골프산업학과', '바이오의약학과', '뷰티화장품학과', '생명공학과', '식품영양학과', '스포츠건강학과'],
     medicine: ['의예과'],
   };
   
@@ -25,68 +29,167 @@ const Department = ({ navigation }) => {
     medicine: '의과대학',
   };
 
+  const handleRegister = () => {
+    if (selectedCollege && selectedDepartment) {
+      setIsDepartmentRegistered(true);
+      
+      // 상태를 Noticelist에 전달할 수 있는 방법으로 저장
+      navigation.navigate('Noticelist', { isDepartmentRegistered: true });
+  
+      // 페이지는 Myinform으로 이동
+      Alert.alert('학과가 저장되었습니다.', '', [
+        { 
+          text: 'OK', 
+          onPress: () => navigation.navigate('Myinform') 
+        }
+      ]);
+    } else {
+      Alert.alert('학과를 선택해 주세요.');
+    }
+  };
+
+  useEffect(() => {
+    console.log('Current department registration status:', isDepartmentRegistered);
+  }, [isDepartmentRegistered]);
+
   return (
+    <ImageBackground source={require('../assets/image/background.png')} style={styles.backgroundImage}>
       <SafeAreaView style={styles.innerContainer}>
         <View style={styles.rectangle1}></View>
         <View style={styles.header}>
-            <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
-                <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
-            </TouchableOpacity>
-            <View style={styles.titleContainer}>
-                <Text style={styles.title}>학과 등록</Text>
-            </View>
+          <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
+            <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
+          </TouchableOpacity>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>학과 등록</Text>
+          </View>
+          <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
+            <Image source={require('../assets/image/question.png')} style={styles.questionIcon} />
+          </TouchableOpacity>
         </View>
         <View style={styles.textContainer}>
-            <View style={styles.textLine}>
-                <Text style={styles.text1}>현재</Text>
-                <Text style={styles.text2}> 재학 중인 학과</Text>
-                <Text style={styles.text1}>를</Text>
-            </View>
-            <Text style={styles.text1}>입력해 주세요</Text>
+          <View style={styles.textLine}>
+            <Text style={styles.text1}>현재</Text>
+            <Text style={styles.text2}> 재학 중인 학과</Text>
+            <Text style={styles.text1}>를</Text>
+          </View>
+          <Text style={styles.text1}>입력해 주세요</Text>
         </View>
-        <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowCollegePicker(!showCollegePicker)}>
-            <Text style={styles.pickerText}>
+        {!isDepartmentRegistered ? (
+          <>
+            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowCollegePicker(!showCollegePicker)}>
+              <Text style={styles.pickerText}>
                 {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
-            </Text>
-            <Icon name={showCollegePicker ? "arrow-drop-up" : "arrow-drop-down"} size={24} color="#000" />
-        </TouchableOpacity>
-        {showCollegePicker && (
-            <View style={styles.pickerContainer}>
+              </Text>
+              <Image
+                source={showCollegePicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            {showCollegePicker && (
+              <View style={styles.pickerContainer}>
                 <Picker
-                    selectedValue={selectedCollege}
-                    onValueChange={(itemValue) => {
+                  selectedValue={selectedCollege}
+                  onValueChange={(itemValue) => {
                     setSelectedCollege(itemValue);
                     setSelectedDepartment(colleges[itemValue] ? colleges[itemValue][0] : undefined);
                     setShowCollegePicker(false);
-                    }}
-                    style={styles.picker}>
-                    {Object.keys(colleges).map((key) => (
+                  }}
+                  style={styles.picker}>
+                  {Object.keys(colleges).map((key) => (
                     <Picker.Item key={key} label={collegeLabels[key]} value={key} />
-                    ))}
+                  ))}
                 </Picker>
-            </View>
-        )}
-        <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
-            <Text style={styles.pickerText}>
+              </View>
+            )}
+            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
+              <Text style={styles.pickerText}>
                 {selectedDepartment ? selectedDepartment : '소속 학과'}
-            </Text>
-            <Icon name={showDepartmentPicker ? "arrow-drop-up" : "arrow-drop-down"} size={24} color="#000" />
-        </TouchableOpacity>
-        {showDepartmentPicker && (
-            <View style={styles.pickerContainer}>
+              </Text>
+              <Image
+                source={showDepartmentPicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            {showDepartmentPicker && (
+              <View style={styles.pickerContainer}>
                 <Picker
-                    selectedValue={selectedDepartment}
-                    onValueChange={(itemValue) => setSelectedDepartment(itemValue)}
-                    style={styles.picker}>
-                    {selectedCollege && colleges[selectedCollege] ? 
-                        colleges[selectedCollege].map((department, index) => (
-                            <Picker.Item key={index} label={department} value={department} />
-                        )) : null
-                    }
+                  selectedValue={selectedDepartment}
+                  onValueChange={(itemValue) => setSelectedDepartment(itemValue)}
+                  style={styles.picker}>
+                  {selectedCollege && colleges[selectedCollege] ? 
+                    colleges[selectedCollege].map((department, index) => (
+                      <Picker.Item key={index} label={department} value={department} />
+                    )) : null
+                  }
                 </Picker>
-            </View>
+              </View>
+            )}
+            <TouchableOpacity onPress={handleRegister}>
+              <View style={styles.save}>
+                <Text style={styles.savetext}>저장하기</Text>
+              </View>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowCollegePicker(!showCollegePicker)}>
+              <Text style={styles.pickerText}>
+                {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
+              </Text>
+              <Image
+                source={showCollegePicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            {showCollegePicker && (
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={selectedCollege}
+                  onValueChange={(itemValue) => {
+                    setSelectedCollege(itemValue);
+                    setSelectedDepartment(colleges[itemValue] ? colleges[itemValue][0] : undefined);
+                    setShowCollegePicker(false);
+                  }}
+                  style={styles.picker}>
+                  {Object.keys(colleges).map((key) => (
+                    <Picker.Item key={key} label={collegeLabels[key]} value={key} />
+                  ))}
+                </Picker>
+              </View>
+            )}
+            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
+              <Text style={styles.pickerText}>
+                {selectedDepartment ? selectedDepartment : '소속 학과'}
+              </Text>
+              <Image
+                source={showDepartmentPicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            {showDepartmentPicker && (
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={selectedDepartment}
+                  onValueChange={(itemValue) => setSelectedDepartment(itemValue)}
+                  style={styles.picker}>
+                  {selectedCollege && colleges[selectedCollege] ? 
+                    colleges[selectedCollege].map((department, index) => (
+                      <Picker.Item key={index} label={department} value={department} />
+                    )) : null
+                  }
+                </Picker>
+              </View>
+            )}
+            <TouchableOpacity onPress={handleRegister}>
+              <View style={styles.save}>
+                <Text style={styles.savetext}>수정하기</Text>
+              </View>
+            </TouchableOpacity>
+          </>
         )}
       </SafeAreaView>
+    </ImageBackground>
   );
 };
 
@@ -102,20 +205,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
-  header:{
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
+    marginTop: 5,
   },
-  backIcon:{
+  backIcon: {
     width: 25,
     height: 25,
+    marginLeft: 5,
   },
   titleContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 5,
   },
   title: {
     fontSize: 16,
@@ -146,22 +252,77 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 2,
-    borderBottomColor: '#ccc',
-    paddingVertical: 20,
-    marginBottom: 20,
-    marginTop:20,
-    width:'90%',
+    borderColor: '#4A7766',
+    borderRadius: 20,
+    paddingVertical: 13,
+    width: '90%',
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 20,
+    backgroundColor: '#F2F2F2',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+    elevation: 5,
   },
   pickerText: {
-    fontSize: 16,
-    color: '#000',
-  },
-  textContainer:{
-    marginTop: 100,
+    fontSize: 18,
+    color: 'grey',
     marginLeft: 20,
   },
-  textLine:{
-    flexDirection:'row',
+  textContainer: {
+    marginTop: 100,
+    marginLeft: 20,
+    marginBottom: 15,
+  },
+  textLine: {
+    flexDirection: 'row',
+  },
+  icon: {
+    width: 30,
+    height: 30,
+    marginRight: 15,
+  },
+  questionIcon: {
+    width: 25,
+    height: 25,
+    marginRight: 5,
+  },
+  backgroundImage: {
+    flex: 1,
+  },
+  save: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 30,
+    paddingVertical: 13,
+    width: '90%',
+    height: 50,
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 40,
+    backgroundColor: '#557237',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  savetext: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    lineHeight: 23,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
 

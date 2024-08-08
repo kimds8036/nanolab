@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-function EnterPage({ navigation }) {
+function Enter({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   buttonInactive: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: '#A9A9A9',
   },
   buttonActive: {
     backgroundColor: '#9DC284',
@@ -229,11 +229,11 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   logo:{
-    left:50,
-    width:450,
-    height:450,
-    opacity: 0.3,
+    left:100,
+    bottom:20,
+    width:400,
+    height:400,
   },
 });
 
-export default EnterPage;
+export default Enter;
