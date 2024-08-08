@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useFonts } from 'expo-font';
 
-
-const Noticelist = () => {
-  const [activeTab, setActiveTab] = useState(0);
+const Noticelist = ({route}) => {
+  const [activeTab, setActiveTab] = useState(route.params.activeTab || 0);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const tabs = ['학과 공지', '학사 공지', '장학 공지', '취업/창업', '공모전','국제 교류' ];
+  const tabs = ['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업/창업', '공모전', '국제 교류', '모시래 식단', '해오름 식단'];
 
   const noticesData = [
     [
@@ -29,7 +28,6 @@ const Noticelist = () => {
       { title: '[학과] 학과 홈페이지 개편 안내', date: '2023.12.20' },
       { title: '[학과] 캡스톤 디자인 경진대회 참가 안내', date: '2024.01.10' },
       { title: '[학과] 2024년 봄 학위수여식 안내', date: '2024.02.20' },
-
     ],
     [
       { title: '[학사] 2024학년도 1학기 수강신청 안내', date: '2023.12.01' },
@@ -49,12 +47,23 @@ const Noticelist = () => {
     [
       { title: '[국제교류] 2024학년도 1학기 교환학생 프로그램 안내', date: '2023.11.05' },
       { title: '[국제교류] 해외 인턴십 프로그램 참가자 모집', date: '2023.12.08' },
+    ],
+    [
+      { title: '[국제교류] 2024학년도 1학기 교환학생 프로그램 안내', date: '2023.11.05' },
+      { title: '[국제교류] 해외 인턴십 프로그램 참가자 모집', date: '2023.12.08' },
       { title: '[국제교류] 해외 대학 방문단 초청 특강', date: '2023.12.18' },
     ],
     [
       { title: '[일반] 도서관 이용 시간 변경 안내', date: '2023.12.01' },
       { title: '[일반] 학생회관 시설 개선 공사 안내', date: '2023.11.28' },
       { title: '[일반] 겨울방학 특별 프로그램 안내', date: '2023.12.12' },
+    ],
+    [
+      { title: '[일반] 도서관 이용 시간 변경 안내', date: '2023.12.01' },
+      { title: '[일반] 학생회관 시설 개선 공사 안내', date: '2023.11.28' },
+    ],
+    [
+      { title: '[일반] 도서관 이용 시간 변경 안내', date: '2023.12.01' },
     ],
   ];
 
@@ -66,7 +75,7 @@ const Noticelist = () => {
     return null;
   }
 
-  const itemsPerPage = 9;
+  const itemsPerPage = 15;
   const totalPages = Math.ceil(noticesData[activeTab].length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -137,26 +146,24 @@ const Noticelist = () => {
             <NoticeItem notice={notice} />
           </View>
         ))}
+        {/* Pagination (공지사항 아래에 배치) */}
+        {totalPages > 1 && (
+          <View style={styles.paginationContainer}>
+            {[...Array(totalPages)].map((_, page) => (
+              <TouchableOpacity
+                key={page}
+                onPress={() => handlePageChange(page)}
+                style={[styles.pageButton, page === currentPage && styles.activePageButton]}
+              >
+                <Text style={styles.pageButtonText}>{page + 1}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </ScrollView>
-
-      {/* Pagination (공지사항 아래에 배치) */}
-      {totalPages > 1 && (
-        <View style={styles.paginationContainer}>
-          {[...Array(totalPages)].map((_, page) => (
-            <TouchableOpacity
-              key={page}
-              onPress={() => handlePageChange(page)}
-              style={[styles.pageButton, page === currentPage && styles.activePageButton]}
-            >
-              <Text style={styles.pageButtonText}>{page + 1}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -164,29 +171,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   header: {
-    backgroundColor: '#9DC284',
-    paddingHorizontal: 9,
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#0E664F',
+    paddingTop: 50,
+    paddingHorizontal: 10,
+    backgroundColor: '#A6C18B',
+    height: 100,
   },
   tabsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-
+    backgroundColor: '#A6C18B',
   },
   tab: {
     fontFamily: 'NanumGothic',
     fontWeight: '800',
     fontSize: 13,
     color: '#9DC284',
-    marginRight: 13,
+    marginRight: 15,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
-    paddingBottom: 0,
   },
   activeTab: {
-    color: '#000000',
     borderBottomColor: '#0E664F',
   },
   noticesContainer: {
@@ -194,18 +198,18 @@ const styles = StyleSheet.create({
   },
   noticesContentContainer: {
     padding: 6,
+    marginTop: 10,
   },
   noticeItem: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#000000',
-    borderRadius: 30, 
+    borderRadius: 30,
     padding: 15,
     marginBottom: 5,
     height: 90,
-    position: 'relative'
+    position: 'relative',
   },
-
   noticeHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -217,14 +221,14 @@ const styles = StyleSheet.create({
   },
   noticeTitle: {
     fontFamily: 'NanumGothic',
-    fontWeight: 'bold',  // 볼드체로 변경
+    fontWeight: 'bold', // 볼드체로 변경
     fontSize: 12,
-    color: '#000000',  // 검은색으로 변경
+    color: '#000000', // 검은색으로 변경
     marginBottom: 3,
   },
   noticeDate: {
     fontFamily: 'NanumGothic',
-    fontWeight: 'bold',  // 볼드체로 변경
+    fontWeight: 'bold', // 볼드체로 변경
     fontSize: 10,
     color: 'rgba(0, 0, 0, 0.8)', // 검은색에 가까운 색으로 변경
     marginRight: 0,
@@ -238,7 +242,8 @@ const styles = StyleSheet.create({
   viewMore: {
     // viewMore 텍스트 스타일은 제거 (이미지로 대체)
   },
-  viewMoreIcon: { // View More 아이콘 스타일 추가
+  viewMoreIcon: {
+    // View More 아이콘 스타일 추가
     width: 17,
     height: 15,
   },
@@ -251,7 +256,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
+    
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 20,
+    
+    borderColor: '#E0E0E0',
   },
   pageButton: {
     paddingHorizontal: 10,
@@ -260,6 +269,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FFFFFF', // 테두리 색상을 배경색과 동일하게 변경
     borderRadius: 5,
+    
   },
   activePageButton: {
     backgroundColor: '#9DC284',
@@ -270,16 +280,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   divider: {
-    width: '108.5%',           // 부모 컨테이너(noticeItem) 너비 기준으로 설정
+    width: '108.5%', // 부모 컨테이너(noticeItem) 너비 기준으로 설정
     height: 1,
     backgroundColor: 'black',
-    marginHorizontal: -15,    // noticeItem의 padding 값만큼 음수 margin 설정
-    marginVertical: 10, 
+    marginHorizontal: -15, // noticeItem의 padding 값만큼 음수 margin 설정
+    marginVertical: 10,
   },
-  starContainer: { // 별 이미지 컨테이너 스타일 추가
+  starContainer: {
+    // 별 이미지 컨테이너 스타일 추가
     position: 'absolute',
     bottom: 0.1, // divider 아래쪽 여백 조절
-    right: 15,  // 오른쪽 여백 조절
+    right: 15, // 오른쪽 여백 조절
   },
   starIcon: {
     width: 15,

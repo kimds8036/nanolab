@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Navigation, onClose } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const Header = ({ onMenuPress }) => {
   return (
     <View style={styles.header}>
-      <View>
+      <View>  
         <Text style={styles.headerTitle}>공지사항</Text>
       </View>
       <View style={styles.headerIcons}>
@@ -190,23 +191,23 @@ const PopularNotices = () => {
   );
 };
 
-const MenuBar = ({ onClose }) => {
+const MenuBar = ({ onClose, navigation }) => {
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
     Animated.timing(slideAnim, {
-      toValue: width * 1/4,
+      toValue: width * 1 / 4,
       duration: 300,
       useNativeDriver: true,
     }).start();
   }, [slideAnim]);
 
   const handleHomePress = () => {
-    Alert.alert('Home button pressed');
+    navigation.navigate('Mypage');
   };
 
   const handleBackPress = () => {
-    Alert.alert('Back button pressed');
+    
     Animated.timing(slideAnim, {
       toValue: width,
       duration: 300,
@@ -216,56 +217,43 @@ const MenuBar = ({ onClose }) => {
     });
   };
 
+  const handleMenuItemPress = (tabIndex) => {
+    navigation.navigate('Noticelist', { activeTab: tabIndex });
+    if (onClose) onClose(); // 메뉴가 닫히면서 이동
+  };
+
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
-        <View style={styles.menuheader}>
-          <Text style={styles.headerText}>Menu</Text>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => alert('Details')}>
-            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton} />  
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleBackPress} style={styles.iconButton}>
-              <Text style={styles.iconText}>←</Text>
-            </TouchableOpacity>
-          </View>
+    <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
+      <View style={styles.menuheader}>
+        <Text style={styles.headerText}>Menu</Text>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={handleHomePress}>
+            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton1} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleBackPress}>
+            <Image source={require('../assets/image/back2.png')} style={styles.iconButton2} />
+          </TouchableOpacity>
         </View>
-        <ScrollView style={styles.menu}>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>학과 공지</Text>
+      </View>
+      <ScrollView style={styles.menu}>
+        {['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업 / 창업', '공모전', '국제 교류', '모시래 식단', '해오름 식단'].map((text, index) => (
+          <TouchableOpacity
+            key={text}
+            style={styles.menuItem}
+            onPress={() => handleMenuItemPress(index)}
+          >
+            <Text style={styles.menuItemText}>{text}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>학사 공지</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>장학 공지</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>일반 공지</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>취업 / 창업</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>공모전</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>국제 교류</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>모시래 식단</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemText}>해오름 식단</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </Animated.View>
-    </View>
+        ))}
+      </ScrollView>
+    </Animated.View>
   );
 };
 
-const MainPage = () => {
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+const MainPage = ({ route }) => {
+  const navigation = useNavigation(); // 네비게이션 훅 호출
+  const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
 
   const handleMenuPress = () => {
     setIsMenuVisible(true);
@@ -284,12 +272,13 @@ const MainPage = () => {
       </ScrollView>
       {isMenuVisible && (
         <View style={styles.menuOverlay}>
-          <MenuBar onClose={handleCloseMenu} />
+          <MenuBar onClose={handleCloseMenu} navigation={navigation} />
         </View>
       )}
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   //menu
@@ -325,13 +314,19 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10, // 아이콘 상단 여유 공간 추가
+    marginTop: 5, // 아이콘 상단 여유 공간 추가
   },
-  iconButton: {
-    marginLeft: 100,
-    marginTop:30,
+  iconButton1: {
+    right:120,
+    marginTop: 30,
     width: 25,
-    height: 30,
+    height: 25,
+  },
+  iconButton2: {
+    right:100,
+    marginTop: 30,
+    width: 20,
+    height: 20,
   },
   iconText: {
     fontSize: 24,
