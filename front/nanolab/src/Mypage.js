@@ -35,7 +35,7 @@ const MyPage = () => {
           style={styles.profileImage}
         />
         <Text style={styles.nickname}>{userData.nickname || 'user'}</Text>
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity style={styles.editButton} onPress={()=>{navigation.navigate('Myinform');}}>
           <Text style={styles.editButtonText}>내 정보 수정</Text>
         </TouchableOpacity>
         <Text style={styles.email}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>

@@ -43,7 +43,7 @@ const Department = ({ navigation }) => {
       <SafeAreaView style={styles.innerContainer}>
         <View style={styles.rectangle1}></View>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => { navigation.navigate('ProfilePage'); }}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
             <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
           </TouchableOpacity>
           <View style={styles.titleContainer}>
