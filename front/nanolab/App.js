@@ -12,25 +12,28 @@ import Keyword from './src/Keyword';
 import Keywordhelp from './src/Keywordhelp';
 import Department from './src/Department';
 import Departmenthelp from './src/Departmenthelp';
+import { DepartmentProvider } from './context/DepartmentContext';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
-        <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
-        <Stack.Screen name="Noticelist" component={Noticelist} options={{ headerShown: false }} />
-        <Stack.Screen name="Mypage" component={Mypage} options={{ headerShown: false }} />
-        <Stack.Screen name="Myinform" component={Myinform} options={{ headerShown: false }} />
-        <Stack.Screen name="Keyword" component={Keyword} options={{ headerShown: false }} />
-        <Stack.Screen name="Keywordhelp" component={Keywordhelp} options={{ headerShown: false }} />
-        <Stack.Screen name="Department" component={Department} options={{ headerShown: false }} />
-        <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <DepartmentProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Main">
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+          <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
+          <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
+          <Stack.Screen name="Noticelist" component={Noticelist} options={{ headerShown: false }} />
+          <Stack.Screen name="Mypage" component={Mypage} options={{ headerShown: false }} />
+          <Stack.Screen name="Myinform" component={Myinform} options={{ headerShown: false }} />
+          <Stack.Screen name="Keyword" component={Keyword} options={{ headerShown: false }} />
+          <Stack.Screen name="Keywordhelp" component={Keywordhelp} options={{ headerShown: false }} />
+          <Stack.Screen name="Department" component={Department} options={{ headerShown: false }} />
+          <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </DepartmentProvider>
   );
 }
 

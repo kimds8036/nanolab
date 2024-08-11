@@ -1,14 +1,22 @@
-// ParentComponent.js
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import create from 'zustand';
+
+// Zustand 훅 정의
+const useStore = create((set) => ({
+  isDepartmentRegistered: false,
+  setIsDepartmentRegistered: (value) => set({ isDepartmentRegistered: value }),
+}));
 
 const Department = ({ navigation }) => {
-  const [isDepartmentRegistered, setIsDepartmentRegistered] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState();
   const [selectedDepartment, setSelectedDepartment] = useState();
   const [showCollegePicker, setShowCollegePicker] = useState(false);
   const [showDepartmentPicker, setShowDepartmentPicker] = useState(false);
+
+  // Zustand 훅 사용
+  const { isDepartmentRegistered, setIsDepartmentRegistered } = useStore();
 
   const colleges = {
     design: ['산업디자인학과', '시각영상디자인학과', '실내디자인학과', '패션디자인학과'],
@@ -20,7 +28,7 @@ const Department = ({ navigation }) => {
     biomedical: ['골프산업학과', '바이오의약학과', '뷰티화장품학과', '생명공학과', '식품영양학과', '스포츠건강학과'],
     medicine: ['의예과'],
   };
-  
+
   const collegeLabels = {
     design: '디자인 대학',
     business: '인문사회융합대학',
@@ -32,24 +40,25 @@ const Department = ({ navigation }) => {
   const handleRegister = () => {
     if (selectedCollege && selectedDepartment) {
       setIsDepartmentRegistered(true);
-      
-      // 상태를 Noticelist에 전달할 수 있는 방법으로 저장
-      navigation.navigate('Noticelist', { isDepartmentRegistered: true });
-  
-      // 페이지는 Myinform으로 이동
-      Alert.alert('학과가 저장되었습니다.', '', [
-        { 
-          text: 'OK', 
-          onPress: () => navigation.navigate('Myinform') 
-        }
-      ]);
+      setTimeout(() => {
+        navigation.navigate('Myinform', {
+          selectedCollege,
+          selectedDepartment,
+        });
+        Alert.alert('학과가 저장되었습니다.', '', [
+          { 
+            text: 'OK', 
+            onPress: () => {} 
+          }
+        ]);
+      }, 0);
     } else {
       Alert.alert('학과를 선택해 주세요.');
     }
   };
 
   useEffect(() => {
-    console.log('Current department registration status:', isDepartmentRegistered);
+    console.log('Updated isDepartmentRegistered:', isDepartmentRegistered);
   }, [isDepartmentRegistered]);
 
   return (

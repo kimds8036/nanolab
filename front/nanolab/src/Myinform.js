@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, navigation, Modal, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 
 function ProfilePage() {
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
   const [isPasswordChanged, setPasswordChanged] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const navigation = useNavigation();
+
 
   const handlePasswordChange = () => {
     setPasswordModalVisible(false);
@@ -14,6 +18,10 @@ function ProfilePage() {
       setPasswordChanged(false);
     }, 2000);
   };
+
+  useEffect(() => {
+    console.log('Updated isDepartmentRegistered:', isDepartmentRegistered);
+  }, [isDepartmentRegistered]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,7 +52,7 @@ function ProfilePage() {
           <Text style={styles.infoButtonText}>이메일 인증</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.infoButton}>
+        <TouchableOpacity style={styles.infoButton} onPress={() => { navigation.navigate('Department'); }}>
           <Text style={styles.infoButtonText}>학과 등록</Text>
         </TouchableOpacity>
       </View>
