@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_URL = 'http://192.168.0.58:5000';
 
-function KeywordAlertPage({ navigation }) {
+function Keyword({ navigation }) {
   const [keyword, setKeyword] = useState('');
   const [registeredKeywords, setRegisteredKeywords] = useState([]);
   const [recentKeywords, setRecentKeywords] = useState(["+", "+", "+", "+", "+", "+"]);
@@ -240,4 +240,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default KeywordAlertPage;
+export default Keyword;

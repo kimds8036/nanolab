@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, navi
 import { useNavigation } from '@react-navigation/native';
 
 
-function ProfilePage() {
+function Myinform() {
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
   const [isPasswordChanged, setPasswordChanged] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -18,11 +18,7 @@ function ProfilePage() {
       setPasswordChanged(false);
     }, 2000);
   };
-
-  useEffect(() => {
-    console.log('Updated isDepartmentRegistered:', isDepartmentRegistered);
-  }, [isDepartmentRegistered]);
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -195,4 +191,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfilePage;
+export default Myinform;

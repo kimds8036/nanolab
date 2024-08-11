@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { GlobalProvider } from './src/GlobalContext';
 import Login from './src/Login';
 import Enter from './src/Enter';
 import Main from './src/Main';
@@ -12,13 +13,12 @@ import Keyword from './src/Keyword';
 import Keywordhelp from './src/Keywordhelp';
 import Department from './src/Department';
 import Departmenthelp from './src/Departmenthelp';
-import { DepartmentProvider } from './context/DepartmentContext';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-    <DepartmentProvider>
+    <GlobalProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Main">
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
@@ -33,7 +33,7 @@ function App() {
           <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
-    </DepartmentProvider>
+    </GlobalProvider>
   );
 }
 

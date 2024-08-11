@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-function LoginPage({ navigation }) {
+function Login({ navigation }) {
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -202,4 +202,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginPage;
+export default Login;

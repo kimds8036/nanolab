@@ -1,11 +1,13 @@
-  import React, { useState,useEffect } from 'react';
+  import React, { useState,useEffect,useContext } from 'react';
   import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
   import { useFonts } from 'expo-font';
+  import { GlobalContext } from './GlobalContext'; // GlobalContext 불러오기
+
 
   const Noticelist = ({ route }) => {
+    const { isDepartmentRegistered } = useContext(GlobalContext); 
     const [activeTab, setActiveTab] = useState(route.params?.activeTab || 0);
     const [currentPage, setCurrentPage] = useState(0);
-    const isDepartmentRegistered = route.params?.isDepartmentRegistered ?? false;
 
     useEffect(() => {
       console.log('isDepartmentRegistered:', isDepartmentRegistered);
