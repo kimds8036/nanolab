@@ -9,7 +9,7 @@ const MyPage = () => {
 
   useEffect(() => {
     // Replace with your actual API call
-    fetch('https://api.yoursite.com/user')
+    fetch('http://192.168.0.58:5000')
       .then(response => response.json())
       .then(data => setUserData(data))
       .catch(error => console.error('Error fetching user data:', error));
@@ -19,65 +19,53 @@ const MyPage = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.container1}>
-        <View style={styles.rectangle1}></View>
-      </View>
+      <View style={styles.bar}></View>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
-          <Image source={require('../assets/image/back.png')} style={styles.backicon} />
+          <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
         </TouchableOpacity>
-        <View style={styles.container1}>
-          <Text style={styles.myPage}>마이페이지</Text>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>마이페이지</Text>
         </View>
       </View>
-      <View style={styles.container1}>
-        <Image source={require('../assets/image/profile.png')} style={styles.image1} />
+
+      <View style={styles.profileSection}>
+        <Image
+          source={require('../assets/image/profile.png')} // 기본 프로필 이미지 경로 설정
+          style={styles.profileImage}
+        />
+        <Text style={styles.nickname}>{userData.nickname || 'user'}</Text>
+        <TouchableOpacity style={styles.editButton}>
+          <Text style={styles.editButtonText}>내 정보 수정</Text>
+        </TouchableOpacity>
+        <Text style={styles.email}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>
       </View>
-      <View style={styles.container1}>
-        <Text style={styles.user}>{userData.nickname}</Text>
-        <Text style={styles.userId}>{userData.email}</Text>
-        <View style={styles.rectangle2}>
-          <View style={styles.container1}>
-            <View style={styles.rectangle3}></View>
-            <View style={styles.menuContainer}>
-              <View style={styles.menuItem}>
-                <Text style={styles.menuText}>다크모드</Text>
-                <Switch onValueChange={toggleSwitch} style={styles.toggle} value={darkMode}/>
-              </View>
-              <View style={styles.menuItem}>
-                <Text style={styles.menuText}>키워드 알림 설정</Text>
-                <TouchableOpacity onPress={() => { navigation.navigate('Keyword'); }}>
-                  <Image style={styles.menuIcon} source={require('../assets/image/keyword.png')} />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.menuItem}>
-                <Text style={styles.menuText}>보관함</Text>
-                <TouchableOpacity>
-                  <Image style={styles.menuIcon} source={require('../assets/image/save.png')} />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.menuItem}>
-                <Text style={styles.menuText}>피드백</Text>
-                <TouchableOpacity>
-                  <Image style={styles.menuIcon} source={require('../assets/image/feedback.png')} />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.menuItem1}>
-                <Text style={styles.menuText}>로그아웃</Text>
-                <TouchableOpacity>
-                  <Image style={styles.menuIcon} source={require('../assets/image/logout.png')} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+
+      <View style={styles.menuSection}>
+        <View style={styles.menuItem}>
+          <Text style={styles.menuText}>다크모드</Text>
+          <Switch
+            onValueChange={toggleSwitch}
+            value={darkMode}
+            style={styles.switch}
+          />
         </View>
-      </View>
-      <View style={styles.container1}>
-        <View style={styles.rectangle4}>
-          <TouchableOpacity style={styles.editButton} onPress={() => { navigation.navigate('Myinform'); }}>
-            <Text style={styles.editButtonText}>내 정보 수정</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuText}>키워드 알림 설정</Text>
+          <Image source={require('../assets/image/keyword.png')} style={styles.menuIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuText}>보관함</Text>
+          <Image source={require('../assets/image/save.png')} style={styles.menuIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuText}>피드백</Text>
+          <Image source={require('../assets/image/feedback.png')} style={styles.menuIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuText}>로그아웃</Text>
+          <Image source={require('../assets/image/logout.png')} style={styles.menuIcon} />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -86,165 +74,90 @@ const MyPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
-  container1: {
-    flex: 1,
-    justifyContent: 'center', // 세로축 가운데 정렬
-    alignItems: 'center', // 가로축 가운데 정렬
+  bar:{
+    backgroundColor:'#9DC284',
+    width:'100%',
+    height:50,
   },
-  rectangle1: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#9DC284',
-    position: 'absolute',
-    top: 0,
-  },
-  header:{
+  header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop:25,
-  },
-  backicon:{
-    width:25,
-    height:25,
-    top: 38,
-    left:10,
-  },
-  myPage: {
-    width: 74,
-    height: 18,
-    top: 40,
-    right:15,
-    fontFamily: 'Handjet',
-    fontStyle: 'normal',
-    fontWeight: '800',
-    fontSize: 16,
-    lineHeight: 18,
-    textAlign: 'center',
-    color: '#000000',
-  },
-  rectangle2: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     width: '100%',
-    height: 700,
-    backgroundColor: '#0E664F',
-    position: 'absolute',
-    top: 300,
   },
-  rectangle3: {
-    position: 'absolute',
-    width: "90%",
-    height: 75,
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    top:30,
-  },
-  image1: {
-    position: 'absolute',
-    width: 116,
-    height: 117,
-    top: 70,
-    borderRadius: 200,
-  },
-  user: {
-    position: 'absolute',
-    width: 39,
+  backIcon: {
+    width: 20,
     height: 20,
-    left: 195,
-    top: 264,
-    fontFamily: 'NanumGothic',
-    fontStyle: 'normal',
-    fontWeight: '800',
-    fontSize: 20,
-    lineHeight: 20,
-    textAlign: 'center',
-    color: '#000000',
   },
-  userId: {
-    position: 'absolute',
-    width: 208,
-    height: 20,
-    left: 111,
-    top: 385,
-    fontFamily: 'NanumGothic',
-    fontStyle: 'normal',
-    fontWeight: '700',
-    fontSize: 20,
-    lineHeight: 20,
-    textAlign: 'center',
-    color: '#000000',
-  },
-  
-  menuContainer: {
-    position: 'absolute',
-    width: "90%",
-    height: 400,
-    top:130,
-    backgroundColor: '#fff',
-    borderRadius: 15,
+  headerTitleContainer: {
+    flex: 1, // 이 뷰가 남은 공간을 차지하게 합니다.
+    justifyContent: 'center', // 이 뷰 안에서 텍스트가 가운데에 위치하도록 합니다.
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    right:12.5,
+  },
+  profileSection: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 16,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#C4C4C4', // 기본 프로필 이미지 배경 색상
+    marginBottom: 16,
+  },
+  nickname: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  editButton: {
+    backgroundColor: '#A4B494',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  editButtonText: {
+    fontSize: 14,
+    color: '#fff',
+  },
+  email: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  menuSection: {
+    backgroundColor: '#DAEAD0', // 메뉴 섹션 배경 색상
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderRadius: 10,
   },
   menuItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical:15.5,
-    borderTopWidth:2,
-    borderColor:'#D5D5D5',
-    width:"90%"
-  },
-  menuItem1:{
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical:15.5,
-    borderTopWidth:2,
-    borderBottomWidth:2,
-    borderColor:'#D5D5D5',
-    width:"90%"
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#C4C4C4',
   },
   menuText: {
     fontSize: 16,
-    fontFamily: 'Handjet',
-    fontStyle: 'normal',
-    fontWeight: '200',
-    color: 'rgba(0, 0, 0, 0.7)',
-    left: 25,
+    color: '#000',
   },
   menuIcon: {
-    width: 40,
-    height: 40,
-    right: 25,
+    width: 24,
+    height: 24,
   },
-  toggle:{
-    right: 20,
-  },
-  rectangle4: {
-    width: 125,
-    height: 33,
-    top: 250,
-    backgroundColor: '#9DC284',
-    borderRadius: 15,
-    alignItems:'center',
-  },
-  editButton: {
-    position: 'absolute',
-    width: 60,
-    height: 33, // 텍스트가 더 잘 맞도록 높이를 조정
-    backgroundColor: '#9DC284',
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center', // 수평 가운데 정렬
-  },
-  editButtonText: {
-    fontFamily: 'Handjet',
-    fontStyle: 'normal',
-    fontWeight: '500',
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#000000',
+  switch: {
+    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
   },
 });
 
