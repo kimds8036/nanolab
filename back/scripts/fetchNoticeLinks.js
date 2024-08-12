@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const mongoose = require('mongoose');
 const NoticeLink = require('../models/noticelink'); // 경로 수정
 
-mongoose.connect('mongodb://localhost:27017/university_notices', {
+mongoose.connect('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

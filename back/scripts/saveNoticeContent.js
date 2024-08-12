@@ -15,7 +15,7 @@ function cleanContent($, $element) {
   htmlContent = htmlContent.replace(/\n/g, '');
   $element.html(htmlContent);
 
-  const allowedTags = ['p', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'span', 'div', 'a'];
+  const allowedTags = ['p', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'span', 'div', 'a' ,'br', 'strong'];
   $element.find('*').each((index, el) => {
     if (!allowedTags.includes(el.tagName.toLowerCase())) {
       $(el).replaceWith($(el).html());
@@ -26,7 +26,7 @@ function cleanContent($, $element) {
 
 const connectToMongoDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/university_notices', {
+    await mongoose.connect('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000
@@ -54,8 +54,7 @@ const createDynamicModel = (collectionName) => {
     views: { type: String, required: false },
     content: { type: String, required: false },
     files: { type: [String], required: false },
-    dDay: { type: String, required: false },
-    extractedText: { type: String, required: false },
+   extractedText: { type: String, required: false },
     deadline: { type: String, required: false } // 마감기한 필드 추가
   });
   return mongoose.model(collectionName, schema, collectionName);
@@ -77,17 +76,6 @@ const saveOrUpdateNotice = async (category, noticeData) => {
   }
 };
 
-const extractDeadline = (text) => {
-  const deadlinePattern = /(?:신청기간|기간|등록기간|접수기간|지원서 접수|지원서 접수기간)\s*:\s*[^~]+~\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\s*\([^)]+\)\s*[0-9]{1,2}:[0-9]{2})/g;
-  let match;
-  const deadlines = [];
-
-  while ((match = deadlinePattern.exec(text)) !== null) {
-    deadlines.push(match[1]);
-  }
-
-  return deadlines.length > 0 ? deadlines[0] : 'No deadline found';
-};
 
 const scrapeAndSaveNotices = async () => {
   await connectToMongoDB();
@@ -95,7 +83,7 @@ const scrapeAndSaveNotices = async () => {
   const noticeLinks = await NoticeLink.find({});
 
   const firstCategory = ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'];
-  const secondCategoryKeywords = ['학과', '혁신공유대학', '의예과'];
+  const secondCategoryKeywords = ['학과', '혁신공유대학', '의예과', '유아교육과',];
 
   for (const noticeLink of noticeLinks) {
     const { link, category } = noticeLink;
@@ -112,9 +100,7 @@ const scrapeAndSaveNotices = async () => {
       continue;
     }
 
-    if (noticeData.extractedText) {
-      noticeData.deadline = extractDeadline(noticeData.extractedText);
-    }
+
 
     await saveOrUpdateNotice(category, noticeData);
   }
@@ -138,15 +124,16 @@ const scrapeSecondCategoryNoticeContent = async (link) => {
     const contentElement = $('#post_view_txt');
 
     contentElement.find('*').each((index, element) => {
-      $(element).css('font-family', '한컴말랑말랑');
+      $(element).css('font-family', 'noto sans');
     });
 
     cleanContent($, contentElement);
     const content = contentElement.html() ? contentElement.html().trim().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ') : '내용 없음';
     console.log(`Content extracted: ${content}`);
 
-    const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ').trim();
+    const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, '').trim();
     console.log(`Extracted Text: ${extractedText}`);
+    
 
     const files = [];
     $('a[href*="/file/fileDownLoad.do"]').each((index, element) => {
@@ -185,15 +172,16 @@ const scrapeFirstCategoryNoticeContent = async (link) => {
     const contentElement = $('#board_contents');
 
     contentElement.find('*').each((index, element) => {
-      $(element).css('font-family', '한컴말랑말랑');
+      $(element).css('font-family', 'noto sans');
     });
 
     cleanContent($, contentElement);
     const content = contentElement.html() ? contentElement.html().trim() : '내용 없음';
     console.log(`Content extracted: ${content}`);
 
-    const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ').trim();
+    const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, '').trim();
     console.log(`Extracted Text: ${extractedText}`);
+    
 
     const files = [];
     $('a[href*="/common/downLoad.do"]').each((index, element) => {
@@ -210,7 +198,7 @@ const scrapeFirstCategoryNoticeContent = async (link) => {
       date: 'Error',
       views: 'Error',
       content: 'Error',
-      files: [],
+      files: [], 
       extractedText: 'Error'
     };
   }
