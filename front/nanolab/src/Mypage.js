@@ -5,8 +5,8 @@ import { GlobalContext } from './GlobalContext'; // GlobalContext를 가져옴
 
 const MyPage = () => {
   const navigation = useNavigation();
-  const [darkMode, setDarkMode] = useState(false);
   const [userData, setUserData] = useState({ email: '' });
+  const { darkMode, setDarkMode } = useContext(GlobalContext);
 
   const { selectedDepartment } = useContext(GlobalContext); // GlobalContext에서 selectedDepartment 값을 가져옴
 

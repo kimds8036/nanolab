@@ -1,8 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { GlobalContext } from './GlobalContext';
 
 const { width } = Dimensions.get('window');
+const { darkMode } = useContext(GlobalContext);
 
 const Header = ({ onMenuPress }) => {
   return (

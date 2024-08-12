@@ -10,6 +10,7 @@
     const [activeTab, setActiveTab] = useState(route.params?.activeTab || 0);
     const [currentPage, setCurrentPage] = useState(0);
     const navigation = useNavigation();
+    const { darkMode } = useContext(GlobalContext);
 
     useEffect(() => {
       console.log('isDepartmentRegistered:', isDepartmentRegistered);
