@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, ScrollView, navigation } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, ScrollView, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GlobalContext } from './GlobalContext'; // GlobalContext를 가져옴
 
@@ -45,7 +45,7 @@ const MyPage = () => {
         <View style={styles.emailpart}>
           <Text style={styles.email}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>
         </View>
-        <View style={styles.menupart}>
+        <ImageBackground source={require('../assets/image/background2.png')} style={styles.menupart}>
           <View style={styles.menuItem1}>
             <Text style={styles.menuText}>다크모드</Text>
             <Switch
@@ -54,15 +54,15 @@ const MyPage = () => {
               style={styles.switch}
             />
           </View>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
             <Text style={styles.menuText}>키워드 알림 설정</Text>
             <Image source={require('../assets/image/keyword.png')} style={styles.menuIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
             <Text style={styles.menuText}>보관함</Text>
             <Image source={require('../assets/image/save.png')} style={styles.menuIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Feedback');}}>
             <Text style={styles.menuText}>피드백</Text>
             <Image source={require('../assets/image/feedback.png')} style={styles.menuIcon} />
           </TouchableOpacity>
@@ -70,7 +70,7 @@ const MyPage = () => {
             <Text style={styles.menuText}>로그아웃</Text>
             <Image source={require('../assets/image/logout.png')} style={styles.menuIcon} />
           </TouchableOpacity>
-        </View>
+        </ImageBackground>
       </View>
     </ScrollView>
     </View>
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   nickname: {
     fontSize: 20,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   emailpart:{
     width:'100%',
     height:75,
-    backgroundColor:'#fff',
+    backgroundColor:'#F2F2F2',
     alignSelf:'center',
     alignContent:'center',
     justifyContent:'center',
@@ -169,12 +169,13 @@ const styles = StyleSheet.create({
     backgroundColor:'#fff',
     borderRadius:20,
     marginTop:20,
+    overflow:'hidden',
   },
   menuItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 15,
     paddingHorizontal: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#C4C4C4',
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 15,
     paddingHorizontal: 30,
     borderTopWidth:1,
     borderTopColor:'#C4C4C4',
@@ -197,11 +198,12 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   menuIcon: {
-    width: 24,
-    height: 24,
+    width: 35,
+    height: 35,
   },
   switch: {
-    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+    left:5,
   },
 });
 

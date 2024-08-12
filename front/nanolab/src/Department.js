@@ -28,10 +28,7 @@ const Department = ({ navigation }) => {
   const handleRegister = () => {
     if (selectedCollege && selectedDepartment) {
       setIsDepartmentRegistered(true);
-      navigation.navigate('Myinform', {
-        selectedCollege,
-        selectedDepartment,
-      });
+      navigation.pop();  // 이전 화면으로 돌아가기
       Alert.alert('학과가 저장되었습니다.');
     } else {
       Alert.alert('학과를 선택해 주세요.');
