@@ -1,6 +1,7 @@
   import React, { useState,useEffect,useContext } from 'react';
-  import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+  import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
   import { useFonts } from 'expo-font';
+  import { useNavigation } from '@react-navigation/native';
   import { GlobalContext } from './GlobalContext'; // GlobalContext 불러오기
 
 
@@ -8,6 +9,7 @@
     const { isDepartmentRegistered } = useContext(GlobalContext); 
     const [activeTab, setActiveTab] = useState(route.params?.activeTab || 0);
     const [currentPage, setCurrentPage] = useState(0);
+    const navigation = useNavigation();
 
     useEffect(() => {
       console.log('isDepartmentRegistered:', isDepartmentRegistered);
@@ -94,6 +96,7 @@
   
     return (
       <View style={styles.container}>
+        <View style={styles.bar}></View>
         <View style={[styles.header, { flexDirection: 'column' }]}>
           <ScrollView
             horizontal
@@ -107,7 +110,7 @@
                 onPress={() => setActiveTab(index)}
                 style={[styles.tab, index === activeTab && styles.activeTab]}
               >
-                <Text style={styles.tabText}>{tab}</Text>
+                <Text style={[styles.tabText, index === activeTab && styles.activeTabText]}>{tab}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -115,7 +118,13 @@
   
         <ScrollView contentContainerStyle={styles.noticesContentContainer} showsVerticalScrollIndicator={false}>
           {activeTab === 0 && !isDepartmentRegistered ? (
-            <Text style={styles.noticeMessage}>학과를 등록해 주세요.</Text>
+            <View style={styles.noticeContainer}>
+              <Image source={require('../assets/image/enroll.png')} style={styles.enroll} />
+              <Text style={styles.noticeMessage}>학과를 등록해 주세요.</Text>
+              <TouchableOpacity style={styles.enrollbutton} onPress={() => { navigation.navigate('Department')}}>
+                <Text style={styles.enrolltext}>등록하러 가기</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
             activeNotices.map((notice, index) => (
               <View key={index} style={styles.noticeItem}>
@@ -124,14 +133,14 @@
               </View>
             ))
           )}
-          {totalPages > 1 && (
+
+          {totalPages > 1 && isDepartmentRegistered && (
             <View style={styles.paginationContainer}>
               {[...Array(totalPages)].map((_, page) => (
                 <TouchableOpacity
                   key={page}
                   onPress={() => handlePageChange(page)}
-                  style={[styles.pageButton, page === currentPage && styles.activePageButton]}
-                >
+                  style={[styles.pageButton, page === currentPage && styles.activePageButton]}>
                   <Text style={[styles.pageButtonText, page === currentPage && styles.activePageButtonText]}>
                     {page + 1}
                   </Text>
@@ -149,28 +158,45 @@
       flex: 1,
       backgroundColor: '#FFFFFF',
     },
+    bar:{
+      backgroundColor:'#9DC284',
+      width:'100%',
+      height:50,
+    },
     header: {
-      paddingTop: 50,
       paddingHorizontal: 10,
-      backgroundColor: '#A6C18B',
-      height: 100,
+      height:50,
     },
     tabsContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#A6C18B',
+      paddingHorizontal:5,
     },
     tab: {
-      fontFamily: 'NanumGothic',
-      fontWeight: '800',
-      fontSize: 13,
-      color: '#9DC284',
-      marginRight: 15,
+      marginRight: 30,
       borderBottomWidth: 2,
       borderBottomColor: 'transparent',
     },
+    tabText:{
+      color:'#9DC284',
+      fontWeight: 'bold',
+      fontSize: 15,
+    },
     activeTab: {
       borderBottomColor: '#0E664F',
+    },
+    activeTabText:{
+      color:'#0E664F',
+    },
+    noticeContainer:{
+      padding: 6,
+      marginTop: 10,
+    },
+    enroll:{
+      alignSelf:'center',
+      marginTop:50,
+      width:200,
+      height:200,
     },
     noticesContentContainer: {
       padding: 6,
@@ -231,8 +257,29 @@
     },
     noticeMessage: {
       textAlign: 'center',
-      fontSize: 16,
-      marginVertical: 20,
+      fontSize: 20,
+      fontWeight:'bold',
+      color:'#0E664F',
+      marginBottom:20,
+    },
+    enrollbutton:{
+      backgroundColor:'#6D9E4C',
+      width:'60%',
+      height:40,
+      alignSelf:'center',
+      justifyContent:'center',
+      alignItems:'center',
+      borderRadius:20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 5,
+      elevation: 5,
+    },
+    enrolltext:{
+      color:'#fff',
+      fontWeight:'bold',
+      fontSize:16,
     },
   });
 

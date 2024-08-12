@@ -434,7 +434,6 @@ const styles = StyleSheet.create({
   },
   noticeContainer: {
     flexDirection: 'row',
-    
   },
   noticeWrapper: {
     paddingBottom: 10,
