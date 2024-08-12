@@ -37,39 +37,39 @@ const RecentNotices = () => {
         </View>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.noticeContainer}>
             <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
+              <TouchableOpacity style={styles.notice}>
                 <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
                 <Text style={styles.noticeText}>더보기</Text>
                 <Text style={styles.category}>{category}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
+            <TouchableOpacity style={styles.notice}>
                 <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
                 <Text style={styles.noticeText}>더보기</Text>
                 <Text style={styles.category}>{category}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
+            <TouchableOpacity style={styles.notice}>
                 <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
                 <Text style={styles.noticeText}>더보기</Text>
                 <Text style={styles.category}>{category}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
+            <TouchableOpacity style={styles.notice}>
                 <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
                 <Text style={styles.noticeText}>더보기</Text>
                 <Text style={styles.category}>{category}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
+            <TouchableOpacity style={styles.notice}>
                 <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
                 <Text style={styles.noticeText}>더보기</Text>
                 <Text style={styles.category}>{category}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
         </ScrollView>
       </View>
