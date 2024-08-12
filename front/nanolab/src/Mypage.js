@@ -1,25 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, ScrollView, navigation } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, ScrollView, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { GlobalContext } from './GlobalContext'; // GlobalContext를 가져옴
 
 const MyPage = () => {
   const navigation = useNavigation();
-  const [darkMode, setDarkMode] = useState(false);
-  const [userData, setUserData] = useState({ nickname: '', email: '' });
+  const [userData, setUserData] = useState({ email: '' });
+  const { darkMode, setDarkMode } = useContext(GlobalContext);
 
-  useEffect(() => {
-    // Replace with your actual API call
-    fetch('http://192.168.0.58:5000')
-      .then(response => response.json())
-      .then(data => setUserData(data))
-      .catch(error => console.error('Error fetching user data:', error));
-  }, []);
+  const { selectedDepartment } = useContext(GlobalContext); // GlobalContext에서 selectedDepartment 값을 가져옴
 
   const toggleSwitch = () => setDarkMode(previousState => !previousState);
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.bar}></View>
+      <ScrollView style={styles.innercontainer}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
           <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
@@ -34,46 +30,60 @@ const MyPage = () => {
           source={require('../assets/image/profile.png')} // 기본 프로필 이미지 경로 설정
           style={styles.profileImage}
         />
-        <Text style={styles.nickname}>{userData.nickname || 'user'}</Text>
-        <TouchableOpacity style={styles.editButton} onPress={()=>{navigation.navigate('Myinform');}}>
+        <Text 
+          style={[styles.nickname, 
+            { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' }]}
+        >
+          {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
+        </Text> 
+        <TouchableOpacity style={styles.editButton} onPress={() => { navigation.navigate('Myinform'); }}>
           <Text style={styles.editButtonText}>내 정보 수정</Text>
         </TouchableOpacity>
-        <Text style={styles.email}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>
       </View>
 
       <View style={styles.menuSection}>
-        <View style={styles.menuItem}>
-          <Text style={styles.menuText}>다크모드</Text>
-          <Switch
-            onValueChange={toggleSwitch}
-            value={darkMode}
-            style={styles.switch}
-          />
+        <View style={styles.emailpart}>
+          <Text style={styles.email}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>
         </View>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>키워드 알림 설정</Text>
-          <Image source={require('../assets/image/keyword.png')} style={styles.menuIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>보관함</Text>
-          <Image source={require('../assets/image/save.png')} style={styles.menuIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>피드백</Text>
-          <Image source={require('../assets/image/feedback.png')} style={styles.menuIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>로그아웃</Text>
-          <Image source={require('../assets/image/logout.png')} style={styles.menuIcon} />
-        </TouchableOpacity>
+        <ImageBackground source={require('../assets/image/background2.png')} style={styles.menupart}>
+          <View style={styles.menuItem1}>
+            <Text style={styles.menuText}>다크모드</Text>
+            <Switch
+              onValueChange={toggleSwitch}
+              value={darkMode}
+              style={styles.switch}
+            />
+          </View>
+          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
+            <Text style={styles.menuText}>키워드 알림 설정</Text>
+            <Image source={require('../assets/image/keyword.png')} style={styles.menuIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
+            <Text style={styles.menuText}>보관함</Text>
+            <Image source={require('../assets/image/save.png')} style={styles.menuIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Feedback');}}>
+            <Text style={styles.menuText}>피드백</Text>
+            <Image source={require('../assets/image/feedback.png')} style={styles.menuIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem}>
+            <Text style={styles.menuText}>로그아웃</Text>
+            <Image source={require('../assets/image/logout.png')} style={styles.menuIcon} />
+          </TouchableOpacity>
+        </ImageBackground>
       </View>
     </ScrollView>
+    </View>
   );
-}
+};
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  innercontainer:{
+    flex:1,
   },
   bar:{
     backgroundColor:'#9DC284',
@@ -103,61 +113,97 @@ const styles = StyleSheet.create({
   },
   profileSection: {
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 20,
     paddingHorizontal: 16,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#C4C4C4', // 기본 프로필 이미지 배경 색상
-    marginBottom: 16,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
   },
   nickname: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
+    marginBottom: 15,
   },
   editButton: {
     backgroundColor: '#A4B494',
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    marginBottom: 16,
   },
   editButtonText: {
-    fontSize: 14,
-    color: '#fff',
+    fontSize: 12,
+    color: '#000',
+    fontWeight:'bold',
+  },
+  emailpart:{
+    width:'100%',
+    height:75,
+    backgroundColor:'#F2F2F2',
+    alignSelf:'center',
+    alignContent:'center',
+    justifyContent:'center',
+    borderRadius:20,
+    marginTop:5,
   },
   email: {
-    fontSize: 16,
-    color: '#fff',
+    fontSize: 20,
+    color: '#000',
+    fontWeight:'bold',
+    alignSelf:'center',
   },
   menuSection: {
-    backgroundColor: '#DAEAD0', // 메뉴 섹션 배경 색상
+    backgroundColor: '#0E664F', // 메뉴 섹션 배경 색상
     paddingHorizontal: 16,
     paddingVertical: 20,
-    borderRadius: 10,
+    height:'100%',
+  },
+  menupart:{
+    width:'100%',
+    height:400,
+    alignSelf:'center',
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor:'#fff',
+    borderRadius:20,
+    marginTop:20,
+    overflow:'hidden',
   },
   menuItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#C4C4C4',
+    width:'90%',
+  },
+  menuItem1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderTopWidth:1,
+    borderTopColor:'#C4C4C4',
+    borderBottomWidth: 1,
+    borderBottomColor: '#C4C4C4',
+    width:'90%',
   },
   menuText: {
     fontSize: 16,
     color: '#000',
   },
   menuIcon: {
-    width: 24,
-    height: 24,
+    width: 35,
+    height: 35,
   },
   switch: {
-    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+    left:5,
   },
 });
 

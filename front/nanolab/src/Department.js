@@ -8,6 +8,7 @@ const Department = ({ navigation }) => {
 
   const [showCollegePicker, setShowCollegePicker] = useState(false);
   const [showDepartmentPicker, setShowDepartmentPicker] = useState(false);
+  const { darkMode } = useContext(GlobalContext);
 
   const colleges = {
     design: ['산업디자인학과', '시각영상디자인학과', '실내디자인학과', '패션디자인학과'],
@@ -28,10 +29,7 @@ const Department = ({ navigation }) => {
   const handleRegister = () => {
     if (selectedCollege && selectedDepartment) {
       setIsDepartmentRegistered(true);
-      navigation.navigate('Myinform', {
-        selectedCollege,
-        selectedDepartment,
-      });
+      navigation.pop();  // 이전 화면으로 돌아가기
       Alert.alert('학과가 저장되었습니다.');
     } else {
       Alert.alert('학과를 선택해 주세요.');

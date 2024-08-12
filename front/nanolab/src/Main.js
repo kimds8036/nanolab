@@ -1,8 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { GlobalContext } from './GlobalContext';
 
 const { width } = Dimensions.get('window');
+
 
 const Header = ({ onMenuPress }) => {
   return (
@@ -193,6 +195,7 @@ const PopularNotices = () => {
 
 const MenuBar = ({ onClose, navigation }) => {
   const slideAnim = useRef(new Animated.Value(width)).current;
+  const { darkMode } = useContext(GlobalContext);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -254,6 +257,7 @@ const MenuBar = ({ onClose, navigation }) => {
 const Main = ({ route }) => {
   const navigation = useNavigation(); // 네비게이션 훅 호출
   const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
+  const { darkMode } = useContext(GlobalContext);
 
   const handleMenuPress = () => {
     setIsMenuVisible(true);
@@ -434,7 +438,6 @@ const styles = StyleSheet.create({
   },
   noticeContainer: {
     flexDirection: 'row',
-    
   },
   noticeWrapper: {
     paddingBottom: 10,
