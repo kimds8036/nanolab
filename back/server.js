@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(useragent.express());
 
-mongoose.connect('mongodb://localhost:27017/mydatabase')
+mongoose.connect('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0')
   .then(() => {
     console.log('Connected to MongoDB');
   })
