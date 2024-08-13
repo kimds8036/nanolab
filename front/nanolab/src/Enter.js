@@ -7,8 +7,7 @@ function Enter({ navigation }) {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
-  const { darkMode } = useContext(GlobalContext);
-
+  
   const handleEmailChange = (text) => {
     setEmail(text);
     validateForm(text, password, passwordConfirmation);
@@ -46,7 +45,6 @@ function Enter({ navigation }) {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         console.log('Registration successful:', data.message);
         Alert.alert('회원가입 완료', '회원가입이 정상적으로 완료되었습니다.', [
