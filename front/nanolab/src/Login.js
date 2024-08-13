@@ -2,12 +2,15 @@ import 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { GlobalContext } from './GlobalContext';
+import { GlobalContext } from './GlobalContext';
 
 function Login({ navigation }) {
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
+
+  const { darkMode } = useContext(GlobalContext);
 
   const { darkMode } = useContext(GlobalContext);
 
