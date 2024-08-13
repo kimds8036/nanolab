@@ -1,28 +1,26 @@
+// server.js
+require('dotenv').config();  // 환경 변수 로드
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');  // 패스워드 해싱을 위한 라이브러리
+const bcrypt = require('bcryptjs');
 const User = require('./models/User');
 const useragent = require('express-useragent');
-const jwt = require('jsonwebtoken');  // 토큰 생성 라이브러리
-const axios = require('axios');  // axios 모듈 불러오기
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
+const connectDB = require('./config/db');  // db.js 파일 불러오기
+
 const app = express();
-const PORT = 5000;
-const GEOLOCATION_API_KEY = '8f73d41d6e8942b8a10d355c00049e4d';  // ipgeolocation.io API 키
-const JWT_SECRET = 'your_jwt_secret';  // JWT 비밀키
+const PORT = process.env.PORT || 5000;
+const GEOLOCATION_API_KEY = process.env.GEOLOCATION_API_KEY;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(useragent.express());
 
-mongoose.connect('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0')
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch(err => {
-    console.error('Failed to connect to MongoDB', err);
-  });
+// 데이터베이스 연결
+connectDB();
 
 app.post('/auth/register', async (req, res) => {
   const { email, password } = req.body;
