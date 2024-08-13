@@ -1,38 +1,44 @@
 import React, { useState, useContext } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground, Alert, ScrollView, TextInput } from 'react-native';
+import { Keyboard, StyleSheet, Text, View, TouchableOpacity, Image, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { GlobalContext } from './GlobalContext';
 
 const Feedback = () => {
     const navigation = useNavigation();
+    const { darkMode } = useContext(GlobalContext);
 
     return (
-        <View style={styles.container}>
-            <View style={styles.bar}></View>
-            <View style={styles.innercontainer}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
-                        <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
-                    </TouchableOpacity>
-                    <View style={styles.headerTitleContainer}>
-                        <Text style={styles.headerTitle}>피드백 보내기</Text>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
+            <View style={styles.container}>
+                <View style={styles.bar}></View>
+                <View style={styles.innercontainer}>
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
+                            <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
+                        </TouchableOpacity>
+                        <View style={styles.headerTitleContainer}>
+                            <Text style={styles.headerTitle}>피드백 보내기</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.feedbackSection}>
+                        <Image source={require('../assets/image/feedbackpaper.png')} style={styles.feedbackpaper}/>
+                        <Text style={styles.feedbacktext}>피드백을 보내 주시면</Text>
+                        <Text style={styles.feedbacktext}>앱 성장에 많은 도움이 돼요</Text>
+
+                        <TextInput 
+                            style={styles.textinput} 
+                            placeholder='5글자 이상 입력해 주세요'
+                            multiline={true}
+                        />
+                        <TouchableOpacity style={styles.submitbutton}>
+                            <Text style={styles.submittext}>피드백 보내기</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-
-                <View style={styles.feedbackSection}>
-                    <Image source={require('../assets/image/feedbackpaper.png')} style={styles.feedbackpaper}/>
-                    <Text style={styles.feedbacktext}>피드백을 보내 주시면</Text>
-                    <Text style={styles.feedbacktext}>앱 성장에 많은 도움이 돼요</Text>
-
-                    
-                    <TextInput style={styles.textinput} placeholder='5글자 이상 입력해 주세요'></TextInput>
-
-                    <TouchableOpacity style={styles.submitbutton}>
-                        <Text style={styles.submittext}>피드백 보내기</Text>
-                    </TouchableOpacity>
-                </View>
             </View>
-        </View>
-  );
+        </TouchableWithoutFeedback>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -89,7 +95,8 @@ const styles = StyleSheet.create({
         height:200,
         alignSelf:'center',
         borderRadius:10,
-        paddingLeft:10,
+        paddingLeft:15,
+        paddingTop:15,
         marginTop:30,
     },
     submitbutton:{
