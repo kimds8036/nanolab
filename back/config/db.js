@@ -1,8 +1,11 @@
+// db.js
+require('dotenv').config();  // 환경 변수 로드
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0', {  // MongoDB URI
+    const uri = process.env.MONGO_URI;
+    await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
