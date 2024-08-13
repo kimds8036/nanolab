@@ -8,7 +8,6 @@ const Department = ({ navigation }) => {
 
   const [showCollegePicker, setShowCollegePicker] = useState(false);
   const [showDepartmentPicker, setShowDepartmentPicker] = useState(false);
-  const { darkMode } = useContext(GlobalContext);
 
   const colleges = {
     design: ['산업디자인학과', '시각영상디자인학과', '실내디자인학과', '패션디자인학과'],

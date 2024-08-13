@@ -9,10 +9,6 @@ function Login({ navigation }) {
     password: '',
   });
 
-  const { darkMode } = useContext(GlobalContext);
-
-
-
   const handleLogin = async () => {
     console.log('Login button pressed');  // 로그인 버튼 클릭 로깅
     try {
