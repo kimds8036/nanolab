@@ -14,7 +14,7 @@ function Login({ navigation }) {
   const handleLogin = async () => {
     console.log('Login button pressed');  // 로그인 버튼 클릭 로깅
     try {
-      const response = await fetch('http://172.20.10.11:5000/auth/login', {  // 서버 IP 주소 사용
+      const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/login', {  // 서버 IP 주소 사용
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, password: form.password })

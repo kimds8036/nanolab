@@ -1,17 +1,16 @@
-// server.js
 require('dotenv').config();  // 환경 변수 로드
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const User = require('./models/User');
+const User = require('./models/user');
 const useragent = require('express-useragent');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const connectDB = require('./config/db');  // db.js 파일 불러오기
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080; // Railway의 기본 포트 8080으로 설정
 const GEOLOCATION_API_KEY = process.env.GEOLOCATION_API_KEY;
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -21,6 +20,11 @@ app.use(useragent.express());
 
 // 데이터베이스 연결
 connectDB();
+
+// 루트 경로 핸들러 추가
+app.get('/', (req, res) => {
+  res.send('Welcome to the API');
+});
 
 app.post('/auth/register', async (req, res) => {
   const { email, password } = req.body;
