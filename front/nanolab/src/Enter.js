@@ -38,12 +38,12 @@ function Enter({ navigation }) {
   const handleRegister = async () => {
     console.log('Register button pressed');
     try {
-      const response = await fetch('http://172.20.10.11:5000/auth/register', {
+      const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-
+  
       const data = await response.json();
       if (response.ok) {
         console.log('Registration successful:', data.message);
@@ -63,7 +63,7 @@ function Enter({ navigation }) {
       Alert.alert('회원가입 실패', '서버와의 통신 중 오류가 발생했습니다.');
     }
   };
-
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
