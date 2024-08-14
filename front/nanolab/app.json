@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "nanolab",
+    "slug": "nanolab",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/image/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/image/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/image/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.eunchae0215.nanolab"
+    },
+    "web": {
+      "favicon": "./assets/image/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7a53e2aa-8a8d-48db-9ff3-445d7b28308e"
+      }
+    }
+  }
+}
