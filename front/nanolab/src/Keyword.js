@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import axios from 'axios';
-import { GlobalContext } from './GlobalContext';
 
 const API_URL = 'http://192.168.0.58:5000';
 
