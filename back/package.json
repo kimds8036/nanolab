@@ -1,11 +1,10 @@
 
-  {
-    "name": "kutice",
-    "version": "1.0.0",
-    "main": "back/server.js",
-    "scripts": {
-      "start": "node server.js"
-    },
+{
+  "name": "kutice",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "axios": "^1.7.2",
     "cheerio": "^1.0.0-rc.12",
