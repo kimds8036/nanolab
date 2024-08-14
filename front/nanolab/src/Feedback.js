@@ -1,11 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { Keyboard, StyleSheet, Text, View, TouchableOpacity, Image, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { GlobalContext } from './GlobalContext';
 
 const Feedback = () => {
     const navigation = useNavigation();
-    const { darkMode } = useContext(GlobalContext);
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>

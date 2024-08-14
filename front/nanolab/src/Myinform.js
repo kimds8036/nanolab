@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, navigation, Modal, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { GlobalContext } from './GlobalContext';
 
 function Myinform() {
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
@@ -9,7 +8,6 @@ function Myinform() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const navigation = useNavigation();
-  const { darkMode } = useContext(GlobalContext);
 
 
   const handlePasswordChange = () => {
