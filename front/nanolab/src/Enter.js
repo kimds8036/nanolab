@@ -7,6 +7,7 @@ function Enter({ navigation }) {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const { darkMode } = useContext(GlobalContext);
   
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -75,7 +76,7 @@ function Enter({ navigation }) {
         <View style={styles.innerContainer}>
           <View>
             <TouchableOpacity onPress={() => { navigation.navigate('Login'); }}>
-              <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+              <Image source={require('../assets/image/light/back.png')} style={styles.backButton}/>
             </TouchableOpacity>
           </View>
           <View style={styles.titleContainer}>
@@ -119,7 +120,7 @@ function Enter({ navigation }) {
               <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
             </TouchableOpacity>
           </View>
-          <Image source={require('../assets/image/konkuk.png')} style={styles.logo}/>
+          <Image source={require('../assets/image/light/konkuk.png')} style={styles.logo}/>
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

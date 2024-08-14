@@ -10,6 +10,7 @@ const Noticelist = ({ route }) => {
   const [activeTab, setActiveTab] = useState(route.params?.activeTab || 0);
   const [currentPage, setCurrentPage] = useState(0);
   const navigation = useNavigation();
+  const { darkMode } = useContext(GlobalContext);
 
   useEffect(() => {
     console.log('isDepartmentRegistered:', isDepartmentRegistered);
@@ -119,7 +120,7 @@ const Noticelist = ({ route }) => {
       <ScrollView contentContainerStyle={styles.noticesContentContainer} showsVerticalScrollIndicator={false}>
         {activeTab === 0 && !isDepartmentRegistered ? (
           <View style={styles.noticeContainer}>
-            <Image source={require('../assets/image/enroll.png')} style={styles.enroll} />
+            <Image source={require('../assets/image/light/enroll.png')} style={styles.enroll} />
             <Text style={styles.noticeMessage}>학과를 등록해 주세요.</Text>
             <TouchableOpacity style={styles.enrollbutton} onPress={() => { navigation.navigate('Department')}}>
               <Text style={styles.enrolltext}>등록하러 가기</Text>

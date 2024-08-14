@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { GlobalContext } from './GlobalContext';
 
 const { width } = Dimensions.get('window');
 
@@ -13,13 +14,13 @@ const Header = ({ onMenuPress }) => {
       </View>
       <View style={styles.headerIcons}>
         <TouchableOpacity onPress={() => alert('Details')}>
-          <Image source={require('../assets/image/search.png')} style={styles.icon} />  
+          <Image source={require('../assets/image/light/search.png')} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={() => alert('Details')}>
-          <Image source={require('../assets/image/alert.png')} style={styles.icon} />  
+          <Image source={require('../assets/image/light/alert.png')} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={onMenuPress}>
-          <Image source={require('../assets/image/menu.png')} style={styles.icon} />  
+          <Image source={require('../assets/image/light/menu.png')} style={styles.icon} />  
         </TouchableOpacity>
       </View>
     </View>
@@ -116,7 +117,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -127,7 +128,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -138,7 +139,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -149,7 +150,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -160,7 +161,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -171,7 +172,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -182,7 +183,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -229,10 +230,10 @@ const MenuBar = ({ onClose, navigation }) => {
         <Text style={styles.headerText}>Menu</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton1} />
+            <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton1} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require('../assets/image/back2.png')} style={styles.iconButton2} />
+            <Image source={require('../assets/image/light/back2.png')} style={styles.iconButton2} />
           </TouchableOpacity>
         </View>
       </View>
@@ -256,6 +257,13 @@ const Main = ({ route }) => {
   const navigation = useNavigation(); // 네비게이션 훅 호출
   const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
   const { darkMode } = useContext(GlobalContext);
+  
+
+  const dynamicStyles = {
+    container: {
+      backgroundColor: darkMode ? 'grey' : '#FFFFFF',
+    },
+  };
 
   const handleMenuPress = () => {
     setIsMenuVisible(true);
@@ -266,7 +274,7 @@ const Main = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dynamicStyles.container]}>
       <ScrollView style={styles.content}>
         <Header onMenuPress={handleMenuPress} />
         <RecentNotices />

@@ -10,6 +10,7 @@ function Keyword({ navigation }) {
   const [keyword, setKeyword] = useState('');
   const [registeredKeywords, setRegisteredKeywords] = useState([]);
   const [recentKeywords, setRecentKeywords] = useState(["+", "+", "+", "+", "+", "+"]);
+  const { darkMode } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchKeywords = async () => {
@@ -77,7 +78,7 @@ function Keyword({ navigation }) {
           >
             <View style={styles.header}>
               <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
-                <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+                <Image source={require('../assets/image/light/back.png')} style={styles.backButton}/>
               </TouchableOpacity>
               <Text style={styles.headerTitle}>키워드 알림 설정</Text>
               <TouchableOpacity style={styles.iconButton}>

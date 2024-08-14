@@ -6,73 +6,98 @@ import { GlobalContext } from './GlobalContext'; // GlobalContext를 가져옴
 const MyPage = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState({ email: '' });
+  
   const { darkMode, setDarkMode } = useContext(GlobalContext);
 
   const { selectedDepartment } = useContext(GlobalContext); // GlobalContext에서 selectedDepartment 값을 가져옴
 
   const toggleSwitch = () => setDarkMode(previousState => !previousState);
+  console.log(darkMode);
+
+  const dynamicStyles = {
+    background: {
+      backgroundColor: darkMode ? 'grey' : '#FFFFFF',
+    },
+    text: {
+      color: darkMode ? '#FFFFFF' : '#000000',
+    },
+    emailPart: {
+      backgroundColor: darkMode ? '#333333' : '#F2F2F2',
+    },
+    menuSection: {
+      backgroundColor: darkMode ? '#1A1A1A' : '#0E664F',
+    },
+    menuPart: {
+      backgroundColor: darkMode ? '#222222' : '#FFFFFF',
+    },
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dynamicStyles.container]}>
       <View style={styles.bar}></View>
       <ScrollView style={styles.innercontainer}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
-          <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
-        </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>마이페이지</Text>
-        </View>
-      </View>
-
-      <View style={styles.profileSection}>
-        <Image
-          source={require('../assets/image/profile.png')} // 기본 프로필 이미지 경로 설정
-          style={styles.profileImage}
-        />
-        <Text 
-          style={[styles.nickname, 
-            { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' }]}
-        >
-          {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
-        </Text> 
-        <TouchableOpacity style={styles.editButton} onPress={() => { navigation.navigate('Myinform'); }}>
-          <Text style={styles.editButtonText}>내 정보 수정</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.menuSection}>
-        <View style={styles.emailpart}>
-          <Text style={styles.email}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>
-        </View>
-        <ImageBackground source={require('../assets/image/background2.png')} style={styles.menupart}>
-          <View style={styles.menuItem1}>
-            <Text style={styles.menuText}>다크모드</Text>
-            <Switch
-              onValueChange={toggleSwitch}
-              value={darkMode}
-              style={styles.switch}
-            />
+        <View style={[styles.header, dynamicStyles.background]}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
+            <Image source={require('../assets/image/light/back.png')} style={styles.backIcon} />
+          </TouchableOpacity>
+          <View style={styles.headerTitleContainer}>
+            <Text style={[styles.headerTitle, dynamicStyles.text]}>마이페이지</Text>
           </View>
-          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
-            <Text style={styles.menuText}>키워드 알림 설정</Text>
-            <Image source={require('../assets/image/keyword.png')} style={styles.menuIcon} />
+        </View>
+
+        <View style={[styles.profileSection, dynamicStyles.background]}>
+          <Image
+            source={require('../assets/image/light/profile.png')} // 기본 프로필 이미지 경로 설정
+            style={styles.profileImage}
+          />
+          <Text 
+            style={[styles.nickname, 
+              dynamicStyles.text,
+              { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' }]}
+          >
+            {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
+          </Text> 
+          <TouchableOpacity style={styles.editButton} onPress={() => { navigation.navigate('Myinform'); }}>
+            <Text style={styles.editButtonText}>내 정보 수정</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
-            <Text style={styles.menuText}>보관함</Text>
-            <Image source={require('../assets/image/save.png')} style={styles.menuIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Feedback');}}>
-            <Text style={styles.menuText}>피드백</Text>
-            <Image source={require('../assets/image/feedback.png')} style={styles.menuIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>로그아웃</Text>
-            <Image source={require('../assets/image/logout.png')} style={styles.menuIcon} />
-          </TouchableOpacity>
-        </ImageBackground>
-      </View>
-    </ScrollView>
+        </View>
+
+        <View style={[styles.menuSection, dynamicStyles.menuSection]}>
+          <View style={[styles.emailpart, dynamicStyles.emailPart]}>
+            <Text style={[styles.email, dynamicStyles.text]}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>
+          </View>
+          <ImageBackground source={require('../assets/image/light/background2.png')} style={[styles.menupart, dynamicStyles.menuPart]}>
+            <View style={styles.menuItem1}>
+              <Text style={[styles.menuText, dynamicStyles.text]}>다크모드</Text>
+              <Switch
+                onValueChange={toggleSwitch}
+                value={darkMode}
+                style={styles.switch}
+              />
+            </View>
+            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
+              <Text style={[styles.menuText, dynamicStyles.text]}>키워드 알림 설정</Text>
+              <Image source={require('../assets/image/light/keyword.png')} style={styles.menuIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
+              <Text style={[styles.menuText, dynamicStyles.text]}>보관함</Text>
+              <Image source={require('../assets/image/light/save.png')} style={styles.menuIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Feedback');}}>
+              <Text style={[styles.menuText, dynamicStyles.text]}>피드백</Text>
+              <Image source={require('../assets/image/light/feedback.png')} style={styles.menuIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Login');}}>
+              <Text style={[styles.menuText, dynamicStyles.text]}>탈퇴</Text>
+              <Image source={require('../assets/image/light/exit.png')} style={styles.menuIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem}>
+              <Text style={[styles.menuText, dynamicStyles.text]}>로그아웃</Text>
+              <Image source={require('../assets/image/light/logout.png')} style={styles.menuIcon} />
+            </TouchableOpacity>
+          </ImageBackground>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -162,7 +187,7 @@ const styles = StyleSheet.create({
   },
   menupart:{
     width:'100%',
-    height:400,
+    height:450,
     alignSelf:'center',
     alignItems:'center',
     justifyContent:'center',

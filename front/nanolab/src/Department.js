@@ -9,6 +9,8 @@ const Department = ({ navigation }) => {
   const [showCollegePicker, setShowCollegePicker] = useState(false);
   const [showDepartmentPicker, setShowDepartmentPicker] = useState(false);
 
+  const { darkMode } = useContext(GlobalContext);
+
   const colleges = {
     design: ['산업디자인학과', '시각영상디자인학과', '실내디자인학과', '패션디자인학과'],
     business: ['경영학과', '경제통상학과', '경찰학과', '동화•한국어문화학과', '문헌정보학과', '사회복지학과', '소방방재융합학과', '신문방송학과', '영어문화학과', '유아교육과'],
@@ -36,18 +38,18 @@ const Department = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={require('../assets/image/background.png')} style={styles.backgroundImage}>
+    <ImageBackground source={require('../assets/image/light/background.png')} style={styles.backgroundImage}>
       <SafeAreaView style={styles.innerContainer}>
         <View style={styles.rectangle1}></View>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
-            <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
+            <Image source={require('../assets/image/light/back.png')} style={styles.backIcon} />
           </TouchableOpacity>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>학과 등록</Text>
           </View>
           <TouchableOpacity onPress={() => { navigation.navigate('ProfilePage'); }}>
-            <Image source={require('../assets/image/question.png')} style={styles.questionIcon} />
+            <Image source={require('../assets/image/light/question.png')} style={styles.questionIcon} />
           </TouchableOpacity>
         </View>
         <View style={styles.textContainer}>
@@ -65,7 +67,7 @@ const Department = ({ navigation }) => {
                 {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
               </Text>
               <Image
-                source={showCollegePicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                source={showCollegePicker ? require('../assets/image/light/arrow-up.png') : require('../assets/image/light/arrow-down.png')}
                 style={styles.icon}
               />
             </TouchableOpacity>
@@ -90,7 +92,7 @@ const Department = ({ navigation }) => {
                 {selectedDepartment ? selectedDepartment : '소속 학과'}
               </Text>
               <Image
-                source={showDepartmentPicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                source={showDepartmentPicker ? require('../assets/image/light/arrow-up.png') : require('../assets/image/light/arrow-down.png')}
                 style={styles.icon}
               />
             </TouchableOpacity>
@@ -121,7 +123,7 @@ const Department = ({ navigation }) => {
                 {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
               </Text>
               <Image
-                source={showCollegePicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                source={showCollegePicker ? require('../assets/image/light/arrow-up.png') : require('../assets/image/light/arrow-down.png')}
                 style={styles.icon}
               />
             </TouchableOpacity>
@@ -146,7 +148,7 @@ const Department = ({ navigation }) => {
                 {selectedDepartment ? selectedDepartment : '소속 학과'}
               </Text>
               <Image
-                source={showDepartmentPicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                source={showDepartmentPicker ? require('../assets/image/light/arrow-up.png') : require('../assets/image/light/arrow-down.png')}
                 style={styles.icon}
               />
             </TouchableOpacity>

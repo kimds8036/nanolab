@@ -14,13 +14,13 @@ const Header = ({ onMenuPress }) => {
       </View>
       <View style={styles.headerIcons}>
         <TouchableOpacity onPress={() => alert('Details')}>
-          <Image source={require('../assets/image/search.png')} style={styles.icon} />  
+          <Image source={require('../assets/image/light/search.png')} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={() => alert('Details')}>
-          <Image source={require('../assets/image/alert.png')} style={styles.icon} />  
+          <Image source={require('../assets/image/light/alert.png')} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={onMenuPress}>
-          <Image source={require('../assets/image/menu.png')} style={styles.icon} />  
+          <Image source={require('../assets/image/light/menu.png')} style={styles.icon} />  
         </TouchableOpacity>
       </View>
     </View>
@@ -117,7 +117,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -128,7 +128,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -139,7 +139,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -150,7 +150,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -161,7 +161,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -172,7 +172,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -183,7 +183,7 @@ const PopularNotices = () => {
               <Text style={styles.details}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/next.png')} style={styles.nextbutton} />  
+                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -230,10 +230,10 @@ const MenuBar = ({ onClose, navigation }) => {
         <Text style={styles.headerText}>Menu</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/mypage.png')} style={styles.iconButton1} />
+            <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton1} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require('../assets/image/back2.png')} style={styles.iconButton2} />
+            <Image source={require('../assets/image/light/back2.png')} style={styles.iconButton2} />
           </TouchableOpacity>
         </View>
       </View>

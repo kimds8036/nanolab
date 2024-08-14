@@ -14,7 +14,7 @@ const Feedback = () => {
                 <View style={styles.innercontainer}>
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
-                            <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
+                            <Image source={require('../assets/image/light/back.png')} style={styles.backIcon} />
                         </TouchableOpacity>
                         <View style={styles.headerTitleContainer}>
                             <Text style={styles.headerTitle}>피드백 보내기</Text>
@@ -22,7 +22,7 @@ const Feedback = () => {
                     </View>
 
                     <View style={styles.feedbackSection}>
-                        <Image source={require('../assets/image/feedbackpaper.png')} style={styles.feedbackpaper}/>
+                        <Image source={require('../assets/image/light/feedbackpaper.png')} style={styles.feedbackpaper}/>
                         <Text style={styles.feedbacktext}>피드백을 보내 주시면</Text>
                         <Text style={styles.feedbacktext}>앱 성장에 많은 도움이 돼요</Text>
 
