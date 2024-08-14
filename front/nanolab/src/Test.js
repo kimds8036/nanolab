@@ -159,6 +159,7 @@ const Test = () => {
 
   return (
     <View style={styles.container}>
+		<View style={styles.bar}></View>
       <WebView 
         originWhitelist={['*']} 
         source={{ html: htmlContent }} 
@@ -171,6 +172,11 @@ const Test = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  bar:{
+    backgroundColor:'#9DC284',
+    width:'100%',
+    height:50,
   },
 });
 
