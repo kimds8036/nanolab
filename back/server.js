@@ -10,7 +10,7 @@ const axios = require('axios');
 const connectDB = require('./config/db');  // db.js 파일 불러오기
 
 const app = express();
-const PORT = process.env.PORT || 8080; // Railway의 기본 포트 8080으로 설정
+const PORT = process.env.PORT || 5000; // Railway의 기본 포트 5000으로 설정
 const GEOLOCATION_API_KEY = process.env.GEOLOCATION_API_KEY;
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -26,6 +26,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the API');
 });
 
+// 회원가입 라우트
 app.post('/auth/register', async (req, res) => {
   const { email, password } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -90,6 +91,11 @@ app.post('/auth/login', async (req, res) => {
     if (!isMatch) {
       console.log('Password does not match');
       return res.status(400).json({ message: '아이디와 비밀번호를 확인해 주세요' });
+    }
+
+    if (!JWT_SECRET) {
+      console.error('JWT_SECRET is not defined');
+      return res.status(500).json({ message: 'Internal server error: JWT_SECRET is not defined' });
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
