@@ -102,6 +102,8 @@ categories = [
     {'name': '혁신공유대학', 'baseUrl': 'https://healingbio.kku.ac.kr', 'type': 'second'}
 ]
 
+# ... (이전 코드 생략)
+
 def scrape_and_save_notices():
     db = connect_to_mongodb()
 
@@ -142,30 +144,48 @@ def scrape_and_save_notices():
                 clean_content(soup, content_element)
                 content = str(content_element) or '내용 없음'
                 extracted_text = content_element.get_text(strip=True)
+                
+                # PDF 파일 링크 추출 및 본문에 포함
+                pdf_url = None
+                iframe_element = content_element.select_one('iframe')
+                if iframe_element:
+                    pdf_url = urljoin(link, iframe_element['src'])
+                    content = content.replace(str(iframe_element), f'<a href="{pdf_url}">View PDF</a>')
+                
+                # 본문에 포함된 링크 필터링 (가짜 링크 제거)
+                valid_links = []
+                for a_tag in content_element.find_all('a', href=True):
+                    if not a_tag['href'].startswith('file://'):
+                        valid_links.append(a_tag['href'])
+
+                # 이미지 URL 추출
                 image_urls = [img['src'] for img in content_element.find_all('img')]
+
             else:
                 content = '내용 없음'
                 extracted_text = '내용 없음'
+                valid_links = []
                 image_urls = []
+                pdf_url = None
 
+            # 첨부 파일 추출
             all_files = []
+            file_elements = soup.select('td[colspan="3"] .addfile a')
+            for file_element in file_elements:
+                file_url = urljoin(matching_category['baseUrl'], file_element['href'])
+                all_files.append(file_url)
 
-        
-
-            if matching_category['type'] == 'second':
-                # 첨부파일 추출
-                file_elements = soup.select('td[colspan="3"] .addfile a')
-                for file_element in file_elements:
-                    file_url = urljoin(matching_category['baseUrl'], file_element['href'])
-                    all_files.append(file_url)
-
-                print(f"Extracted files for second category: {all_files}")
-
-
-    
-
-
-            result = {'title': title, 'date': date, 'views': views, 'content': content, 'files': all_files, 'extractedText': extracted_text, 'images': image_urls}
+            result = {
+                'title': title,
+                'date': date,
+                'views': views,
+                'content': content,
+                'files': all_files,
+                'extractedText': extracted_text,
+                'images': image_urls,
+                'links': valid_links,
+                'pdfUrl': pdf_url  # PDF 파일 URL 저장
+            }
             print(f"Processed notice: {result}")
 
         except Exception as e:
