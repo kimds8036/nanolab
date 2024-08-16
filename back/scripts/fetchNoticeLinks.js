@@ -9,6 +9,8 @@ mongoose.connect('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.m
 });
 
 const categories = [
+  { name: '신문방송학과', urls: ['https://masscom.kku.ac.kr/noticeList.do?siteId=MASSCOM&boardSeq=19&menuSeq=154&curPage=30&page=1'] },
+  { name: '동화.한국어문화학과', urls: ['https://dongwha.kku.ac.kr/noticeList.do?siteId=DONGWHA&boardSeq=215&menuSeq=4579&curPage=30&page=1'] },
   { name: '학사공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=1489&siteId=wwwkr&page=1&id=wwwkr_070102000000'] },
   { name: '장학공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=1497&siteId=wwwkr&page=1&id=wwwkr_070103000000'] },
   { name: '취업/창업공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=1516&siteId=wwwkr&page=1&id=wwwkr_070105000000'] },
@@ -16,8 +18,7 @@ const categories = [
   { name: '일반공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=1481&siteId=wwwkr&page=1&id=wwwkr_070101000000'] },
   { name: '채용공지', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=97694&siteId=wwwkr&page=1&id=wwwkr_070112000000'] },
   { name: '외부행사/공모전', urls: ['https://m.kku.ac.kr/user/boardList.do?boardId=1584&siteId=wwwkr&page=1&id=wwwkr_070306000000'] },
-  { name: '신문방송학과', urls: ['https://masscom.kku.ac.kr/noticeList.do?siteId=MASSCOM&boardSeq=19&menuSeq=154&curPage=30&page=1'] },
-  { name: '동화.한국어문화학과', urls: ['https://dongwha.kku.ac.kr/noticeList.do?siteId=DONGWHA&boardSeq=215&menuSeq=4579&curPage=30&page=1'] },
+
   { name: '영어문화학과', urls: ['https://kuell.kku.ac.kr/noticeList.do?siteId=KUELL2&boardSeq=235&menuSeq=1697&curPage=30&page=1'] },
   { name: '패션디자인학과', urls: ['https://fashion.kku.ac.kr/noticeList.do?siteId=KKUAD&boardSeq=15&menuSeq=7566&curPage=30&page=1'] },
   { name: '뷰티화장품학과', urls: ['https://beauty.kku.ac.kr/noticeList.do?siteId=BEAUTY&boardSeq=278&menuSeq=1956&curPage=30&page=1'] },
