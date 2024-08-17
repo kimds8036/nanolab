@@ -115,7 +115,7 @@ def scrape_and_save_notices():
         print(f"Processing link: {notice_link['link']}")
         link = notice_link['link']
         category = notice_link['category']
-        notice_data = None
+        
 
         # 카테고리 매칭
         matching_category = next((c for c in categories if c['name'] == category), None)
@@ -148,18 +148,27 @@ def scrape_and_save_notices():
                 # PDF 파일 링크 추출 및 본문에 포함
                 pdf_url = None
                 iframe_element = content_element.select_one('iframe')
-                if iframe_element:
+                if (iframe_element):
                     pdf_url = urljoin(link, iframe_element['src'])
                     content = content.replace(str(iframe_element), f'<a href="{pdf_url}">View PDF</a>')
                 
                 # 본문에 포함된 링크 필터링 (가짜 링크 제거)
                 valid_links = []
-                for a_tag in content_element.find_all('a', href=True):
-                    if not a_tag['href'].startswith('file://'):
-                        valid_links.append(a_tag['href'])
+                image_urls = []
 
-                # 이미지 URL 추출
-                image_urls = [img['src'] for img in content_element.find_all('img')]
+                for a_tag in content_element.find_all('a', href=True):
+                        href = a_tag['href'].strip()  # 공백 제거
+                        if not href.startswith(('file://', 'file:///')):
+                            valid_links.append(href)
+
+                for img in content_element.find_all('img'):
+                        img_src = img['src'].strip()  # 공백 제거
+                        if not img_src.startswith(('file://', 'file:///')):  # file://, file:///로 시작하지 않는 이미지 URL만 추가
+                            if img_src.startswith('/file/ckImgView.do'):
+                                img_url = urljoin(matching_category['baseUrl'], img_src)
+                            else:
+                                img_url = urljoin(link, img_src)
+                            image_urls.append(img_url)
 
             else:
                 content = '내용 없음'
@@ -184,7 +193,7 @@ def scrape_and_save_notices():
                 'extractedText': extracted_text,
                 'images': image_urls,
                 'links': valid_links,
-                'pdfUrl': pdf_url  # PDF 파일 URL 저장
+                'pdfUrl': pdf_url  # PDF 파일 URL 저장\
             }
             print(f"Processed notice: {result}")
 
@@ -198,9 +207,12 @@ def scrape_and_save_notices():
 
     db.client.close()
 
+    
+
+# 스크립트 실행
 # 스크립트 실행
 if __name__ == "__main__":
     try:
-        scrape_and_save_notices()
+        scrape_and_save_notices()  # 한 번만 실행
     except Exception as e:
         print(f"An error occurred: {e}")
