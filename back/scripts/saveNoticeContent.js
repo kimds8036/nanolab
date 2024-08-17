@@ -197,3 +197,4 @@ const scrapeFirstCategoryNoticeContent = async (link) => {
 };
 
 scrapeAndSaveNotices();
+
