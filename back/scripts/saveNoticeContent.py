@@ -103,7 +103,6 @@ categories = [
 ]
 
 # ... (이전 코드 생략)
-
 def scrape_and_save_notices():
     db = connect_to_mongodb()
 
@@ -142,6 +141,23 @@ def scrape_and_save_notices():
 
             if content_element:
                 clean_content(soup, content_element)
+                
+                # 이미지 URL 추출 및 도메인 추가
+                image_urls = []
+                for img in content_element.find_all('img'):
+                    img_src = img['src'].strip()  # 공백 제거
+                    if not img_src.startswith(('file://', 'file:///')):  # file://, file:///로 시작하지 않는 이미지 URL만 추가
+                        if img_src.startswith(('/file/ckImgView.do', '/PublishingImages')):
+                            img_url = urljoin(matching_category['baseUrl'], img_src)  # 도메인을 붙여서 완전한 URL로 만듦
+                        else:
+                            img_url = urljoin(link, img_src)
+                        
+                        # src 속성 업데이트 (본문 내용 수정)
+                        img['src'] = img_url
+                        
+                        image_urls.append(img_url)
+
+                # 이미지가 처리된 후 content와 extracted_text 설정
                 content = str(content_element) or '내용 없음'
                 extracted_text = content_element.get_text(strip=True)
                 
@@ -154,21 +170,10 @@ def scrape_and_save_notices():
                 
                 # 본문에 포함된 링크 필터링 (가짜 링크 제거)
                 valid_links = []
-                image_urls = []
-
                 for a_tag in content_element.find_all('a', href=True):
-                        href = a_tag['href'].strip()  # 공백 제거
-                        if not href.startswith(('file://', 'file:///')):
-                            valid_links.append(href)
-
-                for img in content_element.find_all('img'):
-                        img_src = img['src'].strip()  # 공백 제거
-                        if not img_src.startswith(('file://', 'file:///')):  # file://, file:///로 시작하지 않는 이미지 URL만 추가
-                            if img_src.startswith('/file/ckImgView.do'):
-                                img_url = urljoin(matching_category['baseUrl'], img_src)
-                            else:
-                                img_url = urljoin(link, img_src)
-                            image_urls.append(img_url)
+                    href = a_tag['href'].strip()  # 공백 제거
+                    if not href.startswith(('file://', 'file:///')):
+                        valid_links.append(href)
 
             else:
                 content = '내용 없음'
@@ -193,7 +198,8 @@ def scrape_and_save_notices():
                 'extractedText': extracted_text,
                 'images': image_urls,
                 'links': valid_links,
-                'pdfUrl': pdf_url  # PDF 파일 URL 저장\
+                'pdfUrl': pdf_url,  # PDF 파일 URL 저장
+                'type': notice_link.get('type', {})
             }
             print(f"Processed notice: {result}")
 
@@ -209,7 +215,6 @@ def scrape_and_save_notices():
 
     
 
-# 스크립트 실행
 # 스크립트 실행
 if __name__ == "__main__":
     try:
