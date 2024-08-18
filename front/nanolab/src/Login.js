@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard, Switch } from 'react-native';
 
 function LoginPage({ navigation }) {
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
+
+  const [isPersistentLogin, setIsPersistentLogin] = useState(false);
 
   const handleLogin = async () => {
     console.log('Login button pressed');  // 로그인 버튼 클릭 로깅
@@ -77,6 +79,15 @@ function LoginPage({ navigation }) {
                   value={form.password}
                   onChangeText={password => setForm({ ...form, password })}
                 />
+              </View>
+
+              <View style={styles.checkboxContainer}>
+                <Switch
+                  value={isPersistentLogin}
+                  onValueChange={setIsPersistentLogin}
+                  style={styles.checkbox}
+                />
+                <Text style={styles.checkboxLabel}>자동 로그인 유지</Text>
               </View>
 
               <View style={styles.formAction}>
@@ -199,6 +210,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: -15,
+  },
+  checkbox: {
+    marginRight: 8,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#222',
   },
 });
 

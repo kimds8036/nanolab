@@ -12,13 +12,14 @@ import Keyword from './src/Keyword';
 import Keywordhelp from './src/Keywordhelp';
 import Department from './src/Department';
 import Departmenthelp from './src/Departmenthelp';
+import Help from './src/Help';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
+      <Stack.Navigator initialRouteName="Help">
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
         <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
@@ -29,6 +30,7 @@ function App() {
         <Stack.Screen name="Keywordhelp" component={Keywordhelp} options={{ headerShown: false }} />
         <Stack.Screen name="Department" component={Department} options={{ headerShown: false }} />
         <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
+        <Stack.Screen name="Help" component={Help} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
