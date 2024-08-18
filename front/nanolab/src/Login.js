@@ -1,7 +1,7 @@
-import 'react-native-gesture-handler';
 import React, { useState, useContext } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard, Switch } from 'react-native';
 import { GlobalContext } from './GlobalContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Login({ navigation }) {
   const [form, setForm] = useState({
@@ -9,25 +9,29 @@ function Login({ navigation }) {
     password: '',
   });
 
-  const { darkMode } = useContext(GlobalContext);
+  const { darkMode, isPersistentLogin, updatePersistentLogin } = useContext(GlobalContext);
 
   const handleLogin = async () => {
-    console.log('Login button pressed');  // 로그인 버튼 클릭 로깅
+    console.log('Login button pressed');
     try {
       const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, password: form.password })
+        body: JSON.stringify({ email: form.email, password: form.password }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         console.log('Login successful:', data.token);
-        // Save the token and navigate to the main page
-        // 예: AsyncStorage를 사용하여 토큰 저장
-        // await AsyncStorage.setItem('token', data.token);
-        navigation.navigate('Main');  // 'Main'으로 이동 (올바른 화면 이름으로 수정)
+        
+        if (isPersistentLogin) {
+          await AsyncStorage.setItem('token', data.token);
+        } else {
+          // You may want to handle temporary session storage here
+        }
+
+        navigation.navigate('Main');
       } else {
         console.error('Login failed:', data.message);
         Alert.alert('로그인 실패', data.message);
@@ -81,6 +85,15 @@ function Login({ navigation }) {
                   value={form.password}
                   onChangeText={password => setForm({ ...form, password })}
                 />
+              </View>
+
+              <View style={styles.checkboxContainer}>
+                <Switch
+                  value={isPersistentLogin}
+                  onValueChange={updatePersistentLogin}
+                  style={styles.checkbox}
+                />
+                <Text style={styles.checkboxLabel}>자동 로그인 유지</Text>
               </View>
 
               <View style={styles.formAction}>
@@ -203,6 +216,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: -15,
+  },
+  checkbox: {
+    marginRight: 8,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#222',
   },
 });
 

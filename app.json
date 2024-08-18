@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "7a53e2aa-8a8d-48db-9ff3-445d7b28308e"
+      }
+    },
+    "android": {
+      "package": "com.eunchae0215.nanolab"
+    }
+  }
+}

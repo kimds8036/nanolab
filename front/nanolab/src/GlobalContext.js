@@ -1,16 +1,38 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// 초기 상태 설정
 const GlobalContext = createContext();
 
-// Provider 컴포넌트
 const GlobalProvider = ({ children }) => {
   const [isDepartmentRegistered, setIsDepartmentRegistered] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  
-  // 다크모드 상태 추가
   const [darkMode, setDarkMode] = useState(false);
+  const [isPersistentLogin, setIsPersistentLogin] = useState(false);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const persistentLogin = await AsyncStorage.getItem('isPersistentLogin');
+        if (persistentLogin !== null) {
+          setIsPersistentLogin(JSON.parse(persistentLogin));
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    };
+
+    loadSettings();
+  }, []);
+
+  const updatePersistentLogin = async (value) => {
+    try {
+      await AsyncStorage.setItem('isPersistentLogin', JSON.stringify(value));
+      setIsPersistentLogin(value);
+    } catch (error) {
+      console.error('Failed to save persistent login setting:', error);
+    }  
+  };
 
   return (
     <GlobalContext.Provider value={{ 
@@ -20,8 +42,10 @@ const GlobalProvider = ({ children }) => {
       setSelectedCollege, 
       selectedDepartment, 
       setSelectedDepartment,
-      darkMode, // 다크모드 상태
-      setDarkMode // 다크모드 상태 변경 함수
+      darkMode, 
+      setDarkMode,
+      isPersistentLogin,
+      updatePersistentLogin,
     }}>
       {children}
     </GlobalContext.Provider>

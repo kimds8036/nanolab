@@ -1,8 +1,8 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GlobalProvider } from './src/GlobalContext';
+import { GlobalProvider, GlobalContext } from './src/GlobalContext';
 import Login from './src/Login';
 import Enter from './src/Enter';
 import Main from './src/Main';
@@ -15,14 +15,54 @@ import Department from './src/Department';
 import Departmenthelp from './src/Departmenthelp';
 import Feedback from './src/Feedback';
 import Test from './src/Test';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialRoute, setInitialRoute] = useState('Login');
+  const { updatePersistentLogin } = useContext(GlobalContext);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const persistentLogin = await AsyncStorage.getItem('isPersistentLogin');
+
+        if (persistentLogin !== null) {
+          const persistentLoginValue = JSON.parse(persistentLogin);
+          updatePersistentLogin(persistentLoginValue);
+        }
+
+        if (token) {
+          if (persistentLogin === 'true') {
+            setInitialRoute('Main');
+          } else {
+            setInitialRoute('Login');
+          }
+        } else {
+          setInitialRoute('Login');
+        }
+      } catch (error) {
+        console.error('Failed to load login status:', error);
+        setInitialRoute('Login');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkLoginStatus();
+  }, [updatePersistentLogin]);
+
+  if (isLoading) {
+    return null; // 또는 로딩 스피너 등을 추가할 수 있습니다.
+  }
+
   return (
     <GlobalProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Myinform">
+        <Stack.Navigator initialRouteName={initialRoute}>
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
           <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
           <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
