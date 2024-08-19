@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, Button, Image } from 'react-native';
 
@@ -7,6 +8,8 @@ function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [isPasswordChanged, setPasswordChanged] = useState(false);
+  const navigation = useNavigation();
+
 
   const handlePasswordChange = () => {
     Alert.alert(
@@ -33,7 +36,9 @@ function ProfilePage() {
   
   <View style={styles.header}>
     <View style={styles.backContainer}>
-      <Image source={require('../assets/image/back.png')} style={{ width: 24, height: 24 }} />
+    <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
+        <Image source={require('../assets/image/light/back.png')} style={{width:20, height:20}} />
+      </TouchableOpacity>
     </View>
     
     <Text style={styles.headerTitle}>내 정보 수정</Text>
@@ -42,7 +47,7 @@ function ProfilePage() {
   <View style={styles.profileContainer}>
     <View style={styles.profileCard}>
       <View style={styles.imageContainer}>
-        <Image source={require('../assets/image/profile.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
+        <Image source={require('../assets/image/light/profile.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.profileName}>user</Text>
@@ -72,21 +77,21 @@ function ProfilePage() {
 
         <TouchableOpacity onPress={() => setPasswordPromptVisible(true)} style={styles.infoRow}>
           <Text style={styles.infoLabel}>비밀번호 변경</Text>
-          <Image source={require('../assets/image/password.png')} style={{ width: 24, height: 24 }} />
+          <Image source={require('../assets/image/light/password.png')} style={{ width: 30, height: 30 }} />
         </TouchableOpacity>
 
         <View style={styles.separator} />
 
         <TouchableOpacity style={styles.infoRow}>
           <Text style={styles.infoLabel}>이메일 인증</Text>
-          <Image source={require('../assets/image/email.png')} style={{ width: 24, height: 24 }} />
+          <Image source={require('../assets/image/light/email.png')} style={{ width: 30, height: 30 }} />
         </TouchableOpacity>
 
         <View style={styles.separator} />
 
-        <TouchableOpacity style={styles.infoRow}>
+        <TouchableOpacity style={styles.infoRow} onPress={() => { navigation.navigate('Department'); }}>
           <Text style={styles.infoLabel}>학과 등록</Text>
-          <Image source={require('../assets/image/subject.png')} style={{ width: 24, height: 24 }} />
+          <Image source={require('../assets/image/light/subject.png')} style={{ width: 30, height: 30 }} />
         </TouchableOpacity>
 
         <View style={styles.separator} />

@@ -8,7 +8,7 @@ export default function HelpScreen() {
         
         <View style={styles.header}>
           <View style={styles.backContainer}>
-            <Image source={require('../assets/image/back.png')} style={{ width: 24, height: 24 }} />
+            <Image source={require('../assets/image/light/back.png')} style={{ width: 24, height: 24 }} />
           </View>
           
           <Text style={styles.headerTitle}>도움말</Text>

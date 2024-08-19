@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import axios from 'axios';
 
 const API_URL = 'http://192.168.0.58:5000';
 
-function KeywordAlertPage({ navigation }) {
+
+function Keyword({ navigation }) {
   const [keyword, setKeyword] = useState('');
   const [registeredKeywords, setRegisteredKeywords] = useState([]);
   const [recentKeywords, setRecentKeywords] = useState(["+", "+", "+", "+", "+", "+"]);
+  const { darkMode } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchKeywords = async () => {
@@ -75,7 +77,7 @@ function KeywordAlertPage({ navigation }) {
           >
             <View style={styles.header}>
               <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
-                <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+                <Image source={require('../assets/image/light/back.png')} style={styles.backButton}/>
               </TouchableOpacity>
               <Text style={styles.headerTitle}>키워드 알림 설정</Text>
               <TouchableOpacity style={styles.iconButton}>
@@ -240,4 +242,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default KeywordAlertPage;
+export default Keyword;

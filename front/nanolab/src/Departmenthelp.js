@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { GlobalContext } from './GlobalContext';
 
 const Departmenthelp = ({ navigation }) => {
   const [selectedCollege, setSelectedCollege] = useState();
@@ -25,18 +26,18 @@ const Departmenthelp = ({ navigation }) => {
   };
 
   return (
-      <ImageBackground source={require('../assets/image/background.png')} style={styles.backgroundImage}>
+      <ImageBackground source={require('../assets/image/light/background.png')} style={styles.backgroundImage}>
         <SafeAreaView style={styles.innerContainer}>
           <View style={styles.rectangle1}></View>
           <View style={styles.header}>
               <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
-                  <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
+                  <Image source={require('../assets/image/light/back.png')} style={styles.backIcon} />
               </TouchableOpacity>
               <View style={styles.titleContainer}>
                   <Text style={styles.title}>학과 등록</Text>
               </View>
               <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
-                  <Image source={require('../assets/image/question.png')} style={styles.questionIcon} />
+                  <Image source={require('../assets/image/light/question.png')} style={styles.questionIcon} />
               </TouchableOpacity>
           </View>
           <View style={styles.textContainer}>
@@ -52,7 +53,7 @@ const Departmenthelp = ({ navigation }) => {
                   {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
               </Text>
               <Image
-                  source={showCollegePicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                  source={showCollegePicker ? require('../assets/image/light/arrow-up.png') : require('../assets/image/light/arrow-down.png')}
                   style={styles.icon}
               />
           </TouchableOpacity>
@@ -77,7 +78,7 @@ const Departmenthelp = ({ navigation }) => {
                   {selectedDepartment ? selectedDepartment : '소속 학과'}
               </Text>
               <Image
-                  source={showDepartmentPicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
+                  source={showDepartmentPicker ? require('../assets/image/light/arrow-up.png') : require('../assets/image/light/arrow-down.png')}
                   style={styles.icon}
               />
           </TouchableOpacity>

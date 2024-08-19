@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 function Enter({ navigation }) {
@@ -6,7 +6,8 @@ function Enter({ navigation }) {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
-
+  const { darkMode } = useContext(GlobalContext);
+  
   const handleEmailChange = (text) => {
     setEmail(text);
     validateForm(text, password, passwordConfirmation);
@@ -37,14 +38,13 @@ function Enter({ navigation }) {
   const handleRegister = async () => {
     console.log('Register button pressed');
     try {
-      const response = await fetch('http://172.20.10.11:5000/auth/register', {
+      const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-
+  
       const data = await response.json();
-
       if (response.ok) {
         console.log('Registration successful:', data.message);
         Alert.alert('회원가입 완료', '회원가입이 정상적으로 완료되었습니다.', [
@@ -63,7 +63,7 @@ function Enter({ navigation }) {
       Alert.alert('회원가입 실패', '서버와의 통신 중 오류가 발생했습니다.');
     }
   };
-
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
@@ -75,7 +75,7 @@ function Enter({ navigation }) {
         <View style={styles.innerContainer}>
           <View>
             <TouchableOpacity onPress={() => { navigation.navigate('Login'); }}>
-              <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+              <Image source={require('../assets/image/light/back.png')} style={styles.backButton}/>
             </TouchableOpacity>
           </View>
           <View style={styles.titleContainer}>
@@ -119,7 +119,7 @@ function Enter({ navigation }) {
               <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
             </TouchableOpacity>
           </View>
-          <Image source={require('../assets/image/konkuk.png')} style={styles.logo}/>
+          <Image source={require('../assets/image/light/konkuk.png')} style={styles.logo}/>
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

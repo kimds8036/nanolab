@@ -1,31 +1,34 @@
-import React, { useState } from 'react';
+import 'react-native-gesture-handler';
+import React, { useState, useContext } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard, Switch } from 'react-native';
+import { GlobalContext } from './GlobalContext';
 
-function LoginPage({ navigation }) {
+function Login({ navigation }) {
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
 
   const [isPersistentLogin, setIsPersistentLogin] = useState(false);
+  const { darkMode } = useContext(GlobalContext);
 
   const handleLogin = async () => {
     console.log('Login button pressed');  // 로그인 버튼 클릭 로깅
     try {
-      const response = await fetch('http://172.20.10.11:5000/auth/login', {  // 서버 IP 주소 사용
+      const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, password: form.password })
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         console.log('Login successful:', data.token);
         // Save the token and navigate to the main page
         // 예: AsyncStorage를 사용하여 토큰 저장
         // await AsyncStorage.setItem('token', data.token);
-        navigation.navigate('MainPage');  // MainPage로 이동
+        navigation.navigate('Main');  // 'Main'으로 이동 (올바른 화면 이름으로 수정)
       } else {
         console.error('Login failed:', data.message);
         Alert.alert('로그인 실패', data.message);
@@ -47,7 +50,7 @@ function LoginPage({ navigation }) {
           <View style={styles.containerlogin}>
             <View style={styles.header}>
               <Image
-                source={require('../assets/image/qqqq.png')}
+                source={require('../assets/image/light/qqqq.png')}
                 style={styles.headerImg}
                 accessibilityLabel="Logo"
               />
@@ -91,31 +94,31 @@ function LoginPage({ navigation }) {
               </View>
 
               <View style={styles.formAction}>
-              <TouchableOpacity onPress={handleLogin}>
-                <View style={styles.btn}>
-                  <Text style={styles.btnText}>로그인</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity onPress={handleLogin}>
+                  <View style={styles.btn}>
+                    <Text style={styles.btnText}>로그인</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
 
-            <View style={{ alignItems: 'center', marginBottom: 24 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('Enter');
-                }}
-              >
-                <Text style={styles.formFooter}>
-                  계정이 없으신가요?{' '}
-                  <Text style={styles.signupText}>회원가입</Text>
-                </Text>
-              </TouchableOpacity>
+              <View style={{ alignItems: 'center', marginBottom: 24 }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('Enter');
+                  }}
+                >
+                  <Text style={styles.formFooter}>
+                    계정이 없으신가요?{' '}
+                    <Text style={styles.signupText}>회원가입</Text>
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  </TouchableWithoutFeedback>
- );
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -226,4 +229,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginPage;
+export default Login;

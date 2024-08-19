@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { GlobalProvider } from './src/GlobalContext';
 import Login from './src/Login';
 import Enter from './src/Enter';
 import Main from './src/Main';
@@ -13,26 +14,32 @@ import Keywordhelp from './src/Keywordhelp';
 import Department from './src/Department';
 import Departmenthelp from './src/Departmenthelp';
 import Help from './src/Help';
+import Feedback from './src/Feedback';
+import Test from './src/Test';
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Help">
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
-        <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
-        <Stack.Screen name="Noticelist" component={Noticelist} options={{ headerShown: false }} />
-        <Stack.Screen name="Mypage" component={Mypage} options={{ headerShown: false }} />
-        <Stack.Screen name="Myinform" component={Myinform} options={{ headerShown: false }} />
-        <Stack.Screen name="Keyword" component={Keyword} options={{ headerShown: false }} />
-        <Stack.Screen name="Keywordhelp" component={Keywordhelp} options={{ headerShown: false }} />
-        <Stack.Screen name="Department" component={Department} options={{ headerShown: false }} />
-        <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
-        <Stack.Screen name="Help" component={Help} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GlobalProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+          <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
+          <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
+          <Stack.Screen name="Noticelist" component={Noticelist} options={{ headerShown: false }} />
+          <Stack.Screen name="Mypage" component={Mypage} options={{ headerShown: false }} />
+          <Stack.Screen name="Myinform" component={Myinform} options={{ headerShown: false }} />
+          <Stack.Screen name="Keyword" component={Keyword} options={{ headerShown: false }} />
+          <Stack.Screen name="Keywordhelp" component={Keywordhelp} options={{ headerShown: false }} />
+          <Stack.Screen name="Department" component={Department} options={{ headerShown: false }} />
+          <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
+          <Stack.Screen name="Help" component={Help} options={{ headerShown: false }} />
+          <Stack.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
+          <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GlobalProvider>
   );
 }
 
