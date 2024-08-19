@@ -1,541 +1,130 @@
-import React, { useRef, useState, useEffect, useContext } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, Navigation, onClose } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { ScrollView, View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
 
-const { width } = Dimensions.get('window');
-
-
-const Header = ({ onMenuPress }) => {
-  return (
-    <View style={styles.header}>
-      <View>  
-        <Text style={styles.headerTitle}>공지사항</Text>
-      </View>
-      <View style={styles.headerIcons}>
-        <TouchableOpacity onPress={() => alert('Details')}>
-          <Image source={require('../assets/image/light/search.png')} style={styles.icon} />  
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => alert('Details')}>
-          <Image source={require('../assets/image/light/alert.png')} style={styles.icon} />  
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onMenuPress}>
-          <Image source={require('../assets/image/light/menu.png')} style={styles.icon} />  
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
-const RecentNotices = () => {
-  const category = '학사공지';
-  return (
-    <View style={styles.Container1}>
-      <View style={styles.sectionContainer1}>
-        <View style={styles.sectionTitleWrapper}>
-          <Text style={styles.sectionTitle}>최근 공지</Text>
+export default function HelpScreen() {
+    return (
+        <SafeAreaView style={styles.container}>
+        <View style={styles.topBar}></View>
+        
+        <View style={styles.header}>
+          <View style={styles.backContainer}>
+            <Image source={require('../assets/image/light/back.png')} style={{ width: 24, height: 24 }} />
+          </View>
+          
+          <Text style={styles.headerTitle}>도움말</Text>
         </View>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.noticeContainer}>
-            <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </View>
-            </View>
-            <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </View>
-            </View>
-            <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </View>
-            </View>
-            <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </View>
-            </View>
-            <View style={styles.noticeWrapper}>
-              <View style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </View>
-            </View>
-        </ScrollView>
-      </View>
-    </View>
-  );
-};
+      
+      {/* 스크롤 가능한 내용 */}
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={styles.section}>
+          <View style={styles.sectionTitleContainer}>
+            <Text style={styles.sectionTitle}>키워드 등록을 하고 싶어요. 어떻게 하나요?</Text>
+          </View>
+          <Text style={styles.startsection}>
+            키워드 등록 시, 등록한 해당 단어가 포함되어 있는 공지가 올라올 때 사용자에게 푸시 알림이 갑니다.
 
-
-
-const PopularNotices = () => {
-  const daysLeft = 1; // 디데이까지 남은 일수 (예시로 10일 설정)
-
-  // 날짜에 따른 색상 결정 함수
-  const getDateStyle = () => {
-    if (daysLeft <= 0) {
-      return styles.dateBlack;
-    } else if (daysLeft <= 3) {
-      return styles.dateRed;
-    } else if (daysLeft <= 5) {
-      return styles.dateGreen;
-    } else {
-      return styles.dateLightGreen;
-    }
-  };
-
-  const getDateText = () => {
-    if (daysLeft <= 0) {
-      return '마감';
-    } else {
-      return `D-${daysLeft}`;
-    }
-  };
-
-  return (
-    <View style={styles.Container2}>
-      <View style={styles.sectionContainer2}>
-        <View style={styles.sectionTitleWrapper}>
-          <Text style={styles.sectionTitle}>인기 공지</Text>
+            누구보다 빠르게 자신의 관심 공지를 확인할 수 있습니다.
+          </Text>
+          <Text style={styles.sectionText1}>키워드 등록을 하려면?</Text>
+          <Text style={styles.sectionText}>
+            1. 마이 페이지에서 &gt;키워드 알림 설정&lt; 버튼으로 이동할 수 있어요.
+          </Text>
+          <Text style={styles.sectionText}>
+            2. 키워드 입력 창에 관심 있는 키워드 또는 알림 받고 싶은 키워드를 입력하여 추가해 주세요.
+          </Text>
+          <Text style={styles.importText1}>
+            ㄴ 키워드에 오타 발생 시 알림이 가지 않으니 주의하여 작성해 주세요.
+          </Text>
+          <Text style={styles.importText2}>Ex. 건극사랑, 국가 군로, 장헉금 → 건국사랑, 국가 근로, 장학금으로 수정</Text>
+          <Text style={styles.sectionText1}>키워드 등록 팁!</Text>
+          <Text style={styles.sectionText}>
+            - 등록된 키워드를 삭제하고 싶다면 키워드 우측의 삭제 버튼을 통해 삭제가 가능해요.
+          </Text>
+          <Text style={styles.sectionText}>
+            - 최근 본 키워드의 플러스 버튼을 통해 키워드를 등록할 수 있어요.
+          </Text>
         </View>
-        <View style={styles.popularNotices}>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-};
-
-const MenuBar = ({ onClose, navigation }) => {
-  const slideAnim = useRef(new Animated.Value(width)).current;
-
-  useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: width * 1 / 4,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [slideAnim]);
-
-  const handleHomePress = () => {
-    navigation.navigate('Mypage');
-  };
-
-  const handleBackPress = () => {
-    
-    Animated.timing(slideAnim, {
-      toValue: width,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      if (onClose) onClose();
-    });
-  };
-
-  const handleMenuItemPress = (tabIndex) => {
-    navigation.navigate('Noticelist', { activeTab: tabIndex });
-    if (onClose) onClose(); // 메뉴가 닫히면서 이동
-  };
-
-  return (
-    <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
-      <View style={styles.menuheader}>
-        <Text style={styles.headerText}>Menu</Text>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton1} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require('../assets/image/light/back2.png')} style={styles.iconButton2} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <ScrollView style={styles.menu}>
-        {['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업 / 창업', '공모전', '국제 교류', '모시래 식단', '해오름 식단'].map((text, index) => (
-          <TouchableOpacity
-            key={text}
-            style={styles.menuItem}
-            onPress={() => handleMenuItemPress(index)}
-          >
-            <Text style={styles.menuItemText}>{text}</Text>
-          </TouchableOpacity>
-        ))}
       </ScrollView>
-    </Animated.View>
+    </SafeAreaView>
   );
-};
-
-
-const Keywordhelp = ({ route }) => {
-  const navigation = useNavigation(); // 네비게이션 훅 호출
-  const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
-
-  const handleMenuPress = () => {
-    setIsMenuVisible(true);
-  };
-
-  const handleCloseMenu = () => {
-    setIsMenuVisible(false);
-  };
-
-  return (
-    <View style={styles.container}>
-      <ScrollView style={styles.content}>
-        <Header onMenuPress={handleMenuPress} />
-        <RecentNotices />
-        <PopularNotices />
-      </ScrollView>
-      {isMenuVisible && (
-        <View style={styles.menuOverlay}>
-          <MenuBar onClose={handleCloseMenu} navigation={navigation} />
-        </View>
-      )}
-    </View>
-  );
-};
-
+}
 
 const styles = StyleSheet.create({
-  //menu
-  menuOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
-  },
-  slideContainer: {
-    width: width * 5 / 6,
-    backgroundColor: '#edf0f2', // 반투명 백그라운드
-    flex: 1,
-    position: 'absolute',
-    right: 0,
-    height: "100%",
-  },
-  menuheader: {
-    height: 100, // 상단 여유 공간 줄이기
-    backgroundColor: '#6AA84F',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-  },
-  headerText: {
-    fontSize: 30,
-    color: '#FFFFFF',
-    marginTop: 30, // 상단 여유 공간 줄이기
-  },
-  iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5, // 아이콘 상단 여유 공간 추가
-  },
-  iconButton1: {
-    right:120,
-    marginTop: 30,
-    width: 25,
-    height: 25,
-  },
-  iconButton2: {
-    right:100,
-    marginTop: 30,
-    width: 20,
-    height: 20,
-  },
-  menu: {
-    paddingHorizontal: 16,
-  },
-  menuItem: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    marginTop: 16,
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 4,
-    elevation: 2,
-    width: width * 5 / 6 - 32,
-  },
-  menuItemText: {
-    fontSize: 18,
-    color: '#000000',
-  },
-
-  //main
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
-  content: {
-    flex: 1,
+  topBar: {
+    backgroundColor: '#9DC284',
+    width: '100%',
+    height: 70,
+    position:'absolute',
   },
-  Container1:{
-    width:"100%",
-    height: 350,
-    
-  },
-  Container2:{
-    width:"100%",
-    height: "100%",
-    
+  backContainer: {
+    position: 'absolute',
+    left: 10,
   },
   header: {
-    padding: 20,
-    backgroundColor: '#fff',
+    height: 50,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 40,
-    height:70,
-    marginLeft:5,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   headerTitle: {
-    fontSize: 30,
+    color: '#000000',
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
-  headerSubtitle: {
-    fontSize: 12,
-    color: '#777',
+  contentContainer: {
+    padding: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    marginTop: 0, // topBar와의 겹침을 방지하기 위해 추가
   },
-  headerIcons: {
-    flexDirection: 'row',
+  section: {
+    marginBottom: 20,
   },
-  icon: {
-    width: 35,
-    height: 35,
-    marginLeft: 5,
-  },
-  sectionContainer1: {
-    margin: 10,
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 10,
-  },
-  sectionContainer2: {
-    margin: 10,
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 10,
+  sectionTitleContainer: {
+    alignSelf: 'flex-start',
+    borderBottomWidth: 1,     // 밑줄 두께
+    borderBottomColor: '#000000',
+    paddingBottom: 3,         // 텍스트와 밑줄 간격
+    marginBottom: 10,         // 섹션과의 간격
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    width: 100,
-    height: 35,
-    textAlign: 'center',
-    lineHeight: 35,  // 텍스트가 가운데 오도록 조정
-    backgroundColor: '#DDDDDD',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  sectionTitleWrapper: {
-    shadowColor: '#CACACA',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 2,
-    elevation: 5,
-    borderRadius: 20, 
-  },
-  noticeContainer: {
-    flexDirection: 'row',
-    
-  },
-  noticeWrapper: {
-    paddingBottom: 10,
-    overflow: 'visible',
-  },
-  notice: {
-    backgroundColor: '#9DC284',
-    padding: 20,
-    borderRadius: 20,
-    width: 250,
-    marginRight: 10,
-    height: 250,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.35,
-    shadowRadius: 3,
-    elevation: 10,
-  },
-  noticeTitle: {
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: 'bold',
   },
-  noticeText: {
+  sectionText1: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    lineHeight: 20,
+  },
+  startsection: {
+    fontSize: 17,
+    marginBottom: 30,
+    lineHeight: 20,
+  },
+  sectionText: {
+    fontSize: 15,
+    marginBottom: 10,
+    lineHeight: 20,
+  },
+  importText1: {
+    color: '#ff0000',
+    fontWeight: 'bold',
     fontSize: 14,
-    marginTop:10,
+    marginBottom: 2,
+    lineHeight: 20,
   },
-  category:{
-    top:155,
-    color: '#45553A',
-  },
-  popularNotices:{
-    width:"100%",
-  },
-  announcement: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderColor: '#ddd',
-    borderTopWidth: 1,
-    borderBottomWidth:1,
-  },
-  title: {
-    fontSize: 14,
+  importText2: {
+    color: '#ff0000',
     fontWeight: 'bold',
-  },
-  dotted:{
-    height:10,
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderColor: '#CCCCCC',
-  },
-  dcontainer:{
-    flexDirection: 'row',
-    alignItems: 'center', // 수직 정렬
-    justifyContent: 'space-between', // 수평 간격 조절
-    paddingHorizontal: 10, // 양옆에 여백 추가
-    paddingVertical: 5,
-  },
-  date: {
-    marginTop: 5,
-    left:70,
-    backgroundColor:'red',
-    borderRadius:10,
-    width:60,
-    height:20,
-  },
-  datetext:{
-    textAlign: 'center',
-    color:'white',
-    lineHeight:20,
-    fontSize:12,
-  },
-  dateLightGreen: {
-    backgroundColor: '#9DC284',
-    
-  },
-  dateGreen: {
-    backgroundColor: '#0E664F',
-    
-  },
-  dateRed: {
-    backgroundColor: '#C28484',
-    
-  },
-  dateBlack: {
-    backgroundColor: 'black',
-    
-  },
-  details: {
-    fontSize: 12,
-    color: '#777',
-    marginTop: 5,
-    borderWidth:1,
-    borderRadius:10,
-    width: 90,
-    right: 10,
-    textAlign:'center',
-    height:20,
-    lineHeight:15,
-  },
-  nextbutton:{
-    width: 25,
-    height: 25,
-    marginTop: 5,
-    left:20,
+    fontSize: 14,
+    marginBottom: 30,
+    lineHeight: 20,
   },
 });
-
-export default Keywordhelp;

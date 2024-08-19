@@ -1,10 +1,9 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GlobalContext } from './GlobalContext';
 
 const { width } = Dimensions.get('window');
-
 
 const Header = ({ onMenuPress }) => {
   return (
@@ -37,52 +36,49 @@ const RecentNotices = () => {
         </View>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.noticeContainer}>
             <View style={styles.noticeWrapper}>
-              <TouchableOpacity style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.noticeWrapper}>
             <TouchableOpacity style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.noticeWrapper}>
+              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+              <Text style={styles.noticeText}>더보기</Text>
+              <Text style={styles.category}>{category}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.noticeWrapper}>
             <TouchableOpacity style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.noticeWrapper}>
+              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+              <Text style={styles.noticeText}>더보기</Text>
+              <Text style={styles.category}>{category}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.noticeWrapper}>
             <TouchableOpacity style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.noticeWrapper}>
+              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+              <Text style={styles.noticeText}>더보기</Text>
+              <Text style={styles.category}>{category}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.noticeWrapper}>
             <TouchableOpacity style={styles.notice}>
-                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-                <Text style={styles.noticeText}>더보기</Text>
-                <Text style={styles.category}>{category}</Text>
-              </TouchableOpacity>
-            </View>
+              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+              <Text style={styles.noticeText}>더보기</Text>
+              <Text style={styles.category}>{category}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.noticeWrapper}>
+            <TouchableOpacity style={styles.notice}>
+              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+              <Text style={styles.noticeText}>더보기</Text>
+              <Text style={styles.category}>{category}</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
     </View>
   );
 };
 
-
-
 const PopularNotices = () => {
-  const daysLeft = 1; // 디데이까지 남은 일수 (예시로 10일 설정)
+  const daysLeft = 1; // 디데이까지 남은 일수 (예시로 1일 설정)
 
-  // 날짜에 따른 색상 결정 함수
   const getDateStyle = () => {
     if (daysLeft <= 0) {
       return styles.dateBlack;
@@ -208,32 +204,16 @@ const MenuBar = ({ onClose, navigation }) => {
     navigation.navigate('Mypage');
   };
 
-  const handleBackPress = () => {
-    
-    Animated.timing(slideAnim, {
-      toValue: width,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      if (onClose) onClose();
-    });
-  };
-
-  const handleMenuItemPress = (tabIndex) => {
-    navigation.navigate('Noticelist', { activeTab: tabIndex });
-    if (onClose) onClose(); // 메뉴가 닫히면서 이동
-  };
-
   return (
     <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
       <View style={styles.menuheader}>
         <Text style={styles.headerText}>Menu</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton1} />
+            <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleBackPress}>
-            <Image source={require('../assets/image/light/back2.png')} style={styles.iconButton2} />
+          <TouchableOpacity onPress={handleHomePress}>
+            <Image source={require('../assets/image/light/back.png')} style={styles.iconButton} />
           </TouchableOpacity>
         </View>
       </View>
@@ -252,14 +232,12 @@ const MenuBar = ({ onClose, navigation }) => {
   );
 };
 
-
 const Main = ({ route }) => {
-  const navigation = useNavigation(); // 네비게이션 훅 호출
+  const navigation = useNavigation();
   const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
-  const { darkMode } = useContext(GlobalContext);
-  
+const { darkMode } = useContext(GlobalContext);
 
-  const dynamicStyles = {
+const dynamicStyles = {
     container: {
       backgroundColor: darkMode ? 'grey' : '#FFFFFF',
     },
@@ -274,16 +252,18 @@ const Main = ({ route }) => {
   };
 
   return (
-    <View style={[styles.container, dynamicStyles.container]}>
+    <View style={styles.container}>
       <ScrollView style={styles.content}>
         <Header onMenuPress={handleMenuPress} />
         <RecentNotices />
         <PopularNotices />
       </ScrollView>
       {isMenuVisible && (
-        <View style={styles.menuOverlay}>
-          <MenuBar onClose={handleCloseMenu} navigation={navigation} />
-        </View>
+        <TouchableWithoutFeedback onPress={handleCloseMenu}>
+          <View style={styles.menuOverlay}>
+            <MenuBar onClose={handleCloseMenu} navigation={navigation} />
+          </View>
+        </TouchableWithoutFeedback>
       )}
     </View>
   );
@@ -327,13 +307,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 5, // 아이콘 상단 여유 공간 추가
   },
-  iconButton1: {
+  iconButton: {
     right:120,
     marginTop: 30,
     width: 25,
     height: 25,
   },
-  iconButton2: {
+  iconButton: {
     right:100,
     marginTop: 30,
     width: 20,

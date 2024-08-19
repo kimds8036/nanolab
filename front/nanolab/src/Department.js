@@ -48,7 +48,7 @@ const Department = ({ navigation }) => {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>학과 등록</Text>
           </View>
-          <TouchableOpacity onPress={() => { navigation.navigate('ProfilePage'); }}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Departmenthelp'); }}>
             <Image source={require('../assets/image/light/question.png')} style={styles.questionIcon} />
           </TouchableOpacity>
         </View>

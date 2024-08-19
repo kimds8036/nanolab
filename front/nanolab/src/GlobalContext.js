@@ -25,15 +25,6 @@ const GlobalProvider = ({ children }) => {
     loadSettings();
   }, []);
 
-  const updatePersistentLogin = async (value) => {
-    try {
-      await AsyncStorage.setItem('isPersistentLogin', JSON.stringify(value));
-      setIsPersistentLogin(value);
-    } catch (error) {
-      console.error('Failed to save persistent login setting:', error);
-    }  
-  };
-
   return (
     <GlobalContext.Provider value={{ 
       isDepartmentRegistered, 
@@ -45,7 +36,6 @@ const GlobalProvider = ({ children }) => {
       darkMode, 
       setDarkMode,
       isPersistentLogin,
-      updatePersistentLogin,
     }}>
       {children}
     </GlobalContext.Provider>
