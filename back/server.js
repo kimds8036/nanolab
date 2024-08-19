@@ -26,7 +26,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to the API');
 });
 
-// 회원가입 라우트
 app.post('/auth/register', async (req, res) => {
   const { email, password } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -91,11 +90,6 @@ app.post('/auth/login', async (req, res) => {
     if (!isMatch) {
       console.log('Password does not match');
       return res.status(400).json({ message: '아이디와 비밀번호를 확인해 주세요' });
-    }
-
-    if (!JWT_SECRET) {
-      console.error('JWT_SECRET is not defined');
-      return res.status(500).json({ message: 'Internal server error: JWT_SECRET is not defined' });
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
