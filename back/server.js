@@ -1,4 +1,4 @@
-require('dotenv').config();  // 환경 변수 로드
+require('dotenv').config({ path: './back/.env' });
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
