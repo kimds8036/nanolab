@@ -1,6 +1,11 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
-const { fetchPage } = require('./utils'); // fetchPage 함수 가져오기
-const moment = require('moment'); // moment 라이브러리 가져오기
+const cheerio = require('cheerio');
+const { fetchPage } = require('./utils'); 
+const moment = require('moment');
+const axios = require('axios');
+
+const MONGO_URI = process.env.MONGO_URI;
 
 function cleanContent($, $element) {
   $element.contents().each((index, el) => {
@@ -20,16 +25,15 @@ function cleanContent($, $element) {
     if (!allowedTags.includes(el.tagName.toLowerCase())) {
       $(el).replaceWith($(el).html());
     }
-  });}
-
-
+  });
+}
 
 const connectToMongoDB = async () => {
   try {
-    await mongoose.connect('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0', {
+    await mongoose.connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000
+      serverSelectionTimeoutMS: 5000,
     });
     console.log('Successfully connected to MongoDB');
   } catch (error) {
@@ -40,8 +44,9 @@ const connectToMongoDB = async () => {
 
 const noticeLinkSchema = new mongoose.Schema({
   link: { type: String, required: true },
-  category: { type: String, required: true }
+  category: { type: String, required: true },
 });
+
 const NoticeLink = mongoose.model('NoticeLink', noticeLinkSchema);
 
 const createDynamicModel = (collectionName) => {
@@ -54,8 +59,8 @@ const createDynamicModel = (collectionName) => {
     views: { type: String, required: false },
     content: { type: String, required: false },
     files: { type: [String], required: false },
-   extractedText: { type: String, required: false },
-    deadline: { type: String, required: false } // 마감기한 필드 추가
+    extractedText: { type: String, required: false },
+    deadline: { type: String, required: false },
   });
   return mongoose.model(collectionName, schema, collectionName);
 };
@@ -76,36 +81,35 @@ const saveOrUpdateNotice = async (category, noticeData) => {
   }
 };
 
-
 const scrapeAndSaveNotices = async () => {
   await connectToMongoDB();
 
-  const noticeLinks = await NoticeLink.find({});
+  try {
+    const noticeLinks = await NoticeLink.find({});
 
-  const firstCategory = ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'];
-  const secondCategoryKeywords = ['학과', '혁신공유대학', '의예과', '유아교육과',];
+    const firstCategory = ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'];
+    const secondCategoryKeywords = ['학과', '혁신공유대학', '의예과', '유아교육과'];
 
-  for (const noticeLink of noticeLinks) {
-    const { link, category } = noticeLink;
-    let noticeData;
+    for (const noticeLink of noticeLinks) {
+      const { link, category } = noticeLink;
+      let noticeData;
 
-    const isSecondCategory = secondCategoryKeywords.some(keyword => category.includes(keyword));
+      const isSecondCategory = secondCategoryKeywords.some(keyword => category.includes(keyword));
 
-    if (isSecondCategory) {
-      noticeData = await scrapeSecondCategoryNoticeContent(link);
-    } else if (firstCategory.includes(category)) {
-      noticeData = await scrapeFirstCategoryNoticeContent(link);
-    } else {
-      console.warn(`Unrecognized category: ${category}`);
-      continue;
+      if (isSecondCategory) {
+        noticeData = await scrapeSecondCategoryNoticeContent(link);
+      } else if (firstCategory.includes(category)) {
+        noticeData = await scrapeFirstCategoryNoticeContent(link);
+      } else {
+        console.warn(`Unrecognized category: ${category}`);
+        continue;
+      }
+
+      await saveOrUpdateNotice(category, noticeData);
     }
-
-
-
-    await saveOrUpdateNotice(category, noticeData);
+  } finally {
+    mongoose.connection.close();
   }
-
-  mongoose.connection.close();
 };
 
 const scrapeSecondCategoryNoticeContent = async (link) => {
@@ -122,23 +126,17 @@ const scrapeSecondCategoryNoticeContent = async (link) => {
     console.log(`Views extracted: ${views}`);
 
     const contentElement = $('#post_view_txt');
-
-    contentElement.find('*').each((index, element) => {
-      $(element).css('font-family', 'noto sans');
-    });
-
     cleanContent($, contentElement);
-    const content = contentElement.html() ? contentElement.html().trim().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ') : '내용 없음';
-    console.log(`Content extracted: ${content}`);
 
+    const content = contentElement.html() ? contentElement.html().trim().replace(/[\n\r\t\u0020\u00a0\u3000]/g, ' ') : '내용 없음';
     const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, '').trim();
+    console.log(`Content extracted: ${content}`);
     console.log(`Extracted Text: ${extractedText}`);
-    
 
     const files = [];
     $('a[href*="/file/fileDownLoad.do"]').each((index, element) => {
-      const url = 'https://m.kku.ac.kr' + $(element).attr('href');
-      files.push(url);
+      const fileUrl = new URL($(element).attr('href'), link).href;
+      files.push(fileUrl);
     });
     console.log(`Files extracted: ${files}`);
 
@@ -151,7 +149,7 @@ const scrapeSecondCategoryNoticeContent = async (link) => {
       views: 'Error',
       content: 'Error',
       files: [],
-      extractedText: 'Error'
+      extractedText: 'Error',
     };
   }
 };
@@ -170,23 +168,17 @@ const scrapeFirstCategoryNoticeContent = async (link) => {
     console.log(`Views extracted: ${views}`);
 
     const contentElement = $('#board_contents');
-
-    contentElement.find('*').each((index, element) => {
-      $(element).css('font-family', 'noto sans');
-    });
-
     cleanContent($, contentElement);
-    const content = contentElement.html() ? contentElement.html().trim() : '내용 없음';
-    console.log(`Content extracted: ${content}`);
 
+    const content = contentElement.html() ? contentElement.html().trim() : '내용 없음';
     const extractedText = contentElement.text().replace(/[\n\r\t\u0020\u00a0\u3000]/g, '').trim();
+    console.log(`Content extracted: ${content}`);
     console.log(`Extracted Text: ${extractedText}`);
-    
 
     const files = [];
     $('a[href*="/common/downLoad.do"]').each((index, element) => {
-      const url = 'https://m.kku.ac.kr' + $(element).attr('href');
-      files.push(url);
+      const fileUrl = new URL($(element).attr('href'), 'https://m.kku.ac.kr').href;
+      files.push(fileUrl);
     });
     console.log(`Files extracted: ${files}`);
 
@@ -198,10 +190,11 @@ const scrapeFirstCategoryNoticeContent = async (link) => {
       date: 'Error',
       views: 'Error',
       content: 'Error',
-      files: [], 
-      extractedText: 'Error'
+      files: [],
+      extractedText: 'Error',
     };
   }
 };
 
 scrapeAndSaveNotices();
+
