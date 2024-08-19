@@ -13,6 +13,7 @@ import Keyword from './src/Keyword';
 import Keywordhelp from './src/Keywordhelp';
 import Department from './src/Department';
 import Departmenthelp from './src/Departmenthelp';
+import Help from './src/Help';
 import Feedback from './src/Feedback';
 import Test from './src/Test';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -62,7 +63,7 @@ function App() {
   return (
     <GlobalProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
           <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
           <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
@@ -73,6 +74,7 @@ function App() {
           <Stack.Screen name="Keywordhelp" component={Keywordhelp} options={{ headerShown: false }} />
           <Stack.Screen name="Department" component={Department} options={{ headerShown: false }} />
           <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
+          <Stack.Screen name="Help" component={Help} options={{ headerShown: false }} />
           <Stack.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
           <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
         </Stack.Navigator>

@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, Button, Image } from 'react-native';
 
-
 function ProfilePage() {
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
   const [isPasswordPromptVisible, setPasswordPromptVisible] = useState(false);
@@ -169,8 +168,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     alignItems: 'center',
-    marginTop: 40,
-    padding: 20,
+    marginTop: 80,
   },
   profileCard: {
     flexDirection: 'row',
@@ -181,7 +179,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
+    width: '80%',
     height: 110,
   },
   imageContainer: {
@@ -205,23 +203,22 @@ const styles = StyleSheet.create({
   },
   infoContainer: { // 프로필 카드와 이름 사이 공백
     marginTop: 0,
-    padding: 20,
+    padding: 40,
   },
   separator: {
     height: 1,
-    backgroundColor: '#DDDDDD',
+    backgroundColor: '#ababab',
     marginVertical: 5,
-    marginHorizontal: 10, // 양쪽 마진
+    marginHorizontal: 40, // 양쪽 마진
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal:15,
-    paddingVertical:15,
-    width: '100%',
+    marginBottom: 30,
+    width: '75%',
     marginHorizontal: 'auto',
-    height: 60,
+    height: 20,
   },
   infoLabel: {
     fontSize: 20,
@@ -233,7 +230,7 @@ const styles = StyleSheet.create({
   },
   infoText1: {
     fontSize: 20,
-    color: '#DDDDDD',
+    color: '#8a8a8a',
     width: '65%',
     textAlign: 'left',
     textAlignVertical: 'center',
@@ -241,7 +238,7 @@ const styles = StyleSheet.create({
   },
   infoText2: {
     fontSize: 20,
-    color: '#DDDDDD',
+    color: '#8a8a8a',
     width: '65%',
     textAlign: 'left',
     textAlignVertical: 'center',

@@ -9,7 +9,8 @@ function Login({ navigation }) {
     password: '',
   });
 
-  const { darkMode, isPersistentLogin, updatePersistentLogin } = useContext(GlobalContext);
+  const [isPersistentLogin, setIsPersistentLogin] = useState(false);
+  const { darkMode } = useContext(GlobalContext);
 
   const handleLogin = async () => {
     console.log('Login button pressed');
@@ -90,7 +91,7 @@ function Login({ navigation }) {
               <View style={styles.checkboxContainer}>
                 <Switch
                   value={isPersistentLogin}
-                  onValueChange={updatePersistentLogin}
+                  onValueChange={setIsPersistentLogin}
                   style={styles.checkbox}
                 />
                 <Text style={styles.checkboxLabel}>자동 로그인 유지</Text>
