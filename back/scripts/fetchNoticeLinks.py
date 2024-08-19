@@ -9,7 +9,6 @@ client = pymongo.MongoClient('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluste
 db = client['nanolabmeta']
 notice_links_collection = db['noticelinks']
 
-
 headers = {
     'User-Agent': 'Mozilla/5.0 (compatible; Yeti/1.0; +http://naver.me/bot)'
 }
@@ -18,14 +17,17 @@ def fetch_page(url):
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
+        print(f"Successfully fetched page: {url}")
         return BeautifulSoup(response.text, 'html.parser')
     except requests.RequestException as e:
         print(f"Error fetching the page at {url}: {e}")
         return None
 
 def extract_notice_links(url, category):
+    print(f"Extracting notice links for category: {category} from URL: {url}")
     soup = fetch_page(url)
     if soup is None:
+        print(f"Failed to fetch page for category: {category}")
         return []
 
     notice_links = []
@@ -35,16 +37,23 @@ def extract_notice_links(url, category):
         for element in soup.select('td.b_num .box_notice'):
             tr_element = element.find_parent('tr')
             link_element = tr_element.select_one('td.ta_left.b_title a')
-            href = link_element.get('href')
+            href = link_element.get('href') if link_element else None
             if href:
                 full_url = 'https://m.kku.ac.kr/user/' + href
                 title = link_element.get_text(strip=True) or '제목 없음'
                 date_element = tr_element.select_one('td.b_date')
                 date = date_element.get_text(strip=True) if date_element else '날짜 없음'
-                views_element = tr_element.select_one('td.b_count')
-                views = views_element.get_text(strip=True) if views_element else '0'
+                #views_element = tr_element.select_one('td.b_count')
+                #views = views_element.get_text(strip=True) if views_element else '0'
 
-                notice_links.append({'title': title, 'date': date, 'link': full_url, 'views': views, 'type': 'important'})
+                notice_links.append({
+                    'title': title,
+                    'date': date,
+                    'link': full_url,
+                    #'views': views,
+                    'type': 'important',
+                    'category': category
+                })
 
         # 일반 공지사항 추출
         for element in soup.select('td.ta_left.b_title a'):
@@ -59,54 +68,104 @@ def extract_notice_links(url, category):
                 date = date_element.get_text(strip=True) if date_element else '날짜 없음'
                 
                 # 조회수 추출
-                views_element = tr_element.select_one('td.b_etc:nth-child(2)')
-                views = views_element.get_text(strip=True) if views_element else '0'
+                #views_element = tr_element.select_one('td.b_etc:nth-child(2)')
+                #views = views_element.get_text(strip=True) if views_element else '0'
                 
-                notice_links.append({'title': title, 'date': date, 'link': full_url, 'views': views, 'type': 'general'})
+                notice_links.append({
+                    'title': title,
+                    'date': date,
+                    'link': full_url,
+                    #'views': views,
+                    'type': 'general',
+                    'category': category
+                })
 
     if category == '의예과':
-        # 의예과 공지사항 추출
+        # 중요한 공지사항 추출
         for element in soup.select('tr.board-notice'):
-            seq = element.select_one('a[data-itsp-view-link]').get('data-itsp-view-link')
-            if seq:
-                title = element.select_one('strong').get_text(strip=True) or '제목 없음'
+            link_element = element.select_one('a[data-itsp-view-link]')
+            if link_element:
+                seq = link_element.get('data-itsp-view-link')
+                # strong 태그 안의 텍스트 추출
+                title = link_element.select_one('strong').get_text(strip=True) or '제목 없음'
                 
-                # 날짜 추출 부분 수정
-                date_element = element.select_one('span i.fa-clock-o')
+                # 날짜 및 조회수 추출
+                date_element = element.find_next_sibling('tr', class_='td-mobile').select_one('i.fa-clock-o')
                 date = date_element.find_parent().get_text(strip=True) if date_element else '날짜 없음'
                 
-                # 조회수 추출 부분 수정
-                views_element = element.select_one('span i.fa-eye')
-                views = views_element.find_parent().get_text(strip=True) if views_element else '0'
+                #views_element = element.find_next_sibling('tr', class_='td-mobile').select_one('i.fa-eye')
+                #views = views_element.find_parent().get_text(strip=True) if views_element else '0'
                 
                 full_url = f"https://medicine.kku.ac.kr/PostView.do?boardSeq=26&menuSeq=72&seq={seq}"
-                notice_links.append({'title': title, 'date': date, 'link': full_url, 'views': views, 'type': 'general'})
+                notice_links.append({
+                    'title': title,
+                    'date': date,
+                    'link': full_url,
+                    #'views': views,
+                    'type': 'important',
+                    'category': category
+                })
+
+        # 일반 공지사항 추출
+        for element in soup.select('tr.hidden-xs'):
+            link_element = element.select_one('a[data-itsp-view-link]')
+            if link_element:
+                seq = link_element.get('data-itsp-view-link')
+                title = link_element.get_text(strip=True) or '제목 없음'
+                
+                # 날짜 및 조회수 추출
+                date = element.select_one('td.td-date').get_text(strip=True) or '날짜 없음'
+                #views = element.select_one('td.td-num').get_text(strip=True) or '0'
+                
+                full_url = f"https://medicine.kku.ac.kr/PostView.do?boardSeq=26&menuSeq=72&seq={seq}"
+                notice_links.append({
+                    'title': title,
+                    'date': date,
+                    'link': full_url,
+                    #'views': views,
+                    'type': 'general',
+                    'category': category
+                })
+
+
+    
     else:
         # 학과 홈페이지의 중요 및 일반 공지사항 추출
         for element in soup.select('tr.note_box, #dispList tr'):
-            seq = element.select_one('.subject_click').get('data-itsp-view-link')
-            site_id_match = re.search(r'siteId=([^&]*)', url)
-            board_seq_match = re.search(r'boardSeq=([^&]*)', url)
-            menu_seq_match = re.search(r'menuSeq=([^&]*)', url)
+            link_element = element.select_one('.subject_click')
+            if link_element:
+                seq = link_element.get('data-itsp-view-link')
+                site_id_match = re.search(r'siteId=([^&]*)', url)
+                board_seq_match = re.search(r'boardSeq=([^&]*)', url)
+                menu_seq_match = re.search(r'menuSeq=([^&]*)', url)
 
-            if seq and site_id_match and board_seq_match and menu_seq_match:
-                site_id = site_id_match.group(1)
-                board_seq = board_seq_match.group(1)
-                menu_seq = menu_seq_match.group(1)
-                full_url = f"{url.split('/noticeList.do')[0]}/noticeView.do?siteId={site_id}&boardSeq={board_seq}&menuSeq={menu_seq}&seq={seq}"
-                title = element.select_one('.subject_click').get_text(strip=True) or '제목 없음'
-                date = element.select_one('td:nth-child(4)').get_text(strip=True) or '날짜 없음'
-                views = element.select_one('td:nth-child(5)').get_text(strip=True) or '0'
-                notice_links.append({'title': title, 'date': date, 'link': full_url, 'views': views, 'type': 'important'})
+                if seq and site_id_match and board_seq_match and menu_seq_match:
+                    site_id = site_id_match.group(1)
+                    board_seq = board_seq_match.group(1)
+                    menu_seq = menu_seq_match.group(1)
+                    full_url = f"{url.split('/noticeList.do')[0]}/noticeView.do?siteId={site_id}&boardSeq={board_seq}&menuSeq={menu_seq}&seq={seq}"
+                    title = link_element.get_text(strip=True) or '제목 없음'
+                    date = element.select_one('td:nth-child(4)').get_text(strip=True) or '날짜 없음'
+                    #views = element.select_one('td:nth-child(5)').get_text(strip=True) or '0'
+                    notice_links.append({
+                        'title': title,
+                        'date': date,
+                        'link': full_url,
+                        #'views': views,
+                        'type': 'important',
+                        'category': category
+                    })
 
     return notice_links
 
 def scrape_notice_links():
     # 카테고리 배열은 여기에 추가
     categories = [
-  { 'name': '신문방송학과', 'urls': ['https://masscom.kku.ac.kr/noticeList.do?siteId=MASSCOM&boardSeq=19&menuSeq=154&curPage=30&page=1'] },
+          { 'name': '학사공지', 'urls': ['https://m.kku.ac.kr/user/boardList.do?boardId=1489&siteId=wwwkr&page=1&id=wwwkr_070102000000'] },
+{ 'name': '의예과', 'urls': ['https://medicine.kku.ac.kr/PostList.do?boardSeq=26&categorySeq=&menuSeq=72&searchBy=all&searchValue=&curPage=30&page=1'] },
+{ 'name': '신문방송학과', 'urls': ['https://masscom.kku.ac.kr/noticeList.do?siteId=MASSCOM&boardSeq=19&menuSeq=154&curPage=30&page=1'] },
   { 'name': '동화.한국어문화학과', 'urls': ['https://dongwha.kku.ac.kr/noticeList.do?siteId=DONGWHA&boardSeq=215&menuSeq=4579&curPage=30&page=1'] },
-  { 'name': '학사공지', 'urls': ['https://m.kku.ac.kr/user/boardList.do?boardId=1489&siteId=wwwkr&page=1&id=wwwkr_070102000000'] },
+  
   { 'name': '장학공지', 'urls': ['https://m.kku.ac.kr/user/boardList.do?boardId=1497&siteId=wwwkr&page=1&id=wwwkr_070103000000'] },
   { 'name': '취업/창업공지', 'urls': ['https://m.kku.ac.kr/user/boardList.do?boardId=1516&siteId=wwwkr&page=1&id=wwwkr_070105000000'] },
   { 'name': '국제/교류공지', 'urls': ['https://m.kku.ac.kr/user/boardList.do?boardId=35358&siteId=wwwkr&page=1&id=wwwkr_070109000000'] },
@@ -137,7 +196,7 @@ def scrape_notice_links():
   { 'name': '식품영양학과', 'urls': ['https://foodbio.kku.ac.kr/noticeList.do?siteId=FOODBIO&boardSeq=359&menuSeq=8210&curPage=30&page=1'] },
   { 'name': '스포츠건강학과', 'urls': ['https://sports.kku.ac.kr/noticeList.do?siteId=SPORTS&boardSeq=375&menuSeq=2657&curPage=30&page=1'] },
   { 'name': '골프산업학과', 'urls': ['https://golf.kku.ac.kr/noticeList.do?siteId=GOLF&boardSeq=451&menuSeq=2978&curPage=30&page=1'] },
-  { 'name': '의예과', 'urls': ['https://medicine.kku.ac.kr/PostList.do?boardSeq=26&categorySeq=&menuSeq=72&searchBy=all&searchValue=&curPage=30&page=1'] },
+
   { 'name': '혁신공유대학', 'urls': ['https://healingbio.kku.ac.kr/noticeList.do?siteId=HEALINGBIO&boardSeq=1219&menuSeq=8964&curPage=30&page=1'] }
 ]
     
@@ -157,3 +216,26 @@ def scrape_notice_links():
                         print(f"Error saving notice {notice['title']}: {e}")
 
 scrape_notice_links()
+def fetch_page(url):
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        print(f"Successfully fetched page: {url}")
+        return BeautifulSoup(response.text, 'html.parser')
+    except requests.RequestException as e:
+        print(f"Error fetching the page at {url}: {e}")
+        return None
+
+def extract_notice_links(url, category):
+    print(f"Extracting notice links for category: {category} from URL: {url}")
+    soup = fetch_page(url)
+    if soup is None:
+        print(f"Failed to fetch page for category: {category}")
+        return []
+
+    # 추가된 로그 메시지로 HTML 내용을 일부 출력하여 디버깅
+    print(soup.prettify()[:1000])  # 처음 1000자를 출력하여 페이지 구조 확인
+
+    notice_links = []
+    ...
+    return notice_links
