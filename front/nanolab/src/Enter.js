@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { GlobalContext } from './GlobalContext';
 
 function Enter({ navigation }) {
   const [email, setEmail] = useState('');
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
   },
   emailbutton:{
     width:70,
-    height:35,
+    height:30,
     backgroundColor: '#9DC284',
     borderRadius: 10,
     shadowColor: '#000',
@@ -170,6 +171,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     alignItems: 'center',
     justifyContent:'center',
+    top:5,
   },
   emailbuttonText:{
     fontSize:15,

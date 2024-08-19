@@ -6,13 +6,15 @@ import { GlobalContext } from './GlobalContext';
 const { width } = Dimensions.get('window');
 
 const Header = ({ onMenuPress }) => {
+  const navigation = useNavigation();
+  
   return (
     <View style={styles.header}>
       <View>  
         <Text style={styles.headerTitle}>공지사항</Text>
       </View>
       <View style={styles.headerIcons}>
-        <TouchableOpacity onPress={() => alert('Details')}>
+        <TouchableOpacity onPress={() => { navigation.navigate('Search'); }}>
           <Image source={require('../assets/image/light/search.png')} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={() => alert('Details')}>
@@ -189,7 +191,7 @@ const PopularNotices = () => {
   );
 };
 
-const MenuBar = ({ onClose, navigation }) => {
+const MenuBar = ({ navigation }) => {
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
@@ -213,7 +215,7 @@ const MenuBar = ({ onClose, navigation }) => {
             <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/light/back.png')} style={styles.iconButton} />
+            <Image source={require('../assets/image/light/back2.png')} style={styles.iconButton} />
           </TouchableOpacity>
         </View>
       </View>
@@ -235,14 +237,14 @@ const MenuBar = ({ onClose, navigation }) => {
 const Main = ({ route }) => {
   const navigation = useNavigation();
   const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
-const { darkMode } = useContext(GlobalContext);
+  const { darkMode } = useContext(GlobalContext);
+  
 
-const dynamicStyles = {
+  const dynamicStyles = {
     container: {
       backgroundColor: darkMode ? 'grey' : '#FFFFFF',
     },
   };
-
   const handleMenuPress = () => {
     setIsMenuVisible(true);
   };
