@@ -12,4 +12,7 @@ const NoticeSchema = new Schema({
   extractedText: { type: String, required: false }
 });
 
-module.exports = NoticeSchema;
+// Notice 모델 생성
+const Notice = mongoose.model('notice', NoticeSchema);
+
+module.exports = Notice;

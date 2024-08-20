@@ -1,51 +1,86 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, Modal, Button, Image, ImageBackground, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, useContext } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, Button, Image, ImageBackground } from 'react-native';
-import { GlobalContext } from './GlobalContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import GlobalContext from '../context/GlobalContext'; // Assuming you have a GlobalContext for darkMode and selectedDepartment
 
 function ProfilePage() {
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [isPasswordChanged, setPasswordChanged] = useState(false);
+  const [email, setEmail] = useState(''); // 이메일 상태 추가
   const { darkMode } = useContext(GlobalContext);
   const { selectedDepartment } = useContext(GlobalContext);
   const navigation = useNavigation();
   const { user } = useContext(GlobalContext);
 
-  const handlePasswordChange = () => {
-    Alert.alert(
-      "비밀번호 변경",
-      "비밀번호가 변경되었습니다",
-      [{ text: "확인" }]
-    );
-    setPasswordChanged(true);
-    setPasswordModalVisible(false);
+  useEffect(() => {
+    const loadUserEmail = async () => {
+      const storedEmail = await AsyncStorage.getItem('userEmail');
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    };
+
+    loadUserEmail();
+  }, []);
+
+  const handlePasswordChange = async () => {
+    const token = await AsyncStorage.getItem('token'); // JWT 토큰 가져오기
+
+    try {
+      const response = await fetch('https://your-server-url.com/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // 토큰을 헤더에 포함
+        },
+        body: JSON.stringify({
+          email: email,
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("비밀번호 변경", "비밀번호가 변경되었습니다", [{ text: "확인" }]);
+        setPasswordChanged(true);
+        setPasswordModalVisible(false);
+      } else {
+        Alert.alert("오류", data.message || '비밀번호 변경 실패', [{ text: "확인" }]);
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+      Alert.alert('오류', '비밀번호 변경 중 오류가 발생했습니다.', [{ text: "확인" }]);
+    }
   };
 
-  const dynamicStyles ={
+  const dynamicStyles = {
     profileDepartment: {
       fontSize: 20,
       fontWeight: 'bold',
-      color:darkMode?'#ffffff':'#000000',
+      color: darkMode ? '#ffffff' : '#000000',
     },
     bar: {
-      backgroundColor: darkMode ? '#597248':'#9DC284',
-      width:'100%',
+      backgroundColor: darkMode ? '#597248' : '#9DC284',
+      width: '100%',
       height: 50,
-      position:'absolute',
+      position: 'absolute',
     },
     headerTitle: {
       fontSize: 18,
       fontWeight: 'bold',
       textAlign: 'center',
-      color:darkMode?'#ffffff':'#000000',
+      color: darkMode ? '#ffffff' : '#000000',
     },
     profileCard: {
       flexDirection: 'row',
       borderRadius: 40,
       borderWidth: 2,
-      borderColor:darkMode?'#ffffff':'#000000',
+      borderColor: darkMode ? '#ffffff' : '#000000',
       alignItems: 'center',
       justifyContent: 'left',
       width: '90%',
@@ -53,7 +88,7 @@ function ProfilePage() {
     },
     profileEmail: {
       fontSize: 16,
-      color:darkMode?'#9DC284':'#0E664F',
+      color: darkMode ? '#9DC284' : '#0E664F',
     },
     infoLabel: {
       fontSize: 20,
@@ -62,7 +97,7 @@ function ProfilePage() {
       textAlign: 'left',
       textAlignVertical: 'center',
       alignSelf: 'center',
-      color:darkMode?'#ffffff':'#000000',
+      color: darkMode ? '#ffffff' : '#000000',
     },
     modalContent: {
       width: '80%',
@@ -83,7 +118,7 @@ function ProfilePage() {
   return (
     <ImageBackground source={background} style={styles.backgroundImage}>
       <SafeAreaView style={styles.container}>
-        <View style={[styles.bar,dynamicStyles.bar]}></View>
+        <View style={[styles.bar, dynamicStyles.bar]}></View>
       
         <View style={styles.header}>
           <View style={styles.backContainer}>
@@ -91,45 +126,32 @@ function ProfilePage() {
               <Image source={back} style={{ width: 25, height: 25 }} />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.headerTitle,dynamicStyles.headerTitle]}>내 정보 수정</Text>
-        </View>
-
-        <View style={styles.profileContainer}>
-          <View style={[styles.profileCard,dynamicStyles.profileCard]}>
-            <View style={styles.imageContainer}>
-              <Image source={require('../assets/image/light/profile.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
-            </View>
-            <View style={styles.textContainer}>
-              <Text 
-                style={[styles.profileDepartment, dynamicStyles.profileDepartment,
-                  { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' },
-                  selectedDepartment && dynamicStyles.profileDepartment // selectedDepartment가 true일 때 dynamicStyles.menuText를 추가
-                ]}  >
-                {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
-              </Text>
-              <Text style={[styles.profileEmail,dynamicStyles.profileEmail]}>konkukuniv@kku.ac.kr</Text>
-            </View>
-          </View>
+          <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>내 정보 수정</Text>
         </View>
 
         <View style={styles.infoContainer}>
-          <TouchableOpacity onPress={() => setPasswordModalVisible(true)} style={styles.infoRow}>
-            <Text style={[styles.infoLabel,dynamicStyles.infoLabel]}>비밀번호 변경</Text>
-            <Image source={require('../assets/image/light/password.png')} style={{ width: 30, height: 30 }} />
+          <Text style={styles.infoLabel}>이름</Text>
+          <Text style={styles.infoText}>user</Text>
+
+          <Text style={styles.infoLabel}>이메일</Text>
+          <Text style={styles.infoText}>{email}</Text> {/* 이메일을 상태에서 가져와 표시 */}
+
+          <TouchableOpacity onPress={() => setPasswordModalVisible(true)} style={styles.infoButton}>
+            <Text style={styles.infoButtonText}>비밀번호 변경</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.infoRow} onPress={() => { navigation.navigate('Department'); }}>
-            <Text style={[styles.infoLabel,dynamicStyles.infoLabel]}>학과 등록</Text>
-            <Image source={require('../assets/image/light/subject.png')} style={{ width: 30, height: 30 }} />
+
+          <TouchableOpacity style={styles.infoButton}>
+            <Text style={styles.infoButtonText}>이메일 인증</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.infoRow1} onPress={() => { navigation.navigate('Department'); }}>
-            <Text style={[styles.infoLabel,dynamicStyles.infoLabel]}>탈퇴</Text>
-            <Image source={require('../assets/image/light/exit.png')} style={{ width: 30, height: 30 }} />
+
+          <TouchableOpacity style={styles.infoButton} onPress={() => { navigation.navigate('Department'); }}>
+            <Text style={styles.infoButtonText}>학과 등록</Text>
           </TouchableOpacity>
         </View>
 
         <Modal visible={isPasswordModalVisible} transparent={true} animationType="slide">
           <View style={styles.modalContainer}>
-            <View style={[styles.modalContent,dynamicStyles.modalContent]}>
+            <View style={[styles.modalContent, dynamicStyles.modalContent]}>
               <TextInput
                 placeholder="기존 비밀번호"
                 secureTextEntry
@@ -148,7 +170,7 @@ function ProfilePage() {
               />
               <View style={styles.buttonContainer}>
                 <View style={styles.button}>
-                  <Button title="확인" color={darkMode ? '#9DC284':'#0E664F'} onPress={handlePasswordChange} />
+                  <Button title="확인" color={darkMode ? '#9DC284' : '#0E664F'} onPress={handlePasswordChange} />
                 </View>
                 <View style={styles.button}>
                   <Button title="취소" color={darkMode ? 'white' : 'black'} onPress={() => setPasswordModalVisible(false)} />
@@ -162,7 +184,6 @@ function ProfilePage() {
   );
 }
 
-
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
@@ -171,10 +192,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bar: {
-    backgroundColor:'#9DC284',
-    width:'100%',
+    backgroundColor: '#9DC284',
+    width: '100%',
     height: 50,
-    position:'absolute',
+    position: 'absolute',
   },
   header: {
     height: 50,
@@ -216,43 +237,43 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000',
-    marginBottom:5,
+    marginBottom: 5,
   },
   profileEmail: {
     fontSize: 16,
     color: '#0E664F',
   },
-  infoContainer: { // 프로필 카드와 이름 사이 공백
+  infoContainer: {
     marginTop: 50,
   },
   separator: {
     height: 1,
     backgroundColor: '#ababab',
     marginVertical: 5,
-    marginHorizontal: 40, // 양쪽 마진
+    marginHorizontal: 40,
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    alignSelf:'center',
+    alignSelf: 'center',
     width: '80%',
-    borderTopWidth:2,
-    borderColor:'#E5E3E3',
+    borderTopWidth: 2,
+    borderColor: '#E5E3E3',
     height: 70,
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
   },
   infoRow1: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    alignSelf:'center',
+    alignSelf: 'center',
     width: '80%',
-    borderTopWidth:2,
-    borderBottomWidth:2,
-    borderColor:'#E5E3E3',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: '#E5E3E3',
     height: 70,
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
   },
   infoLabel: {
     fontSize: 20,
@@ -274,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
-    marginBottom: 24,  // 여백 추가
+    marginBottom: 24,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -318,14 +339,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',    
     justifyContent: 'space-between', 
-    paddingHorizontal:10,
-    marginTop:10,
+    paddingHorizontal: 10,
+    marginTop: 10,
   },
   button: {
-    borderWidth:1,
-    borderColor:'#C4C4C4',
-    borderRadius:8,
-    width:'45%',
+    borderWidth: 1,
+    borderColor: '#C4C4C4',
+    borderRadius: 8,
+    width: '45%',
   },
 });
 
