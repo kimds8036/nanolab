@@ -1,17 +1,35 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// GlobalContext 생성
 const GlobalContext = createContext();
 
-// Provider 컴포넌트 정의
 const GlobalProvider = ({ children }) => {
   const [isDepartmentRegistered, setIsDepartmentRegistered] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [isPersistentLogin, setIsPersistentLogin] = useState(false);
+  const [user, setUser] = useState(null); // user 상태 추가
 
-  // 유저 정보를 저장하는 상태 추가
-  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const persistentLogin = await AsyncStorage.getItem('isPersistentLogin');
+        if (persistentLogin !== null) {
+          setIsPersistentLogin(JSON.parse(persistentLogin));
+        }
+
+        const storedUser = await AsyncStorage.getItem('user'); // 저장된 유저 정보 불러오기
+        if (storedUser) {
+          setUser(JSON.parse(storedUser)); // user 상태 업데이트
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    };
+
+    loadSettings();
+  }, []);
 
   return (
     <GlobalContext.Provider value={{ 
@@ -23,8 +41,9 @@ const GlobalProvider = ({ children }) => {
       setSelectedDepartment,
       darkMode, 
       setDarkMode,
-      user, // 유저 정보 상태
-      setUser, // 유저 정보 상태를 업데이트하는 함수
+      isPersistentLogin,
+      user, // user 상태 제공
+      setUser, // setUser 함수 제공
     }}>
       {children}
     </GlobalContext.Provider>

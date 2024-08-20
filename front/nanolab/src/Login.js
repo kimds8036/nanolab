@@ -10,8 +10,7 @@ function Login({ navigation }) {
   });
 
   const [isPersistentLogin, setIsPersistentLogin] = useState(false);
-  const { darkMode } = useContext(GlobalContext);
-  const { user } = useContext(GlobalContext);
+  const { darkMode, setUser } = useContext(GlobalContext); // GlobalContext에서 setUser 가져오기
 
   const handleLogin = async () => {
     console.log('Login button pressed');
@@ -26,13 +25,19 @@ function Login({ navigation }) {
 
       if (response.ok) {
         console.log('Login successful:', data.token);
-        
+
         if (isPersistentLogin) {
           await AsyncStorage.setItem('token', data.token);
-        } else {
-          // You may want to handle temporary session storage here
         }
 
+        // 로그인 성공 시 유저 정보 설정
+        setUser({
+          email: form.email,
+          token: data.token,
+          // 필요한 경우 다른 유저 정보도 추가 가능
+        });
+
+        // 메인 화면으로 이동
         navigation.navigate('Main');
       } else {
         console.error('Login failed:', data.message);
@@ -103,89 +108,121 @@ function Login({ navigation }) {
       textAlign: 'center',
       letterSpacing: 0.15,
     },
-  };
+  
+    checkboxLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: darkMode ? '#ffffff' : 'black',
+  },
+  btn: {
+    backgroundColor: darkMode ? '#597248' : '#9DC284',
+    borderRadius: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#000',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  formFooter: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: darkMode ? '#ffffff' : 'black',
+    textAlign: 'center',
+    letterSpacing: 0.15,
+  },
+};
 
-  return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <SafeAreaView style={[styles.container,dynamicStyles.container]}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-        >
-          <View style={styles.containerlogin}>
-            <View style={styles.header}>
-              <Image
-                source={require('../assets/image/light/qqqq.png')}
-                style={styles.headerImg}
-                accessibilityLabel="Logo"
+return (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <SafeAreaView style={[styles.container, dynamicStyles.container]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
+        <View style={styles.containerlogin}>
+          <View style={styles.header}>
+            <Image
+              source={require('../assets/image/light/qqqq.png')}
+              style={styles.headerImg}
+              accessibilityLabel="Logo"
+            />
+            <Text style={[styles.titlelogin, dynamicStyles.titlelogin]}>로그인</Text>
+            <Text style={styles.subtitle}>Enter your email and password</Text>
+          </View>
+
+          <View style={styles.form}>
+            <View style={styles.inputlogin}>
+              <Text style={[styles.inputLabel, dynamicStyles.inputLabel]}>이메일</Text>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                style={[styles.inputControl, dynamicStyles.inputControl]}
+                placeholder="학교 이메일을 입력하세요"
+                placeholderTextColor="#6b7280"
+                value={form.email}
+                onChangeText={email => setForm({ ...form, email })}
               />
-              <Text style={[styles.titlelogin,dynamicStyles.titlelogin]}>로그인</Text>
-              <Text style={styles.subtitle}>Enter your email and password</Text>
+            </View>
+            <View style={styles.inputlogin}>
+              <Text style={[styles.inputLabel, dynamicStyles.inputLabel]}>비밀번호</Text>
+              <TextInput
+                secureTextEntry
+                style={[styles.inputControl, dynamicStyles.inputControl]}
+                placeholder="비밀번호를 입력하세요"
+                placeholderTextColor="#6b7280"
+                value={form.password}
+                onChangeText={password => setForm({ ...form, password })}
+              />
             </View>
 
-            <View style={styles.form}>
-              <View style={styles.inputlogin}>
-                <Text style={[styles.inputLabel,dynamicStyles.inputLabel]}>이메일</Text>
-                <TextInput
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  keyboardType="email-address"
-                  style={[styles.inputControl,dynamicStyles.inputControl]}
-                  placeholder="학교 이메일을 입력하세요"
-                  placeholderTextColor="#6b7280"
-                  value={form.email}
-                  onChangeText={email => setForm({ ...form, email })}
-                />
-              </View>
-              <View style={styles.inputlogin}>
-                <Text style={[styles.inputLabel,dynamicStyles.inputLabel]}>비밀번호</Text>
-                <TextInput
-                  secureTextEntry
-                  style={[styles.inputControl,dynamicStyles.inputControl]}
-                  placeholder="비밀번호를 입력하세요"
-                  placeholderTextColor="#6b7280"
-                  value={form.password}
-                  onChangeText={password => setForm({ ...form, password })}
-                />
-              </View>
+            <View style={styles.checkboxContainer}>
+              <Switch
+                value={isPersistentLogin}
+                onValueChange={setIsPersistentLogin}
+                style={styles.checkbox}
+              />
+              <Text style={[styles.checkboxLabel, dynamicStyles.checkboxLabel]}>자동 로그인 유지</Text>
+            </View>
 
-              <View style={styles.checkboxContainer}>
-                <Switch
-                  value={isPersistentLogin}
-                  onValueChange={setIsPersistentLogin}
-                  style={styles.checkbox}
-                />
-                <Text style={[styles.checkboxLabel,dynamicStyles.checkboxLabel]}>자동 로그인 유지</Text>
-              </View>
+            <View style={styles.formAction}>
+              <TouchableOpacity onPress={handleLogin}>
+                <View style={[styles.btn, dynamicStyles.btn]}>
+                  <Text style={styles.btnText}>로그인</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
-              <View style={styles.formAction}>
-                <TouchableOpacity onPress={handleLogin}>
-                  <View style={[styles.btn,dynamicStyles.btn]}>
-                    <Text style={styles.btnText}>로그인</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-
-              <View style={{ alignItems: 'center', marginBottom: 24 }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('Enter');
-                  }}
-                >
-                  <Text style={[styles.formFooter,dynamicStyles.formFooter]}>
-                    계정이 없으신가요?{' '}
-                    <Text style={styles.signupText}>회원가입</Text>
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            <View style={{ alignItems: 'center', marginBottom: 24 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Enter');
+                }}
+              >
+                <Text style={[styles.formFooter, dynamicStyles.formFooter]}>
+                  계정이 없으신가요?{' '}
+                  <Text style={styles.signupText}>회원가입</Text>
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
-  );
-}
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  </TouchableWithoutFeedback>
+);
+};
+
+
 
 const styles = StyleSheet.create({
   container:{
