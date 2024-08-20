@@ -11,6 +11,7 @@ function ProfilePage() {
   const { darkMode } = useContext(GlobalContext);
   const { selectedDepartment } = useContext(GlobalContext);
   const navigation = useNavigation();
+  const { user } = useContext(GlobalContext);
 
   const handlePasswordChange = () => {
     Alert.alert(

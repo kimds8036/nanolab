@@ -11,6 +11,7 @@ const Noticelist = ({ route }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const navigation = useNavigation();
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   useEffect(() => {
     console.log('isDepartmentRegistered:', isDepartmentRegistered);

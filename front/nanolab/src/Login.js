@@ -11,6 +11,7 @@ function Login({ navigation }) {
 
   const [isPersistentLogin, setIsPersistentLogin] = useState(false);
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   const handleLogin = async () => {
     console.log('Login button pressed');

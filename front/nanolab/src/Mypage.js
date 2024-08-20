@@ -8,6 +8,7 @@ const MyPage = () => {
   const [userData, setUserData] = useState({ email: '' });
   
   const { darkMode, setDarkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   const { selectedDepartment } = useContext(GlobalContext); // GlobalContext에서 selectedDepartment 값을 가져옴
 

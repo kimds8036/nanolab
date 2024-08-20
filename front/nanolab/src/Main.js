@@ -8,6 +8,7 @@ const { width } = Dimensions.get('window');
 const Header = ({ onMenuPress }) => {
   const { darkMode } = useContext(GlobalContext);
   const navigation = useNavigation();
+  const { user } = useContext(GlobalContext);
   
   const dynamicStyles = {
     header: {
@@ -62,6 +63,7 @@ const Header = ({ onMenuPress }) => {
 const RecentNotices = () => {
   const category = '학사공지';
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
   
   const dynamicStyles = {
     Container1: {
@@ -164,6 +166,7 @@ const RecentNotices = () => {
 const PopularNotices = () => {
   const daysLeft = 1; // 디데이까지 남은 일수 (예시로 10일 설정)
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   // 날짜에 따른 색상 결정 함수
   const getDateStyle = () => {
@@ -327,6 +330,7 @@ const PopularNotices = () => {
 const MenuBar = ({ onClose, navigation }) => {
   const slideAnim = useRef(new Animated.Value(width)).current;
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -423,6 +427,7 @@ const Main = ({ route }) => {
   const navigation = useNavigation(); // 네비게이션 훅 호출
   const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   const dynamicStyles = {
     container: {

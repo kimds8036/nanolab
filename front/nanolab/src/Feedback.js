@@ -6,6 +6,7 @@ import { GlobalContext } from './GlobalContext';
 const Feedback = () => {
     const navigation = useNavigation();
     const { darkMode } = useContext(GlobalContext);
+    const { user } = useContext(GlobalContext);
 
     const dynamicStyles={
       container:{

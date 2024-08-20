@@ -8,6 +8,7 @@ function Enter({ navigation }) {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
   
   const handleEmailChange = (text) => {
     setEmail(text);
