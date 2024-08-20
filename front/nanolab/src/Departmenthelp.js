@@ -54,7 +54,7 @@ export default function HelpScreen() {
   
   const help1 = darkMode 
     ? require('../assets/image/dark/help1.png')
-    : require('../assets/image/light/help2.png');
+    : require('../assets/image/light/help1.png');
 
   const help2 = darkMode 
     ? require('../assets/image/dark/help2.png')

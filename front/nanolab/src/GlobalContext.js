@@ -7,7 +7,7 @@ const GlobalProvider = ({ children }) => {
   const [isDepartmentRegistered, setIsDepartmentRegistered] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [isPersistentLogin, setIsPersistentLogin] = useState(false);
 
   useEffect(() => {
