@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, Modal, Button, Image, ImageBackground, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import GlobalContext from '../context/GlobalContext'; // Assuming you have a GlobalContext for darkMode and selectedDepartment
+import GlobalContext from './GlobalContext'; // Assuming you have a GlobalContext for darkMode and selectedDepartment
 
 function ProfilePage() {
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
@@ -13,6 +13,7 @@ function ProfilePage() {
   const { darkMode } = useContext(GlobalContext);
   const { selectedDepartment } = useContext(GlobalContext);
   const navigation = useNavigation();
+  const { user } = useContext(GlobalContext);
 
   useEffect(() => {
     const loadUserEmail = async () => {

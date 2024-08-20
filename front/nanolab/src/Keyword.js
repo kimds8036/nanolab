@@ -11,6 +11,7 @@ function Keyword({ navigation }) {
   const [registeredKeywords, setRegisteredKeywords] = useState([]);
   const [recentKeywords, setRecentKeywords] = useState(["+", "+", "+", "+", "+", "+"]);
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchKeywords = async () => {

@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 export default function HelpScreen() {
   const { darkMode } = useContext(GlobalContext);
   const navigation = useNavigation();
+  const { user } = useContext(GlobalContext);
 
   const dynamicStyles ={
     container: {

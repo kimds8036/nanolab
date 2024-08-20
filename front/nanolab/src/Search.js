@@ -7,6 +7,7 @@ const Search = () => {
   const [hasResults, setHasResults] = useState(false);
   const [results, setResults] = useState([]);
   const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   const handleSearch = async () => {
     try {
