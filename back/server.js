@@ -1,10 +1,5 @@
-require('dotenv').config();  // 같은 폴더의 .env 파일 로드
-
-
-console.log("MONGO_URI:", process.env.MONGO_URI);  // MONGO_URI 값을 출력하여 확인
-
-
-// 나머지 코드...
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });  // .env 파일의 절대경로 설정
 
 const express = require('express');
 const bodyParser = require('body-parser');
