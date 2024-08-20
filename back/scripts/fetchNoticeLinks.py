@@ -131,7 +131,7 @@ def extract_notice_links(url, category):
     
     else:
         # 학과 홈페이지의 중요 및 일반 공지사항 추출
-        for element in soup.select('tr.note_box, #dispList tr'):
+        for element in soup.select('tr.note_box'):
             link_element = element.select_one('.subject_click')
             if link_element:
                 seq = link_element.get('data-itsp-view-link')
@@ -155,6 +155,31 @@ def extract_notice_links(url, category):
                         'type': 'important',
                         'category': category
                     })
+                    # 일반 공지사항 추출
+        for element in soup.select('#dispList tr'):
+            link_element = element.select_one('.subject_click')
+            if link_element:
+                seq = link_element.get('data-itsp-view-link')
+                site_id_match = re.search(r'siteId=([^&]*)', url)
+                board_seq_match = re.search(r'boardSeq=([^&]*)', url)
+                menu_seq_match = re.search(r'menuSeq=([^&]*)', url)
+
+                if seq and site_id_match and board_seq_match and menu_seq_match:
+                    site_id = site_id_match.group(1)
+                    board_seq = board_seq_match.group(1)
+                    menu_seq = menu_seq_match.group(1)
+                    full_url = f"{url.split('/noticeList.do')[0]}/noticeView.do?siteId={site_id}&boardSeq={board_seq}&menuSeq={menu_seq}&seq={seq}"
+                    title = link_element.get_text(strip=True) or '제목 없음'
+                    date = element.select_one('td:nth-child(4)').get_text(strip=True) or '날짜 없음'
+
+                    notice_links.append({
+                        'title': title,
+                        'date': date,
+                        'link': full_url,
+                        'type': 'general',  # 일반 공지사항
+                        'category': category
+                    })
+
 
     return notice_links
 
@@ -216,26 +241,5 @@ def scrape_notice_links():
                         print(f"Error saving notice {notice['title']}: {e}")
 
 scrape_notice_links()
-def fetch_page(url):
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        print(f"Successfully fetched page: {url}")
-        return BeautifulSoup(response.text, 'html.parser')
-    except requests.RequestException as e:
-        print(f"Error fetching the page at {url}: {e}")
-        return None
 
-def extract_notice_links(url, category):
-    print(f"Extracting notice links for category: {category} from URL: {url}")
-    soup = fetch_page(url)
-    if soup is None:
-        print(f"Failed to fetch page for category: {category}")
-        return []
 
-    # 추가된 로그 메시지로 HTML 내용을 일부 출력하여 디버깅
-    print(soup.prettify()[:1000])  # 처음 1000자를 출력하여 페이지 구조 확인
-
-    notice_links = []
-    ...
-    return notice_links
