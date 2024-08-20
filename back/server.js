@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const User = require('./models/user');
-const NoticeLink = require('./models/notice'); // NoticeLink 모델이 있다고 가정
+
 const useragent = require('express-useragent');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
