@@ -217,7 +217,8 @@ def scrape_and_save_notices():
                         all_files.append(file_url)
                     else:
                         valid_links.append(urljoin(link, href))
-
+            image_urls = []
+            pdf_url = []
             if content_element:
                 clean_content(soup, content_element)
 
@@ -226,27 +227,34 @@ def scrape_and_save_notices():
                     a_tag['href'] = urljoin(link, a_tag['href'])
                     valid_links.append(a_tag['href'])  # 본문 내 링크도 valid_links에 추가
 
-                image_urls = []
-                for img in content_element.find_all('img'):
-                    img_src = img['src'].strip()
-                    img_url = urljoin(link, img_src)
-                    image_urls.append(img_url)
-                    img['src'] = img_url
-
                 pdf_url = None
                 iframe_element = content_element.select_one('iframe')
                 if iframe_element:
+                    # PDF URL 절대 경로로 변환
                     pdf_url = urljoin(link, iframe_element['src'])
                     pdf_embed_code = f'<iframe src="{pdf_url}" width="100%" height="800px"></iframe>'
+                    # 기존 iframe 요소를 새로 만든 임베드 코드로 대체
                     content = content_element.prettify().replace(str(iframe_element), pdf_embed_code)
                 else:
                     content = content_element.prettify()
 
-                extracted_text = content_element.get_text(strip=True)
-            else:
-                content = ''
-                extracted_text = ''
+                # 본문 내 모든 링크와 이미지에 도메인 추가
+                for tag in content_element.find_all(['a', 'img', 'iframe'], src=True):
+                    tag['src'] = urljoin(link, tag['src'])
 
+                for tag in content_element.find_all('a', href=True):
+                    tag['href'] = urljoin(link, tag['href'])
+
+                # prettify를 통해 HTML 문자열로 변환
+                content = content_element.prettify()
+
+                extracted_text = content_element.get_text(strip=True)
+
+                # 결과 확인
+                print("PDF URL:", pdf_url)
+                print("Content with domain:", content)
+                print("Extracted Text:", extracted_text)
+            
             result = {
                 'title': title,
                 'date': date,

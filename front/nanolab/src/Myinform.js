@@ -1,23 +1,60 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, navigation, Modal, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, Modal, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Myinform() {
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
   const [isPasswordChanged, setPasswordChanged] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [email, setEmail] = useState(''); 
   const navigation = useNavigation();
 
+  useEffect(() => {
+    const loadUserEmail = async () => {
+      const storedEmail = await AsyncStorage.getItem('userEmail');
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    };
 
-  const handlePasswordChange = () => {
-    setPasswordModalVisible(false);
-    setPasswordChanged(true);
-    setTimeout(() => {
-      setPasswordChanged(false);
-    }, 2000);
+    loadUserEmail();
+  }, []);
+
+  const handlePasswordChange = async () => {
+    const token = await AsyncStorage.getItem('token'); // 로그인 시 저장된 JWT 토큰을 가져옴
+    try {
+      const response = await fetch('https://your-server-url.com/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // 인증을 위한 토큰 포함
+        },
+        body: JSON.stringify({
+          email: email,
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setPasswordModalVisible(false);
+        setPasswordChanged(true);
+        setTimeout(() => {
+          setPasswordChanged(false);
+        }, 2000);
+      } else {
+        alert(data.message || '비밀번호 변경 실패');
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+      alert('비밀번호 변경 중 오류가 발생했습니다.');
+    }
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -28,7 +65,7 @@ function Myinform() {
         <View style={styles.profileCard}>
           <Text style={styles.profileName}>user</Text>
           <Text style={styles.profileDepartment}>미디어 콘텐츠학과</Text>
-          <Text style={styles.profileEmail}>konkukuniv@kku.ac.kr</Text>
+          <Text style={styles.profileEmail}>{email}</Text>
         </View>
       </View>
 
@@ -37,7 +74,7 @@ function Myinform() {
         <Text style={styles.infoText}>user</Text>
 
         <Text style={styles.infoLabel}>이메일</Text>
-        <Text style={styles.infoText}>konkukuniv@kku.ac.kr</Text>
+        <Text style={styles.infoText}>{email}</Text>
 
         <TouchableOpacity onPress={() => setPasswordModalVisible(true)} style={styles.infoButton}>
           <Text style={styles.infoButtonText}>비밀번호 변경</Text>
