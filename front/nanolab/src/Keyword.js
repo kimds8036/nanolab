@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { GlobalContext } from './GlobalContext';
 import axios from 'axios';
 
 const API_URL = 'http://192.168.0.58:5000';
@@ -9,6 +10,7 @@ function Keyword({ navigation }) {
   const [keyword, setKeyword] = useState('');
   const [registeredKeywords, setRegisteredKeywords] = useState([]);
   const [recentKeywords, setRecentKeywords] = useState(["+", "+", "+", "+", "+", "+"]);
+  const { darkMode } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchKeywords = async () => {
@@ -76,12 +78,9 @@ function Keyword({ navigation }) {
           >
             <View style={styles.header}>
               <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
-                <Image source={require('../assets/image/back.png')} style={styles.backButton}/>
+                <Image source={require('../assets/image/light/back.png')} style={styles.backButton}/>
               </TouchableOpacity>
               <Text style={styles.headerTitle}>키워드 알림 설정</Text>
-              <TouchableOpacity style={styles.iconButton}>
-                <Text style={styles.iconButtonText}>?</Text>
-              </TouchableOpacity>
             </View>
 
             <TextInput
@@ -96,7 +95,7 @@ function Keyword({ navigation }) {
             {registeredKeywords.length === 0 ? (
               <View style={styles.noKeywordView}>
                 <Text style={styles.noKeywordText}>아직 등록된 키워드가 없어요</Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => { navigation.navigate('Keywordhelp'); }}>
                   <Text style={styles.howToUseText}>어떻게 사용하나요?</Text>
                 </TouchableOpacity>
               </View>
@@ -140,7 +139,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     backgroundColor: '#a5c585',
     paddingTop: 10, // 상태바 높이를 고려해 패딩 추가
     paddingHorizontal: 10,
@@ -155,6 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'black',
+    
   },
   iconButton: {
     padding: 10,

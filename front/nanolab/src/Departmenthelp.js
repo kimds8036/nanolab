@@ -1,200 +1,224 @@
-import React, { useState, useContext } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useContext } from 'react';
+import { ScrollView, View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { GlobalContext } from './GlobalContext';
+import { useNavigation } from '@react-navigation/native';
 
-const Departmenthelp = ({ navigation }) => {
-  const [selectedCollege, setSelectedCollege] = useState();
-  const [selectedDepartment, setSelectedDepartment] = useState();
-  const [showCollegePicker, setShowCollegePicker] = useState(false);
-  const [showDepartmentPicker, setShowDepartmentPicker] = useState(false);
+export default function HelpScreen() {
+  const { darkMode } = useContext(GlobalContext);
+  const navigation = useNavigation();
 
-  const colleges = {
-    design: ['산업디자인학과', '시각영상디자인학과', '실내디자인학과','패션디자인학과'],
-    business: ['경영학과', '경제통상학과','경찰학과','동화•한국어문화학과','문헌정보학과','사회복지학과','소방방재융합학과','신문방송학과','영어문화학과','유아교육과'], 
-    engineering: ['녹색기술융합학과', '메카트로닉스공학과','바이오메디컬공학과','에너지신소재공학과','컴퓨터공학과'],
-    biomedical: ['골프산업학과','바이오의약학과','뷰티화장품학과','생명공학과','식품영양학과','스포츠건강학과'],
-    medicine: ['의예과'],
+  const dynamicStyles ={
+    container: {
+      flex: 1,
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+    },
+    bar: {
+      backgroundColor: darkMode ? '#597248':'#9DC284',
+      width: '100%',
+      height: 50,
+      position: 'absolute',
+      top: 0,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: '800',
+      color:darkMode?'#ffffff':'#000000',
+    },
+    sectionTitleContainer: {
+      alignSelf: 'flex-start',
+      borderBottomWidth: 1,     // 밑줄 두께
+      borderBottomColor: darkMode?'#ffffff':'#000000',
+      paddingBottom: 3,         // 텍스트와 밑줄 간격
+      marginBottom: 10,         // 섹션과의 간격
+    },
+    photo:{
+      flexDirection:'row',
+      justifyContent:'space-between',
+      alignSelf:'center',
+      marginBottom:30,
+      borderRadius:20,
+      padding:10,
+      backgroundColor:darkMode?'#505050':'#c2c2c2',
+    },
+    text:{
+      color:darkMode?'white':'black',
+    },
+    text2:{
+      color:darkMode?'#DE3D3D':'#ff0000',
+    }
   };
+
+  const back = darkMode 
+    ? require('../assets/image/dark/back.png')
+    : require('../assets/image/light/back.png');
   
-  const collegeLabels = {
-    design: '디자인 대학',
-    business: '인문사회융합대학',
-    engineering: '과학기술대학',
-    biomedical: '의료생명대학',
-    medicine: '의과대학',
-  };
+  const help1 = darkMode 
+    ? require('../assets/image/dark/help1.png')
+    : require('../assets/image/light/help1.png');
 
-  return (
-      <ImageBackground source={require('../assets/image/background.png')} style={styles.backgroundImage}>
-        <SafeAreaView style={styles.innerContainer}>
-          <View style={styles.rectangle1}></View>
-          <View style={styles.header}>
-              <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
-                  <Image source={require('../assets/image/back.png')} style={styles.backIcon} />
-              </TouchableOpacity>
-              <View style={styles.titleContainer}>
-                  <Text style={styles.title}>학과 등록</Text>
-              </View>
-              <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
-                  <Image source={require('../assets/image/question.png')} style={styles.questionIcon} />
-              </TouchableOpacity>
-          </View>
-          <View style={styles.textContainer}>
-              <View style={styles.textLine}>
-                  <Text style={styles.text1}>현재</Text>
-                  <Text style={styles.text2}> 재학 중인 학과</Text>
-                  <Text style={styles.text1}>를</Text>
-              </View>
-              <Text style={styles.text1}>입력해 주세요</Text>
-          </View>
-          <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowCollegePicker(!showCollegePicker)}>
-              <Text style={styles.pickerText}>
-                  {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
-              </Text>
-              <Image
-                  source={showCollegePicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
-                  style={styles.icon}
-              />
+  const help2 = darkMode 
+    ? require('../assets/image/dark/help2.png')
+    : require('../assets/image/light/help2.png');
+
+  const help3 = darkMode 
+    ? require('../assets/image/dark/help3.png')
+    : require('../assets/image/light/help3.png');
+
+  const help4 = darkMode 
+    ? require('../assets/image/dark/help4.png')
+    : require('../assets/image/light/help4.png');
+
+  const help5 = darkMode 
+    ? require('../assets/image/dark/help5.png')
+    : require('../assets/image/light/help5.png');
+
+  const help6 = darkMode 
+    ? require('../assets/image/dark/help6.png')
+    : require('../assets/image/light/help6.png');
+
+    return (
+      <SafeAreaView style={[styles.container,dynamicStyles.container]}>
+        <View style={[styles.bar,dynamicStyles.bar]}></View>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Department'); }}>
+            <Image source={back} style={styles.backIcon} />
           </TouchableOpacity>
-          {showCollegePicker && (
-              <View style={styles.pickerContainer}>
-                  <Picker
-                      selectedValue={selectedCollege}
-                      onValueChange={(itemValue) => {
-                      setSelectedCollege(itemValue);
-                      setSelectedDepartment(colleges[itemValue] ? colleges[itemValue][0] : undefined);
-                      setShowCollegePicker(false);
-                      }}
-                      style={styles.picker}>
-                      {Object.keys(colleges).map((key) => (
-                      <Picker.Item key={key} label={collegeLabels[key]} value={key} />
-                      ))}
-                  </Picker>
-              </View>
-          )}
-          <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
-              <Text style={styles.pickerText}>
-                  {selectedDepartment ? selectedDepartment : '소속 학과'}
-              </Text>
-              <Image
-                  source={showDepartmentPicker ? require('../assets/image/arrow-up.png') : require('../assets/image/arrow-down.png')}
-                  style={styles.icon}
-              />
-          </TouchableOpacity>
-          {showDepartmentPicker && (
-              <View style={styles.pickerContainer}>
-                  <Picker
-                      selectedValue={selectedDepartment}
-                      onValueChange={(itemValue) => setSelectedDepartment(itemValue)}
-                      style={styles.picker}>
-                      {selectedCollege && colleges[selectedCollege] ? 
-                          colleges[selectedCollege].map((department, index) => (
-                              <Picker.Item key={index} label={department} value={department} />
-                          )) : null
-                      }
-                  </Picker>
-              </View>
-          )}
-        </SafeAreaView>
-      </ImageBackground>
-  );
-};
+          <View style={styles.titleContainer}>
+            <Text style={[styles.title,dynamicStyles.title]}>도움말</Text>
+          </View>
+        </View>
+      
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+          <View style={styles.section}>
+            <View style={[styles.sectionTitleContainer,dynamicStyles.sectionTitleContainer]}>
+              <Text style={[styles.sectionTitle,dynamicStyles.text]}>학과 등록을 하고 싶어요. 어떻게 하나요?</Text>
+            </View>
+            <Text style={[styles.startsection,dynamicStyles.text]}>학과 등록 시, 내가 소속된 학과의 공지를 학과 공지 목록에서 확인할 수 있으며 등록한 학과의 공지만 띄워집니다.</Text>
+            <Text style={[styles.sectionText1,dynamicStyles.text]}>학과 등록을 하려면?</Text>
+            <Text style={[styles.sectionText,dynamicStyles.text]}>1. 학과 공지 페이지에서 &gt;등록하기&lt; 버튼 혹은 내 정보 수정에서 &gt;학과 등록&lt; 버튼으로 이동할 수 있어요.</Text>
+            <View style={[styles.photo,dynamicStyles.photo]}>
+              <Image source={help1} style={[styles.help, styles.helpMargin]}></Image>
+              <Image source={help2} style={styles.help}></Image>
+            </View>
+            <Text style={[styles.sectionText,dynamicStyles.text]}>2. 단과 대학과 소속 학과를 선택 후 &gt;저장하기&lt; 버튼을 눌러 주세요. 바뀐 학과는 마이페이지에서 확인할 수 있어요.</Text>
+            <Text style={[styles.importText1,dynamicStyles.text2]}>ㄴ 학과 명이 바뀐 경우 가장 최근 학과 명으로 선택해 주세요.</Text>
+            <Text style={[styles.importText2,dynamicStyles.text2]}>Ex. 소프트웨어공학과 → 컴퓨터공학과로 선택</Text>
+            <View style={[styles.photo,dynamicStyles.photo]}>
+              <Image source={help3} style={[styles.help, styles.helpMargin]}></Image>
+              <Image source={help5} style={styles.help}></Image>
+            </View>
+            <Text style={[styles.sectionText1,dynamicStyles.text]}>학과 등록을 끝냈다면?</Text>
+            <Text style={[styles.sectionText,dynamicStyles.text]}>- 바로 자신의 소속된 학과 공지 확인이 가능해요.</Text>
+            <Text style={[styles.sectionText,dynamicStyles.text]}>- 학과를 잘못 선택했거나 다전공 및 부전공은 내 정보 수정에서 학과 수정 후 수정하기를 눌러 주세요.</Text>
+            <View style={[styles.photo,dynamicStyles.photo]}>
+              <Image source={help4} style={[styles.help, styles.helpMargin]}></Image>
+              <Image source={help6} style={styles.help}></Image>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+}
 
 const styles = StyleSheet.create({
-  rectangle1: {
+  container: {
+    flex: 1,
+  },
+  bar: {
     width: '100%',
     height: 50,
     backgroundColor: '#9DC284',
     position: 'absolute',
     top: 0,
   },
-  innerContainer: {
-    flex: 1,
-    padding: 10,
-  },
-  header:{
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
+    marginTop: 5,
   },
-  backIcon:{
+  backIcon: {
     width: 25,
     height: 25,
+    marginLeft: 5,
   },
   titleContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop:5,
+    marginTop: 5,
+    right:15,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '800',
     color: '#000000',
   },
-  text1: {
-    color: 'black',
-    fontSize: 30,
-    fontWeight: 'bold',
+  contentContainer: {
+    padding: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    marginTop: 0, // topBar와의 겹침을 방지하기 위해 추가
   },
-  text2: {
-    color: '#45B035',
-    fontSize: 30,
-    fontWeight: 'bold',
-    lineHeight: 33,
-  },
-  pickerContainer: {
+  section: {
     marginBottom: 20,
-    height: 180,
   },
-  picker: {
-    width: '100%',
-    height: 50,
+  sectionTitleContainer: {
+    alignSelf: 'flex-start',
+    borderBottomWidth: 1,     // 밑줄 두께
+    borderBottomColor: '#000000',
+    paddingBottom: 3,         // 텍스트와 밑줄 간격
+    marginBottom: 10,         // 섹션과의 간격
   },
-  pickerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#4A7766',
-    borderRadius:20,
-    paddingVertical: 13,
-    width:'90%',
-    margin:15,
-    backgroundColor:'#F2F2F2',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 5,
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
   },
-  pickerText: {
+  sectionText1: {
     fontSize: 18,
-    color: 'grey',
-    marginLeft:20
+    fontWeight: 'bold',
+    marginBottom: 5,
+    lineHeight: 20,
   },
-  textContainer:{
-    marginTop: 100,
-    marginLeft: 20,
-    marginBottom:15,
+  startsection: {
+    fontSize: 17,
+    marginBottom: 30,
+    lineHeight: 20,
   },
-  textLine:{
+  sectionText: {
+    fontSize: 15,
+    marginBottom: 10,
+    lineHeight: 20,
+  },
+  importText1: {
+    color: '#ff0000',
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginBottom: 2,
+    lineHeight: 20,
+  },
+  importText2: {
+    color: '#ff0000',
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginBottom: 10,
+    lineHeight: 20,
+  },
+  photo:{
     flexDirection:'row',
+    justifyContent:'space-between',
+    alignSelf:'center',
+    marginBottom:30,
+    borderRadius:20,
+    padding:10,
+    backgroundColor:'#c2c2c2'
   },
-  icon:{
-    width:30,
-    height:30,
-    marginRight:15,
+  help:{
+    width:170,
+    height:350,
   },
-  questionIcon:{
-    width: 25,
-    height: 25,
-  },
-  backgroundImage: {
-    flex: 1,
+  helpMargin: {
+    marginRight: 10, 
   },
 });
-
-export default Departmenthelp;
