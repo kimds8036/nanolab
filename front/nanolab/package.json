@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@types/react-native": "^0.73.0",
     "react-native-typescript-transformer": "^1.2.13"
   },
   "private": true
