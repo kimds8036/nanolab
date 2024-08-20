@@ -1,27 +1,58 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GlobalContext } from './GlobalContext';
 
 const { width } = Dimensions.get('window');
 
 const Header = ({ onMenuPress }) => {
+  const { darkMode } = useContext(GlobalContext);
   const navigation = useNavigation();
   
+  const dynamicStyles = {
+    header: {
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+      padding: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 40,
+      height:70,
+      marginLeft:5,
+    },
+    headerTitle: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      color:darkMode?'#ffffff':'#000000',
+    },
+  };
+
+  const search = darkMode 
+    ? require('../assets/image/dark/search.png')
+    : require('../assets/image/light/search.png');
+
+  const alert = darkMode 
+    ? require('../assets/image/dark/alert.png')
+    : require('../assets/image/light/alert.png');
+
+  const menu = darkMode 
+    ? require('../assets/image/dark/menu.png')
+    : require('../assets/image/light/menu.png');
+
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, dynamicStyles.header]}>
       <View>  
-        <Text style={styles.headerTitle}>공지사항</Text>
+        <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>공지사항</Text>
       </View>
       <View style={styles.headerIcons}>
-        <TouchableOpacity onPress={() => { navigation.navigate('Search'); }}>
-          <Image source={require('../assets/image/light/search.png')} style={styles.icon} />  
+        <TouchableOpacity onPress={() => {navigation.navigate('Search');}}>
+          <Image source={search} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={() => alert('Details')}>
-          <Image source={require('../assets/image/light/alert.png')} style={styles.icon} />  
+          <Image source={alert} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={onMenuPress}>
-          <Image source={require('../assets/image/light/menu.png')} style={styles.icon} />  
+          <Image source={menu} style={styles.icon} />  
         </TouchableOpacity>
       </View>
     </View>
@@ -30,57 +61,111 @@ const Header = ({ onMenuPress }) => {
 
 const RecentNotices = () => {
   const category = '학사공지';
+  const { darkMode } = useContext(GlobalContext);
+  
+  const dynamicStyles = {
+    Container1: {
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+      width:"100%",
+      height: 350,
+    },
+    sectionContainer1: {
+      margin: 10,
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+      padding: 10,
+      borderRadius: 10,
+    },
+    sectionTitleWrapper: {
+      shadowColor: darkMode? '#000000':'#CACACA',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 1,
+      shadowRadius: 2,
+      elevation: 5,
+      borderRadius: 20, 
+    },
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      width: 100,
+      height: 35,
+      textAlign: 'center',
+      lineHeight: 35,  // 텍스트가 가운데 오도록 조정
+      backgroundColor: darkMode ? '#505050' : '#dddddd',
+      color:darkMode?'#ffffff':'#000000',
+      borderRadius: 20,
+      overflow: 'hidden',
+    },
+    notice: {
+      backgroundColor: darkMode ? '#597248':'#9DC284',
+      padding: 20,
+      borderRadius: 20,
+      width: 250,
+      marginRight: 10,
+      height: 250,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 5 },
+      shadowOpacity: 0.35,
+      shadowRadius: 3,
+      elevation: 10,
+    },
+  };
+  
   return (
-    <View style={styles.Container1}>
-      <View style={styles.sectionContainer1}>
-        <View style={styles.sectionTitleWrapper}>
-          <Text style={styles.sectionTitle}>최근 공지</Text>
+    <View style={[styles.Container1, dynamicStyles.Container1]}>
+      <View style={[styles.sectionContainer1, dynamicStyles.sectionContainer1]}>
+        <View style={[styles.sectionTitleWrapper, dynamicStyles.sectionTitleWrapper]}>
+          <Text style={[styles.sectionTitle, dynamicStyles.sectionTitle]}>최근 공지</Text>
         </View>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.noticeContainer}>
             <View style={styles.noticeWrapper}>
-            <TouchableOpacity style={styles.notice}>
-              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-              <Text style={styles.noticeText}>더보기</Text>
-              <Text style={styles.category}>{category}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.noticeWrapper}>
-            <TouchableOpacity style={styles.notice}>
-              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-              <Text style={styles.noticeText}>더보기</Text>
-              <Text style={styles.category}>{category}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.noticeWrapper}>
-            <TouchableOpacity style={styles.notice}>
-              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-              <Text style={styles.noticeText}>더보기</Text>
-              <Text style={styles.category}>{category}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.noticeWrapper}>
-            <TouchableOpacity style={styles.notice}>
-              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-              <Text style={styles.noticeText}>더보기</Text>
-              <Text style={styles.category}>{category}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.noticeWrapper}>
-            <TouchableOpacity style={styles.notice}>
-              <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
-              <Text style={styles.noticeText}>더보기</Text>
-              <Text style={styles.category}>{category}</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity style={[styles.notice, dynamicStyles.notice]}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.noticeWrapper}>
+            <TouchableOpacity style={[styles.notice, dynamicStyles.notice]}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.noticeWrapper}>
+            <TouchableOpacity style={[styles.notice, dynamicStyles.notice]}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.noticeWrapper}>
+            <TouchableOpacity style={[styles.notice, dynamicStyles.notice]}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.noticeWrapper}>
+            <TouchableOpacity style={[styles.notice, dynamicStyles.notice]}>
+                <Text style={styles.noticeTitle}>졸업유예 신청 안내</Text>
+                <Text style={styles.noticeText}>더보기</Text>
+                <Text style={styles.category}>{category}</Text>
+              </TouchableOpacity>
+            </View>
         </ScrollView>
       </View>
     </View>
   );
 };
 
-const PopularNotices = () => {
-  const daysLeft = 1; // 디데이까지 남은 일수 (예시로 1일 설정)
 
+
+const PopularNotices = () => {
+  const daysLeft = 1; // 디데이까지 남은 일수 (예시로 10일 설정)
+  const { darkMode } = useContext(GlobalContext);
+
+  // 날짜에 따른 색상 결정 함수
   const getDateStyle = () => {
     if (daysLeft <= 0) {
       return styles.dateBlack;
@@ -100,88 +185,136 @@ const PopularNotices = () => {
       return `D-${daysLeft}`;
     }
   };
+  
+  const dynamicStyles = {
+    sectionContainer2: {
+      margin: 10,
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+      padding: 10,
+      borderRadius: 10,
+    },
+    sectionTitleWrapper: {
+      shadowColor: darkMode? '#000000':'#CACACA',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 1,
+      shadowRadius: 2,
+      elevation: 5,
+      borderRadius: 20, 
+    },
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      width: 100,
+      height: 35,
+      textAlign: 'center',
+      lineHeight: 35,  // 텍스트가 가운데 오도록 조정
+      backgroundColor: darkMode ? '#505050' : '#dddddd',
+      color:darkMode?'#ffffff':'#000000',
+      borderRadius: 20,
+      overflow: 'hidden',
+    },
+    announcement: {
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+      padding: 15,
+      borderColor: '#ddd',
+      borderTopWidth: 1,
+      borderBottomWidth:1,
+    },
+    title: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color:darkMode?'#ffffff':'#000000',
+    },
+    details: {
+      fontSize: 12,
+      color:darkMode?'#ffffff':'#777',
+      marginTop: 5,
+      borderWidth:1,
+      borderRadius:10,
+      width: 90,
+      right: 10,
+      textAlign:'center',
+      height:20,
+      lineHeight:17,
+      borderColor:'#777',
+    },
+  };
+
+  const next = darkMode 
+    ? require('../assets/image/dark/next.png')
+    : require('../assets/image/light/next.png');
 
   return (
     <View style={styles.Container2}>
-      <View style={styles.sectionContainer2}>
-        <View style={styles.sectionTitleWrapper}>
-          <Text style={styles.sectionTitle}>인기 공지</Text>
+      <View style={[styles.sectionContainer2, dynamicStyles.sectionContainer2]}>
+        <View style={[styles.sectionTitleWrapper, dynamicStyles.sectionTitleWrapper]}>
+          <Text style={[styles.sectionTitle, dynamicStyles.sectionTitle]}>인기 공지</Text>
         </View>
         <View style={styles.popularNotices}>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+          <View style={[styles.announcement,dynamicStyles.announcement]}>
+            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
             <View style={styles.dotted}></View>
             <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
+              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
+                <Image source={next} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+          <View style={[styles.announcement,dynamicStyles.announcement]}>
+            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
             <View style={styles.dotted}></View>
             <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
+              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
+                <Image source={next} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+          <View style={[styles.announcement,dynamicStyles.announcement]}>
+            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
             <View style={styles.dotted}></View>
             <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
+              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
+                <Image source={next} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+          <View style={[styles.announcement,dynamicStyles.announcement]}>
+            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
             <View style={styles.dotted}></View>
             <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
+              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
+                <Image source={next} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+          <View style={[styles.announcement,dynamicStyles.announcement]}>
+            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
             <View style={styles.dotted}></View>
             <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
+              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
+                <Image source={next} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+          <View style={[styles.announcement,dynamicStyles.announcement]}>
+            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
             <View style={styles.dotted}></View>
             <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
+              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
               <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
               <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.announcement}>
-            <Text style={styles.title}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={styles.details}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={require('../assets/image/light/next.png')} style={styles.nextbutton} />  
+                <Image source={next} style={styles.nextbutton} />  
               </TouchableOpacity>
             </View>
           </View>
@@ -191,8 +324,9 @@ const PopularNotices = () => {
   );
 };
 
-const MenuBar = ({ navigation }) => {
+const MenuBar = ({ onClose, navigation }) => {
   const slideAnim = useRef(new Animated.Value(width)).current;
+  const { darkMode } = useContext(GlobalContext);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -206,27 +340,77 @@ const MenuBar = ({ navigation }) => {
     navigation.navigate('Mypage');
   };
 
+  const handleBackPress = () => {
+    
+    Animated.timing(slideAnim, {
+      toValue: width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      if (onClose) onClose();
+    });
+  };
+
+  const handleMenuItemPress = (tabIndex) => {
+    navigation.navigate('Noticelist', { activeTab: tabIndex });
+    if (onClose) onClose(); // 메뉴가 닫히면서 이동
+  };
+
+  const dynamicStyles = {
+    menuheader: {
+      height: 100, // 상단 여유 공간 줄이기
+      backgroundColor: darkMode ? '#597248':'#9DC284',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+    },
+    menu: {
+      paddingHorizontal: 16,
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+    },
+    menuItem: {
+      backgroundColor: darkMode?'#505050':'#FFFFFF',
+      padding: 16,
+      marginTop: 16,
+      borderRadius: 8,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 1 },
+      shadowRadius: 4,
+      elevation: 2,
+      width: width * 5 / 6 - 32,
+    },
+    menuItemText: {
+      fontSize: 18,
+      color:darkMode?'#ffffff':'#000000',
+    },
+  };
+
   return (
     <Animated.View style={[styles.slideContainer, { transform: [{ translateX: slideAnim }] }]}>
-      <View style={styles.menuheader}>
+      <View style={[styles.menuheader,dynamicStyles.menuheader]}>
         <Text style={styles.headerText}>Menu</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton} />
+            <Image source={require('../assets/image/light/mypage.png')} style={styles.iconButton1} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleHomePress}>
-            <Image source={require('../assets/image/light/back2.png')} style={styles.iconButton} />
+          <TouchableOpacity onPress={handleBackPress}>
+            <Image source={require('../assets/image/light/back2.png')} style={styles.iconButton2} />
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView style={styles.menu}>
+      <ScrollView style={[styles.menu,dynamicStyles.menu]}>
         {['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업 / 창업', '공모전', '국제 교류', '모시래 식단', '해오름 식단'].map((text, index) => (
           <TouchableOpacity
             key={text}
-            style={styles.menuItem}
+            style={[styles.menuItem,dynamicStyles.menuItem]}
             onPress={() => handleMenuItemPress(index)}
           >
-            <Text style={styles.menuItemText}>{text}</Text>
+            <Text style={[styles.menuItemText,dynamicStyles.menuItemText]}>{text}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -234,17 +418,18 @@ const MenuBar = ({ navigation }) => {
   );
 };
 
+
 const Main = ({ route }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // 네비게이션 훅 호출
   const [isMenuVisible, setIsMenuVisible] = useState(route.params?.isMenuVisible || false);
   const { darkMode } = useContext(GlobalContext);
-  
 
   const dynamicStyles = {
     container: {
-      backgroundColor: darkMode ? 'grey' : '#FFFFFF',
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
     },
   };
+
   const handleMenuPress = () => {
     setIsMenuVisible(true);
   };
@@ -254,18 +439,16 @@ const Main = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dynamicStyles.container]}>
       <ScrollView style={styles.content}>
         <Header onMenuPress={handleMenuPress} />
         <RecentNotices />
         <PopularNotices />
       </ScrollView>
       {isMenuVisible && (
-        <TouchableWithoutFeedback onPress={handleCloseMenu}>
-          <View style={styles.menuOverlay}>
-            <MenuBar onClose={handleCloseMenu} navigation={navigation} />
-          </View>
-        </TouchableWithoutFeedback>
+        <View style={styles.menuOverlay}>
+          <MenuBar onClose={handleCloseMenu} navigation={navigation} />
+        </View>
       )}
     </View>
   );
@@ -309,13 +492,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 5, // 아이콘 상단 여유 공간 추가
   },
-  iconButton: {
+  iconButton1: {
     right:120,
     marginTop: 30,
     width: 25,
     height: 25,
   },
-  iconButton: {
+  iconButton2: {
     right:100,
     marginTop: 30,
     width: 20,
@@ -523,7 +706,7 @@ const styles = StyleSheet.create({
     right: 10,
     textAlign:'center',
     height:20,
-    lineHeight:15,
+    lineHeight:17,
     borderColor:'#777',
   },
   nextbutton:{

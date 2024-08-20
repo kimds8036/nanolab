@@ -51,7 +51,7 @@ const Search = () => {
         />
       ) : (
         <View style={styles.noResultsContainer}>
-          <Image source={require('../assets/image/light/Searchfail.png')} style={styles.noResultsImage} />
+          <Image source={require('../assets/image/light/searchfail.png')} style={styles.noResultsImage} />
           <Text style={styles.noResultsText}>아쉽게도 일치하는 내용이 없습니다</Text>
           <Text style={styles.noResultsSubText}>검색어를 바꾸어 다시 검색 해 보세요</Text>
         </View>

@@ -95,8 +95,27 @@ const Noticelist = ({ route }) => {
     setCurrentPage(page);
   };
 
+  const dynamicStyles={
+    container: {
+      flex: 1,
+      backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
+    },
+    tabText:{
+      color: darkMode ? '#597248':'#9DC284',
+      fontWeight: 'bold',
+      fontSize: 15,
+    },
+    activeTabText:{
+      color:darkMode?'1B4102':'#0E664F',
+    },
+  };
+
+  const enroll = darkMode 
+    ? require('../assets/image/dark/enroll.png')
+    : require('../assets/image/light/enroll.png');
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,dynamicStyles.container]}>
       <View style={styles.bar}></View>
       <View style={[styles.header, { flexDirection: 'column' }]}>
         <ScrollView
@@ -111,7 +130,7 @@ const Noticelist = ({ route }) => {
               onPress={() => setActiveTab(index)}
               style={[styles.tab, index === activeTab && styles.activeTab]}
             >
-              <Text style={[styles.tabText, index === activeTab && styles.activeTabText]}>{tab}</Text>
+              <Text style={[styles.tabText,dynamicStyles.tabText, index === activeTab && styles.activeTabText, dynamicStyles.activeTabText]}>{tab}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -120,7 +139,7 @@ const Noticelist = ({ route }) => {
       <ScrollView contentContainerStyle={styles.noticesContentContainer} showsVerticalScrollIndicator={false}>
         {activeTab === 0 && !isDepartmentRegistered ? (
           <View style={styles.noticeContainer}>
-            <Image source={require('../assets/image/light/enroll.png')} style={styles.enroll} />
+            <Image source={enroll} style={styles.enroll} />
             <Text style={styles.noticeMessage}>학과를 등록해 주세요.</Text>
             <TouchableOpacity style={styles.enrollbutton} onPress={() => { navigation.navigate('Department')}}>
               <Text style={styles.enrolltext}>등록하러 가기</Text>
@@ -157,7 +176,6 @@ const Noticelist = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   bar:{
     backgroundColor:'#9DC284',

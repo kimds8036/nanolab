@@ -37,32 +37,89 @@ const Department = ({ navigation }) => {
     }
   };
 
+  const dynamicStyles ={
+    bar: {
+      backgroundColor: darkMode ? '#597248':'#9DC284',
+      width: '100%',
+      height: 50,
+      position: 'absolute',
+      top: 0,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: '800',
+      color:darkMode?'#ffffff':'#000000',
+    },
+    text1: {
+      color:darkMode?'#ffffff':'#000000',
+      fontSize: 30,
+      fontWeight: 'bold',
+    },
+    text2: {
+      color:darkMode?'#9DC284':'#45B035',
+      fontSize: 30,
+      fontWeight: 'bold',
+      lineHeight: 33,
+    },
+    pickerHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: '#4A7766',
+      borderRadius: 20,
+      paddingVertical: 13,
+      width: '90%',
+      marginLeft: 20,
+      marginRight: 20,
+      marginTop: 20,
+      backgroundColor: darkMode ? '#2f2f2f' : '#f2f2f2',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.25,
+      shadowRadius: 2,
+      elevation: 5,
+    },
+  };
+
+  const background = darkMode 
+    ? require('../assets/image/dark/background.png')
+    : require('../assets/image/light/background.png');
+  
+  const back = darkMode 
+    ? require('../assets/image/dark/back.png')
+    : require('../assets/image/light/back.png');
+
+  const question = darkMode 
+    ? require('../assets/image/dark/question.png')
+    : require('../assets/image/light/question.png');
+
   return (
-    <ImageBackground source={require('../assets/image/light/background.png')} style={styles.backgroundImage}>
+    <ImageBackground source={background} style={styles.backgroundImage}>
       <SafeAreaView style={styles.innerContainer}>
-        <View style={styles.rectangle1}></View>
+        <View style={[styles.bar,dynamicStyles.bar]}></View>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
-            <Image source={require('../assets/image/light/back.png')} style={styles.backIcon} />
+            <Image source={back} style={styles.backIcon} />
           </TouchableOpacity>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>학과 등록</Text>
+            <Text style={[styles.title,dynamicStyles.title]}>학과 등록</Text>
           </View>
           <TouchableOpacity onPress={() => { navigation.navigate('Departmenthelp'); }}>
-            <Image source={require('../assets/image/light/question.png')} style={styles.questionIcon} />
+            <Image source={question} style={styles.questionIcon} />
           </TouchableOpacity>
         </View>
         <View style={styles.textContainer}>
           <View style={styles.textLine}>
-            <Text style={styles.text1}>현재</Text>
-            <Text style={styles.text2}> 재학 중인 학과</Text>
-            <Text style={styles.text1}>를</Text>
+            <Text style={[styles.text1,dynamicStyles.text1]}>현재</Text>
+            <Text style={[styles.text2,dynamicStyles.text2]}> 재학 중인 학과</Text>
+            <Text style={[styles.text1,dynamicStyles.text1]}>를</Text>
           </View>
-          <Text style={styles.text1}>입력해 주세요</Text>
+          <Text style={[styles.text1,dynamicStyles.text1]}>입력해 주세요</Text>
         </View>
         {!isDepartmentRegistered ? (
           <>
-            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowCollegePicker(!showCollegePicker)}>
+            <TouchableOpacity style={[styles.pickerHeader,dynamicStyles.pickerHeader]} onPress={() => setShowCollegePicker(!showCollegePicker)}>
               <Text style={styles.pickerText}>
                 {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
               </Text>
@@ -82,12 +139,12 @@ const Department = ({ navigation }) => {
                   }}
                   style={styles.picker}>
                   {Object.keys(colleges).map((key) => (
-                    <Picker.Item key={key} label={collegeLabels[key]} value={key} />
+                    <Picker.Item key={key} label={collegeLabels[key]} value={key} color={darkMode ? 'white' : 'black'}/>
                   ))}
                 </Picker>
               </View>
             )}
-            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
+            <TouchableOpacity style={[styles.pickerHeader,dynamicStyles.pickerHeader]} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
               <Text style={styles.pickerText}>
                 {selectedDepartment ? selectedDepartment : '소속 학과'}
               </Text>
@@ -104,7 +161,7 @@ const Department = ({ navigation }) => {
                   style={styles.picker}>
                   {selectedCollege && colleges[selectedCollege] ? 
                     colleges[selectedCollege].map((department, index) => (
-                      <Picker.Item key={index} label={department} value={department} />
+                      <Picker.Item key={index} label={department} value={department} color={darkMode ? 'white' : 'black'}/>
                     )) : null
                   }
                 </Picker>
@@ -118,7 +175,7 @@ const Department = ({ navigation }) => {
           </>
         ) : (
           <>
-            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowCollegePicker(!showCollegePicker)}>
+            <TouchableOpacity style={[styles.pickerHeader,dynamicStyles.pickerHeader]} onPress={() => setShowCollegePicker(!showCollegePicker)}>
               <Text style={styles.pickerText}>
                 {selectedCollege ? collegeLabels[selectedCollege] : '단과 대학교'}
               </Text>
@@ -143,7 +200,7 @@ const Department = ({ navigation }) => {
                 </Picker>
               </View>
             )}
-            <TouchableOpacity style={styles.pickerHeader} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
+            <TouchableOpacity style={[styles.pickerHeader,dynamicStyles.pickerHeader]} onPress={() => setShowDepartmentPicker(!showDepartmentPicker)}>
               <Text style={styles.pickerText}>
                 {selectedDepartment ? selectedDepartment : '소속 학과'}
               </Text>
@@ -179,7 +236,7 @@ const Department = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  rectangle1: {
+  bar: {
     width: '100%',
     height: 50,
     backgroundColor: '#9DC284',
@@ -209,7 +266,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '800',
     color: '#000000',
   },

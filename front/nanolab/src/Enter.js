@@ -64,49 +64,129 @@ function Enter({ navigation }) {
       Alert.alert('회원가입 실패', '서버와의 통신 중 오류가 발생했습니다.');
     }
   };
+
+  const dynamicStyles = {
+    container: {
+      flex: 1,
+      backgroundColor: darkMode ? '#2f2f2f' : '#ffffff',
+    },
+    header: {
+      backgroundColor: darkMode ? '#597248' : '#9DC284',
+      width:'100%',
+      height:50,
+    },
+    text: {
+      color: darkMode ? '#ffffff' : 'black',
+    },
+    emailbutton: {
+      width: 70,
+      height: 30,
+      backgroundColor: darkMode ? '#597248' : '#9DC284',
+      borderRadius: 10,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 2,
+      elevation: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
+      top: 5,
+    },
+    button: {
+      backgroundColor: '#9DC284',
+      padding: 15,
+      borderRadius: 30,
+      alignItems: 'center',
+      width: '100%',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 5,
+      elevation: 5,
+    },
+    buttonInactive: {
+      // 다크모드이고 폼이 유효하지 않을 때
+      backgroundColor: darkMode ? '#2f2f2f' : '#d3d3d3',
+    },
+    buttonActive: {
+      // 다크모드이고 폼이 유효할 때
+      backgroundColor: darkMode ? '#1B4102' : '#4CAF50',
+    },
+    buttonText: {
+      // 기본 텍스트 스타일
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    buttonTextInactive: {
+      color: darkMode ? '#888888' : '#ffffff', // 다크모드이고 폼이 유효하지 않을 때
+    },
+    buttonTextActive: {
+      color: darkMode ? '#ffffff' : '#ffffff', // 다크모드이고 폼이 유효할 때
+    },
+    title: {
+      fontSize: 35,
+      fontWeight: 'bold',
+      color:darkMode?'#ffffff':'#000000',
+    },
+    input: {
+      height: 40,
+      borderColor: 'gray',
+      borderBottomWidth: 1,
+      marginBottom: 15,
+      color:darkMode?'#ffffff':'#000000',
+    },
+  };
+
+  const back = darkMode 
+    ? require('../assets/image/dark/back.png')
+    : require('../assets/image/light/back.png');
+  
   
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={[styles.container,dynamicStyles.container]}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
       >
-        <View style={styles.header}></View>
+        <View style={[styles.header,dynamicStyles.header]}></View>
         <View style={styles.innerContainer}>
           <View>
             <TouchableOpacity onPress={() => { navigation.navigate('Login'); }}>
-              <Image source={require('../assets/image/light/back.png')} style={styles.backButton}/>
+              <Image source={back} style={styles.backButton}/>
             </TouchableOpacity>
           </View>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>회원가입</Text>
+            <Text style={[styles.title,dynamicStyles.title]}>회원가입</Text>
           </View>
           <View style={styles.inputContainer}>
-            <Text>이메일</Text>
+            <Text style={dynamicStyles.text}>이메일</Text>
             <View style={styles.emailContainer}>
               <TextInput
-                style={styles.emailinput}
+                style={[styles.emailinput,dynamicStyles.input]}
                 placeholder="학교 이메일을 입력하세요"
+                placeholderTextColor={darkMode ? '#8B8B8B' : '#c2c2c2'}
                 value={email}
                 onChangeText={handleEmailChange}
               />
-              <TouchableOpacity style={styles.emailbutton} onPress={handleEmailVerification}>
+              <TouchableOpacity style={[styles.emailbutton,dynamicStyles.emailbutton]} onPress={handleEmailVerification}>
                 <Text style={styles.emailbuttonText}>인증하기</Text>
               </TouchableOpacity>
             </View>
-            <Text>비밀번호</Text>
+            <Text style={dynamicStyles.text}>비밀번호</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input,dynamicStyles.input]}
               placeholder="6자 이상 입력하세요"
+              placeholderTextColor={darkMode ? '#8B8B8B' : '#c2c2c2'}
               secureTextEntry={true}
               value={password}
               onChangeText={handlePasswordChange}
             />
-            <Text>비밀번호 확인</Text>
+            <Text style={dynamicStyles.text}>비밀번호 확인</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input,dynamicStyles.input]}
               placeholder="비밀번호 확인을 위해 한 번 더 입력하세요"
+              placeholderTextColor={darkMode ? '#8B8B8B' : '#c2c2c2'}
               secureTextEntry={true}
               value={passwordConfirmation}
               onChangeText={handlePasswordConfirmationChange}
@@ -114,10 +194,10 @@ function Enter({ navigation }) {
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.button, isFormValid ? styles.buttonActive : styles.buttonInactive]}
+              style={[dynamicStyles.button, isFormValid ? dynamicStyles.buttonActive : dynamicStyles.buttonInactive]}
               onPress={handleRegister}
               disabled={!isFormValid}>
-              <Text style={[styles.buttonText, isFormValid ? styles.buttonTextActive : styles.buttonTextInactive]}>가입하기</Text>
+              <Text style={[dynamicStyles.buttonText, isFormValid ? dynamicStyles.buttonTextActive : dynamicStyles.buttonTextInactive]}>가입하기</Text>
             </TouchableOpacity>
           </View>
           <Image source={require('../assets/image/light/konkuk.png')} style={styles.logo}/>
