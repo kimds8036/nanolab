@@ -163,7 +163,7 @@ def scrape_and_save_notices():
 
                 for a_tag in soup.find_all('a', href=True):
                     href = a_tag['href'].strip()
-                    if "/common/downLoad.do" in href:
+                    if "/common/downLoad.do" in href or "/file/fileDownLoad.do" in href:
                         file_url = urljoin(link, href)
                         all_files.append(file_url)
                     else:
@@ -178,7 +178,7 @@ def scrape_and_save_notices():
                     'files': all_files,
                     'extractedText': extracted_text,
                     'images': image_urls,
-                    'links': valid_links,
+                    #'links': valid_links,
                     'pdfUrl': pdf_url,
                     'type': notice_link.get('type', {})
                 }
@@ -186,14 +186,37 @@ def scrape_and_save_notices():
             else:
                 print(f"Necessary elements not found for link: {link}")
 
+            valid_links = []  # valid_links를 처음에 초기화
+
             if matching_category['type'] == 'first':
                 title = soup.select_one('h4').get_text(strip=True).replace('제목\t :', '').strip() or '제목 없음'
                 date = soup.select_one('span.detail_info_date + span.detail_info_after').get_text(strip=True) or '날짜 없음'
                 content_element = soup.select_one('#board_contents')
+
+                all_files = []
+                # 첫 번째 카테고리의 파일 링크 추가
+                for a_tag in soup.select('div.detail_info span.detail_info_after a[href]'):
+                    href = a_tag['href'].strip()
+                    if "/common/downLoad.do" in href or "/file/fileDownLoad.do" in href:
+                        file_url = urljoin(link, href)
+                        all_files.append(file_url)
+                    else:
+                        valid_links.append(urljoin(link, href))
+
             elif matching_category['type'] == 'second':
                 title = soup.select_one('table.grid .subject').get_text(strip=True) or '제목 없음'
                 date = soup.select_one('table.grid th:contains("작성일") + td').get_text(strip=True) or '날짜 없음'
                 content_element = soup.select_one('#post_view_txt')
+
+                all_files = []
+                # 두 번째 카테고리의 파일 링크 추가
+                for a_tag in soup.select('div.post_add div.addfile a[href]'):
+                    href = a_tag['href'].strip()
+                    if "/common/downLoad.do" in href or "/file/fileDownLoad.do" in href:
+                        file_url = urljoin(link, href)
+                        all_files.append(file_url)
+                    else:
+                        valid_links.append(urljoin(link, href))
 
             if content_element:
                 clean_content(soup, content_element)
@@ -201,25 +224,15 @@ def scrape_and_save_notices():
                 # 본문 내 모든 링크에 도메인 추가
                 for a_tag in content_element.find_all('a', href=True):
                     a_tag['href'] = urljoin(link, a_tag['href'])
+                    valid_links.append(a_tag['href'])  # 본문 내 링크도 valid_links에 추가
 
                 image_urls = []
-                valid_links = []
-                all_files = []
+                for img in content_element.find_all('img'):
+                    img_src = img['src'].strip()
+                    img_url = urljoin(link, img_src)
+                    image_urls.append(img_url)
+                    img['src'] = img_url
 
-                for a_tag in soup.select('.detail_info_after a[href]'):
-                    href = a_tag['href'].strip()
-                    if "/common/downLoad.do" in href:
-                        file_url = urljoin(link, href)
-                        all_files.append(file_url)
-                    else:
-                        valid_links.append(urljoin(link, href))
-
-                    image_urls = []
-                    for img in content_element.find_all('img'):
-                        img_src = img['src'].strip()
-                        img_url = urljoin(link, img_src)
-                        image_urls.append(img_url)
-                        img['src'] = img_url
                 pdf_url = None
                 iframe_element = content_element.select_one('iframe')
                 if iframe_element:
@@ -229,18 +242,26 @@ def scrape_and_save_notices():
                 else:
                     content = content_element.prettify()
 
-                result = {
-                    'title': title,
-                    'date': date,
-                    'content': content,
-                    'files': all_files,
-                    'extractedText': content_element.get_text(strip=True),
-                    'images': image_urls,
-                    'links': valid_links,
-                    'pdfUrl': pdf_url,
-                    'type': notice_link.get('type', {})
-                }
-                print(f"Processed notice: {result}")
+                extracted_text = content_element.get_text(strip=True)
+            else:
+                content = ''
+                extracted_text = ''
+
+            result = {
+                'title': title,
+                'date': date,
+                'content': content,
+                'files': all_files,
+                'extractedText': extracted_text,
+                'images': image_urls,
+                #'links': valid_links,  # 링크를 links 필드에 저장 (이 줄 주석처리 유지)
+                'pdfUrl': pdf_url,
+                'type': notice_link.get('type', {})
+            }
+
+            print(f"Processed notice: {result}")
+
+
 
         except Exception as e:
             print(f'Error scraping notice content for category {category}:', e)
