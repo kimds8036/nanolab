@@ -102,7 +102,8 @@ app.post('/auth/login', async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-    const decoded = jwt.verify(token, secretKey);
+    const decoded = jwt.verify(token, JWT_SECRET); // JWT_SECRET을 사용
+
     res.status(200).json({ token, email: user.email });  // 이메일도 함께 전달
   } catch (error) {
     console.error('Login error:', error);
@@ -122,7 +123,9 @@ app.get('/auth/profile', authMiddleware, (req, res) => {
 
 // 비밀번호 변경 라우트
 app.post('/auth/change-password', authMiddleware, async (req, res) => {
-  const { email, currentPassword, newPassword } = req.body;
+  const { currentPassword, newPassword } = req.body;
+  const email = req.user.email; // `authMiddleware`가 설정한 사용자 이메일
+
 
   try {
     const user = await User.findOne({ email });
