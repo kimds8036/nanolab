@@ -20,7 +20,7 @@ const authMiddleware = async (req, res, next) => {
     console.log('Decoded token:', decoded);
 
     // 사용자가 존재하는지 확인
-    const user = await User.findOne({ _id: decoded.userId });
+    const user = await User.findOne({ email: decoded.email });
     if (!user) {
       return res.status(401).json({ message: '인증되지 않은 사용자입니다.' });
     }

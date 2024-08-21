@@ -104,11 +104,13 @@ app.post('/auth/login', async (req, res) => {
     }
 
     // JWT 토큰 생성
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    // JWT 토큰 생성
+    const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     console.log('Generated token:', token);
 
+
     res.status(200).json({ token, email: user.email });
-    // 선택 사항: 토큰을 검증하여 디코딩
+ // 선택 사항: 토큰을 검증하여 디코딩
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       console.log('Decoded token:', decoded); // 디코딩된 내용 확인 (선택 사항)
@@ -116,6 +118,7 @@ app.post('/auth/login', async (req, res) => {
       console.error('Token verification error:', error.message);
       return res.status(500).json({ message: 'Internal server error: JWT verification failed' });
     }
+
 
     // 클라이언트에게 토큰과 이메일 반환
     

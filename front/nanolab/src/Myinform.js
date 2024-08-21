@@ -23,36 +23,37 @@ function ProfilePage() {
     loadUserEmail();
   }, [setUser]);
 
-  const handlePasswordChange = async (oldPassword, newPassword) => {
-    try {
-      const token = await AsyncStorage.getItem('token') || await AsyncStorage.getItem('temporary_token');
-  
-      if (!token) {
-        Alert.alert('오류', '로그인 상태를 확인할 수 없습니다.');
-        return;
+    const handlePasswordChange = async (email, oldPassword, newPassword) => {
+      try {
+        const token = await AsyncStorage.getItem('token') || await AsyncStorage.getItem('temporary_token');
+    
+        if (!token) {
+          Alert.alert('오류', '로그인 상태를 확인할 수 없습니다.');
+          return;
+        }
+    
+        const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // 토큰을 사용해 사용자 인증
+          },
+          body: JSON.stringify({ email: form.email, oldPassword, newPassword }),
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          Alert.alert('성공', '비밀번호가 변경되었습니다.');
+        } else {
+          Alert.alert('오류', data.message || '비밀번호 변경에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('Password change error:', error);
+        Alert.alert('오류', '비밀번호 변경 중 오류가 발생했습니다.');
       }
+    };
   
-      const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/change-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // 토큰을 사용해 사용자 인증
-        },
-        body: JSON.stringify({ email: form.email, oldPassword, newPassword }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        Alert.alert('성공', '비밀번호가 변경되었습니다.');
-      } else {
-        Alert.alert('오류', data.message || '비밀번호 변경에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('Password change error:', error);
-      Alert.alert('오류', '비밀번호 변경 중 오류가 발생했습니다.');
-    }
-  };
   const dynamicStyles = {
     profileDepartment: {
       fontSize: 20,
