@@ -96,20 +96,32 @@ app.post('/auth/login', async (req, res) => {
       return res.status(400).json({ message: '아이디와 비밀번호를 확인해 주세요' });
     }
 
+    // JWT_SECRET 확인
     if (!JWT_SECRET) {
       console.error('JWT_SECRET is not defined');
       return res.status(500).json({ message: 'Internal server error: JWT_SECRET is not defined' });
     }
 
+    // JWT 토큰 생성
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-    const decoded = jwt.verify(token, JWT_SECRET); // JWT_SECRET을 사용
 
-    res.status(200).json({ token, email: user.email });  // 이메일도 함께 전달
+    // 선택 사항: 토큰을 검증하여 디코딩
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      console.log('Decoded token:', decoded); // 디코딩된 내용 확인 (선택 사항)
+    } catch (error) {
+      console.error('Token verification error:', error.message);
+      return res.status(500).json({ message: 'Internal server error: JWT verification failed' });
+    }
+
+    // 클라이언트에게 토큰과 이메일 반환
+    res.status(200).json({ token, email: user.email });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // 프로필 조회 라우트
 app.get('/auth/profile', authMiddleware, (req, res) => {

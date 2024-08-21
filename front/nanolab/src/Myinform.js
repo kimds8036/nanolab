@@ -25,6 +25,8 @@ function ProfilePage() {
 
   const handlePasswordChange = async () => {
     const token = await AsyncStorage.getItem('token'); // JWT 토큰 가져오기
+    console.log('Sending token:', token);
+
 
     try {
       const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/change-password', {
@@ -41,7 +43,7 @@ function ProfilePage() {
       });
 
       const data = await response.json();
-
+      console.log('Password change response:', data);
       if (response.ok) {
         Alert.alert("비밀번호 변경", "비밀번호가 변경되었습니다", [{ text: "확인" }]);
         setPasswordChanged(true);

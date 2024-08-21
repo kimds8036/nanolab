@@ -28,6 +28,7 @@ function Login({ navigation }) {
 
         if (isPersistentLogin) {
           await AsyncStorage.setItem('token', data.token);
+          console.log('Token saved to AsyncStorage');
         }
 
         // 로그인 성공 시 유저 정보 설정
