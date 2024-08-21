@@ -79,6 +79,7 @@ app.post('/auth/register', async (req, res) => {
 });
 
 // 로그인 라우트
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
   console.log(`Login attempt for email: ${email}`);
@@ -96,19 +97,34 @@ app.post('/auth/login', async (req, res) => {
       return res.status(400).json({ message: '아이디와 비밀번호를 확인해 주세요' });
     }
 
+    // JWT_SECRET 확인
     if (!JWT_SECRET) {
       console.error('JWT_SECRET is not defined');
       return res.status(500).json({ message: 'Internal server error: JWT_SECRET is not defined' });
     }
 
+    // JWT 토큰 생성
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    console.log('Generated token:', token);
 
-    res.status(200).json({ token, email: user.email });  // 이메일도 함께 전달
+    res.status(200).json({ token, email: user.email });
+    // 선택 사항: 토큰을 검증하여 디코딩
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      console.log('Decoded token:', decoded); // 디코딩된 내용 확인 (선택 사항)
+    } catch (error) {
+      console.error('Token verification error:', error.message);
+      return res.status(500).json({ message: 'Internal server error: JWT verification failed' });
+    }
+
+    // 클라이언트에게 토큰과 이메일 반환
+    
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // 프로필 조회 라우트
 app.get('/auth/profile', authMiddleware, (req, res) => {
@@ -122,7 +138,9 @@ app.get('/auth/profile', authMiddleware, (req, res) => {
 
 // 비밀번호 변경 라우트
 app.post('/auth/change-password', authMiddleware, async (req, res) => {
-  const { email, currentPassword, newPassword } = req.body;
+  const { currentPassword, newPassword } = req.body;
+  const email = req.user.email; // `authMiddleware`가 설정한 사용자 이메일
+
 
   try {
     const user = await User.findOne({ email });

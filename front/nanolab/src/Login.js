@@ -22,19 +22,22 @@ function Login({ navigation }) {
       });
 
       const data = await response.json();
+      console.log('Received data:', data);
 
       if (response.ok) {
         console.log('Login successful:', data.token);
 
-        if (isPersistentLogin) {
-          await AsyncStorage.setItem('token', data.token);
-        }
+      if (isPersistentLogin) {
+        console.log('Attempting to save token:', data.token);  // 저장 전 로그
+        await AsyncStorage.setItem('token', data.token);
+        console.log('Token saved to AsyncStorage');
+      }
+      
 
         // 로그인 성공 시 유저 정보 설정
         setUser({
           email: form.email,
           token: data.token,
-          // 필요한 경우 다른 유저 정보도 추가 가능
         });
 
         // 메인 화면으로 이동
@@ -47,7 +50,8 @@ function Login({ navigation }) {
       console.error('Login error:', error);
       Alert.alert('로그인 오류', '서버와의 통신 중 오류가 발생했습니다.');
     }
-  };
+};
+
 
   const dynamicStyles={
     container:{
