@@ -25,7 +25,8 @@ exports.register = async (req, res) => {
 
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
@@ -47,11 +48,12 @@ exports.login = async (req, res) => {
         }
 
         // JWT 생성
-        const token = jwt.sign({ id: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({ token });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
@@ -82,6 +84,7 @@ exports.changePassword = async (req, res) => {
 
         res.json({ message: 'Password updated successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        console.error('Password change error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

@@ -31,6 +31,7 @@ function Login({ navigation }) {
           console.log('Attempting to save token:', data.token);  // 저장 전 로그
           await AsyncStorage.setItem('token', data.token);
           console.log('Token saved to AsyncStorage');
+          console.log('Received token:', data.token);
         } else {
           // isPersistentLogin이 false인 경우에도 토큰을 임시로 저장
           await AsyncStorage.setItem('temporary_token', data.token);
