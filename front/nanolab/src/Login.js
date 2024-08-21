@@ -20,13 +20,13 @@ function Login({ navigation }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, password: form.password }),
       });
-
+  
       const data = await response.json();
       console.log('Received data:', data);
-
+  
       if (response.ok) {
         console.log('Login successful:', data.token);
-
+  
         // 토큰 저장 로직
         if (isPersistentLogin) {
           console.log('Attempting to save token:', data.token);  // 저장 전 로그
@@ -36,16 +36,16 @@ function Login({ navigation }) {
           // isPersistentLogin이 false인 경우에도 토큰을 임시로 저장
           await AsyncStorage.setItem('temporary_token', data.token);
         }
-
+  
         // 저장된 토큰 확인
         const storedToken = await AsyncStorage.getItem('token') || await AsyncStorage.getItem('temporary_token');
         if (storedToken) {
           // 로그인 성공 시 유저 정보 설정
           setUser({
-            email: form.email,
-            token: data.token,
+            email: form.email, // 이메일 저장
+            token: data.token, // 토큰 저장
           });
-
+  
           // 메인 화면으로 이동
           navigation.navigate('Main');
         } else {
@@ -60,6 +60,7 @@ function Login({ navigation }) {
       Alert.alert('로그인 오류', '서버와의 통신 중 오류가 발생했습니다.');
     }
   };
+  
 
   const dynamicStyles = {
     container: {

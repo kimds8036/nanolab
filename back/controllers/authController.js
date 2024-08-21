@@ -32,29 +32,29 @@ exports.register = async (req, res) => {
 
 // 로그인 로직
 exports.login = async (req, res) => {
-    const { username, password } = req.body;
+  const { email, password } = req.body;
 
-    try {
-        // 유저 확인
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
+  try {
+      // 유저 확인
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(400).json({ message: 'Invalid credentials' });
+      }
 
-        // 비밀번호 검증
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
+      // 비밀번호 검증
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+          return res.status(400).json({ message: 'Invalid credentials' });
+      }
 
-        // JWT 생성
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      // JWT 생성 (userId 대신 email 사용)
+      const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.json({ token });
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
+      res.json({ token });
+  } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ message: 'Server error', error: error.message });
+  }
 };
 
 // 비밀번호 변경 로직
