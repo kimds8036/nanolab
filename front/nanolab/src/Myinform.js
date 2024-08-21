@@ -27,7 +27,7 @@ function ProfilePage() {
     const token = await AsyncStorage.getItem('token'); // JWT 토큰 가져오기
 
     try {
-      const response = await fetch('nanolab-production-6aa7.up.railway.app/auth/change-password', {
+      const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
