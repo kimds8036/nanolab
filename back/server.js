@@ -79,6 +79,7 @@ app.post('/auth/register', async (req, res) => {
 });
 
 // 로그인 라우트
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
   console.log(`Login attempt for email: ${email}`);

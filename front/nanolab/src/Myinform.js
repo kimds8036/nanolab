@@ -25,7 +25,7 @@ function ProfilePage() {
 
   const handlePasswordChange = async () => {
     const token = await AsyncStorage.getItem('token'); // JWT 토큰 가져오기
-    console.log('Sending token:', token);
+    console.log('Retrieved token:', token);
 
 
     try {

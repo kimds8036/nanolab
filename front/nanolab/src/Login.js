@@ -27,10 +27,12 @@ function Login({ navigation }) {
       if (response.ok) {
         console.log('Login successful:', data.token);
 
-        if (isPersistentLogin) {
-          await AsyncStorage.setItem('token', data.token);
-          console.log('Token saved to AsyncStorage');
-        }
+      if (isPersistentLogin) {
+        console.log('Attempting to save token:', data.token);  // 저장 전 로그
+        await AsyncStorage.setItem('token', data.token);
+        console.log('Token saved to AsyncStorage');
+      }
+      
 
         // 로그인 성공 시 유저 정보 설정
         setUser({

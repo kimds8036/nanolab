@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });  // .env 파일의 절대경로 설정
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const JWT_SECRET = process.env.JWT_SECRET;
