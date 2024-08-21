@@ -5,6 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GlobalContext } from './GlobalContext'; // Assuming you have a GlobalContext for darkMode and selectedDepartment
 
 function ProfilePage() {
+  const [form, setForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+  });
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
