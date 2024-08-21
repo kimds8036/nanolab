@@ -38,7 +38,8 @@ function ProfilePage() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`, // 토큰을 사용해 사용자 인증
           },
-          body: JSON.stringify({ email: form.email, oldPassword, newPassword }),
+          body: JSON.stringify({ 
+            email: form.email, oldPassword, newPassword }),
         });
     
         const data = await response.json();
@@ -166,7 +167,7 @@ function ProfilePage() {
                 secureTextEntry
                 style={{ width: '100%', padding: 10, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 10 }}
                 value={currentPassword}
-                onChangeText={setCurrentPassword}
+                onChangeText={(text) => setForm({ ...form, currentPassword: text })}
                 placeholderTextColor="grey"
               />
               <TextInput
@@ -174,7 +175,7 @@ function ProfilePage() {
                 secureTextEntry
                 style={{ width: '100%', padding: 10, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 10 }}
                 value={newPassword}
-                onChangeText={setNewPassword}
+                onChangeText={(text) => setForm({ ...form, newPassword: text })}
                 placeholderTextColor="grey"
               />
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 10 }}>
