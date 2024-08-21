@@ -104,7 +104,9 @@ app.post('/auth/login', async (req, res) => {
 
     // JWT 토큰 생성
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    console.log('Generated token:', token);
 
+    res.status(200).json({ token, email: user.email });
     // 선택 사항: 토큰을 검증하여 디코딩
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
@@ -115,7 +117,7 @@ app.post('/auth/login', async (req, res) => {
     }
 
     // 클라이언트에게 토큰과 이메일 반환
-    res.status(200).json({ token, email: user.email });
+    
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
