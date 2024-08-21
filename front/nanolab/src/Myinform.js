@@ -10,9 +10,6 @@ function ProfilePage() {
     newPassword: '',
   });
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [isPasswordChanged, setPasswordChanged] = useState(false);
   const { darkMode, user, setUser, selectedDepartment } = useContext(GlobalContext);
   const navigation = useNavigation();
 
@@ -27,40 +24,41 @@ function ProfilePage() {
     loadUserEmail();
   }, [setUser]);
 
-    const handlePasswordChange = async (email, oldPassword, newPassword) => {
-      try {
-        const token = await AsyncStorage.getItem('token') || await AsyncStorage.getItem('temporary_token');
-    
-        if (!token) {
-          Alert.alert('오류', '로그인 상태를 확인할 수 없습니다.');
-          return;
-        }
-    
-        const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/change-password', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // 토큰을 사용해 사용자 인증
-          },
-          body: JSON.stringify({
-            email: user?.email, // 이메일 사용
-            currentPassword: form.currentPassword,
-            newPassword: form.newPassword,
-          }),
-        });
-    
-        const data = await response.json();
-    
-        if (response.ok) {
-          Alert.alert('성공', '비밀번호가 변경되었습니다.');
-        } else {
-          Alert.alert('오류', data.message || '비밀번호 변경에 실패했습니다.');
-        }
-      } catch (error) {
-        console.error('Password change error:', error);
-        Alert.alert('오류', '비밀번호 변경 중 오류가 발생했습니다.');
+  const handlePasswordChange = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token') || await AsyncStorage.getItem('temporary_token');
+  
+      if (!token) {
+        Alert.alert('오류', '로그인 상태를 확인할 수 없습니다.');
+        return;
       }
-    };
+  
+      const response = await fetch('https://nanolab-production-6aa7.up.railway.app/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // 토큰을 사용해 사용자 인증
+        },
+        body: JSON.stringify({
+          email: user?.email, // 이메일 사용
+          currentPassword: form.currentPassword,
+          newPassword: form.newPassword,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Alert.alert('성공', '비밀번호가 변경되었습니다.');
+        setPasswordModalVisible(false); // 비밀번호 변경 후 모달 닫기
+      } else {
+        Alert.alert('오류', data.message || '비밀번호 변경에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+      Alert.alert('오류', '비밀번호 변경 중 오류가 발생했습니다.');
+    }
+  };
   
   const dynamicStyles = {
     profileDepartment: {
@@ -119,93 +117,88 @@ function ProfilePage() {
     ? require('../assets/image/dark/back.png')
     : require('../assets/image/light/back.png');
     
-    return (
-      <ImageBackground source={background} style={{ flex: 1 }}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={dynamicStyles.bar}></View>
+  return (
+    <ImageBackground source={background} style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={dynamicStyles.bar}></View>
+      
+        <View style={{ height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ position: 'absolute', left: 10 }}>
+            <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
+              <Image source={back} style={{ width: 25, height: 25 }} />
+            </TouchableOpacity>
+          </View>
+          <Text style={dynamicStyles.headerTitle}>내 정보 수정</Text>
+        </View>
         
-          <View style={{ height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ position: 'absolute', left: 10 }}>
-              <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
-                <Image source={back} style={{ width: 25, height: 25 }} />
-              </TouchableOpacity>
+        <View style={{ alignItems: 'center', marginTop: 80 }}>
+          <View style={dynamicStyles.profileCard}>
+            <View style={{ marginRight: 20, marginLeft: 30 }}>
+              <Image source={require('../assets/image/light/profile.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
             </View>
-            <Text style={dynamicStyles.headerTitle}>내 정보 수정</Text>
-          </View>
-          
-          <View style={{ alignItems: 'center', marginTop: 80 }}>
-            <View style={dynamicStyles.profileCard}>
-              <View style={{ marginRight: 20, marginLeft: 30 }}>
-                <Image source={require('../assets/image/light/profile.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
-              </View>
-              <View style={{ flexDirection: 'column' }}>
-                <Text style={[dynamicStyles.profileDepartment,
-                  { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' },
-                  selectedDepartment && dynamicStyles.profileDepartment]}>
-                  {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
-                </Text>
-                <Text style={dynamicStyles.profileEmail}>
-                  {user?.email || '이메일이 없습니다.'}
-                </Text>
-              </View>
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={[dynamicStyles.profileDepartment,
+                { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' },
+                selectedDepartment && dynamicStyles.profileDepartment]}>
+                {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
+              </Text>
+              <Text style={dynamicStyles.profileEmail}>
+                {user?.email || '이메일이 없습니다.'}
+              </Text>
             </View>
           </View>
-  
-          <View style={{ marginTop: 50 }}>
-            <TouchableOpacity onPress={() => setPasswordModalVisible(true)} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }}>
-              <Text style={dynamicStyles.infoLabel}>비밀번호 변경</Text>
-              <Image source={require('../assets/image/light/password.png')} style={{ width: 30, height: 30 }} />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }} onPress={() => { navigation.navigate('Department'); }}>
-              <Text style={dynamicStyles.infoLabel}>학과 등록</Text>
-              <Image source={require('../assets/image/light/subject.png')} style={{ width: 30, height: 30 }} />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderBottomWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }} onPress={() => { navigation.navigate('Department'); }}>
-              <Text style={dynamicStyles.infoLabel}>탈퇴</Text>
-              <Image source={require('../assets/image/light/exit.png')} style={{ width: 30, height: 30 }} />
-            </TouchableOpacity>
-          </View>
-  
-          <Modal visible={isPasswordModalVisible} transparent={true} animationType="slide">
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-              <View style={dynamicStyles.modalContent}>
-                <TextInput
-                  placeholder="기존 비밀번호"
-                  secureTextEntry
-                  style={{ width: '100%', padding: 10, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 10 }}
-                  value={currentPassword}
-                  onChangeText={(text) => {
-                    console.log('Current Password:', text); // 입력한 텍스트가 올바르게 전달되는지 확인
-                    setForm({ ...form, currentPassword: text });
-                  }}
-                  placeholderTextColor="grey"
-                />
-                <TextInput
-                  placeholder="새로운 비밀번호"
-                  secureTextEntry
-                  style={{ width: '100%', padding: 10, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 10 }}
-                  value={newPassword}
-                  onChangeText={(text) => {
-                    console.log('Current Password:', text); // 입력한 텍스트가 올바르게 전달되는지 확인
-                    setForm({ ...form, currentPassword: text });
-                  }}
-                  placeholderTextColor="grey"
-                />
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 10 }}>
-                  <View style={{ borderWidth: 1, borderColor: '#C4C4C4', borderRadius: 8, width: '45%' }}>
-                    <Button title="확인" color={darkMode ? '#9DC284' : '#0E664F'} onPress={handlePasswordChange} />
-                  </View>
-                  <View style={{ borderWidth: 1, borderColor: '#C4C4C4', borderRadius: 8, width: '45%' }}>
-                    <Button title="취소" color={darkMode ? 'white' : 'black'} onPress={() => setPasswordModalVisible(false)} />
-                  </View>
+        </View>
+
+        <View style={{ marginTop: 50 }}>
+          <TouchableOpacity onPress={() => setPasswordModalVisible(true)} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }}>
+            <Text style={dynamicStyles.infoLabel}>비밀번호 변경</Text>
+            <Image source={require('../assets/image/light/password.png')} style={{ width: 30, height: 30 }} />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }} onPress={() => { navigation.navigate('Department'); }}>
+            <Text style={dynamicStyles.infoLabel}>학과 등록</Text>
+            <Image source={require('../assets/image/light/subject.png')} style={{ width: 30, height: 30 }} />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderBottomWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }} onPress={() => { navigation.navigate('Department'); }}>
+            <Text style={dynamicStyles.infoLabel}>탈퇴</Text>
+            <Image source={require('../assets/image/light/exit.png')} style={{ width: 30, height: 30 }} />
+          </TouchableOpacity>
+        </View>
+
+        <Modal visible={isPasswordModalVisible} transparent={true} animationType="slide">
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <View style={dynamicStyles.modalContent}>
+              <TextInput
+                placeholder="기존 비밀번호"
+                secureTextEntry
+                style={{ width: '100%', padding: 10, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 10 }}
+                value={form.currentPassword}
+                onChangeText={(text) => setForm({ ...form, currentPassword: text })}
+                placeholderTextColor="grey"
+              />
+              <TextInput
+                placeholder="새로운 비밀번호"
+                secureTextEntry
+                style={{ width: '100%', padding: 10, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 10 }}
+                value={form.newPassword}
+                onChangeText={(text) => setForm({ ...form, newPassword: text })}
+                placeholderTextColor="grey"
+              />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 10 }}>
+                <View style={{ borderWidth: 1, borderColor: '#C4C4C4', borderRadius: 8, width: '45%' }}>
+                  <Button title="확인" color={darkMode ? '#9DC284' : '#0E664F'} onPress={handlePasswordChange} />
+                </View>
+                <View style={{ borderWidth: 1, borderColor: '#C4C4C4', borderRadius: 8, width: '45%' }}>
+                  <Button title="취소" color={darkMode ? 'white' : 'black'} onPress={() => setPasswordModalVisible(false)} />
                 </View>
               </View>
             </View>
-          </Modal>
-        </SafeAreaView>
-      </ImageBackground>
-    );
-  }
+          </View>
+        </Modal>
+      </SafeAreaView>
+    </ImageBackground>
+  );
+}
+
 
 
 
