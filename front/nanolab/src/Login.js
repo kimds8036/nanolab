@@ -27,12 +27,27 @@ function Login({ navigation }) {
       if (response.ok) {
         console.log('Login successful:', data.token);
 
-      if (isPersistentLogin) {
-        console.log('Attempting to save token:', data.token);  // 저장 전 로그
-        await AsyncStorage.setItem('token', data.token);
-        console.log('Token saved to AsyncStorage');
+        if (isPersistentLogin) {
+          console.log('Attempting to save token:', data.token);  // 저장 전 로그
+          await AsyncStorage.setItem('token', data.token);
+          console.log('Token saved to AsyncStorage');
+        } else {
+          // isPersistentLogin이 false인 경우에도 토큰을 임시로 저장
+          await AsyncStorage.setItem('temporary_token', data.token);
       }
-      
+      const storedToken = await AsyncStorage.getItem('token') || await AsyncStorage.getItem('temporary_token');
+      if (storedToken) {
+    // 로그인 성공 시 유저 정보 설정
+        setUser({
+          email: form.email,
+          token: data.token,
+      });
+
+      // 메인 화면으로 이동
+      navigation.navigate('Main');
+  } else {
+      Alert.alert('오류', '토큰 저장에 실패했습니다. 다시 시도해주세요.');
+  }
 
         // 로그인 성공 시 유저 정보 설정
         setUser({
