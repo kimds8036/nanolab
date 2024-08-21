@@ -38,8 +38,11 @@ function ProfilePage() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`, // 토큰을 사용해 사용자 인증
           },
-          body: JSON.stringify({ 
-            email: form.email, oldPassword, newPassword }),
+          body: JSON.stringify({
+            email: user?.email, // 이메일 사용
+            currentPassword: form.currentPassword,
+            newPassword: form.newPassword,
+          }),
         });
     
         const data = await response.json();
