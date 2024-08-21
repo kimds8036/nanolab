@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, viewCount } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GlobalContext } from './GlobalContext';
 
@@ -167,6 +167,7 @@ const PopularNotices = () => {
   const daysLeft = 1; // 디데이까지 남은 일수 (예시로 10일 설정)
   const { darkMode } = useContext(GlobalContext);
   const { user } = useContext(GlobalContext);
+  const [viewCounts, setViewCounts] = useState([0,0,0,0,0,0,0,0]);
 
   // 날짜에 따른 색상 결정 함수
   const getDateStyle = () => {
@@ -187,6 +188,12 @@ const PopularNotices = () => {
     } else {
       return `D-${daysLeft}`;
     }
+  };
+
+  const handlePress = (index) => {
+    const newViewCounts = [...viewCounts];
+    newViewCounts[index] += 1;
+    setViewCounts(newViewCounts);
   };
   
   const dynamicStyles = {
@@ -244,10 +251,6 @@ const PopularNotices = () => {
     },
   };
 
-  const next = darkMode 
-    ? require('../assets/image/dark/next.png')
-    : require('../assets/image/light/next.png');
-
   return (
     <View style={styles.Container2}>
       <View style={[styles.sectionContainer2, dynamicStyles.sectionContainer2]}>
@@ -255,71 +258,133 @@ const PopularNotices = () => {
           <Text style={[styles.sectionTitle, dynamicStyles.sectionTitle]}>인기 공지</Text>
         </View>
         <View style={styles.popularNotices}>
-          <View style={[styles.announcement,dynamicStyles.announcement]}>
-            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={next} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
-          <View style={[styles.announcement,dynamicStyles.announcement]}>
-            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={next} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
-          <View style={[styles.announcement,dynamicStyles.announcement]}>
-            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={next} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
-          <View style={[styles.announcement,dynamicStyles.announcement]}>
-            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={next} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
-          <View style={[styles.announcement,dynamicStyles.announcement]}>
-            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={next} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
-          <View style={[styles.announcement,dynamicStyles.announcement]}>
-            <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
-            <View style={styles.dotted}></View>
-            <View style={styles.dcontainer}>
-              <Text style={[styles.details,dynamicStyles.details]}>조회수: 125</Text>
-              <View style={[styles.date, getDateStyle()]}><Text style={styles.datetext}>{getDateText()}</Text></View>
-              <TouchableOpacity onPress={() => alert('Details')}>
-                <Image source={next} style={styles.nextbutton} />  
-              </TouchableOpacity>
-            </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+          <View>
+            {viewCounts.map((count, index) => (
+              <View key={index} style={[styles.announcement,dynamicStyles.announcement]}>
+                <TouchableOpacity onPress={() => handlePress(index)}>
+                  <Text style={[styles.title,dynamicStyles.title]}>[장학 공지] 장학금 수혜/수혜증명서 발급 안내</Text>
+                </TouchableOpacity>
+                <View style={styles.dotted}></View>
+                <View style={styles.dcontainer}>
+                  <Text style={[styles.details,dynamicStyles.details]}>조회수: {count}</Text>
+                  <View style={[styles.date, getDateStyle()]}>
+                    <Text style={styles.datetext}>{getDateText()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
         </View>
       </View>
@@ -673,7 +738,6 @@ const styles = StyleSheet.create({
   },
   date: {
     marginTop: 5,
-    left:70,
     backgroundColor:'red',
     borderRadius:10,
     width:60,
