@@ -102,7 +102,7 @@ app.post('/auth/login', async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-
+    const decoded = jwt.verify(token, secretKey);
     res.status(200).json({ token, email: user.email });  // 이메일도 함께 전달
   } catch (error) {
     console.error('Login error:', error);
