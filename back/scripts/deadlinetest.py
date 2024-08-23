@@ -1,53 +1,53 @@
 import pymongo
+from pymongo import MongoClient
 
 # MongoDB 연결 설정
-client = pymongo.MongoClient('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0')
 db = client['nanolabmeta']
 
-def deduplicate_urls_in_notices_collections():
-    # 'notices'로 시작하는 모든 컬렉션 이름 가져오기
-    collections = [col for col in db.list_collection_names() if col.startswith('notices')]
+# 모든 컬렉션 이름 가져오기
+collection_names = db.list_collection_names()
 
-    for collection_name in collections:
-        print(f"Processing collection: {collection_name}")
-        collection = db[collection_name]
-        # 모든 문서를 탐색
-        for document in collection.find():
-            updated_fields = {}
-            is_updated = False
-            document_id = document['_id']  # _id 가져오기
+for collection_name in collection_names:
+    collection = db[collection_name]
 
-            # files 필드 중복 제거
-            if 'files' in document:
-                unique_files = list(set(document['files']))
-                if len(unique_files) != len(document['files']):
-                    updated_fields['files'] = unique_files
-                    is_updated = True
+    # 기준이 되는 필드들 (예: title, date, link)
+    pipeline = [
+        {
+            "$group": {
+                "_id": {
+                    "title": "$title",  # title과 date 기준으로 그룹화
+                    "date": "$date"
+                },
+                "count": {"$sum": 1},
+                "docs": {"$push": "$$ROOT"}
+            }
+        },
+        {
+            "$match": {
+                "count": {"$gt": 1}  # 중복된 문서만 선택
+            }
+        }
+    ]
 
-            # images 필드 중복 제거
-            if 'images' in document:
-                unique_images = list(set(document['images']))
-                if len(unique_images) != len(document['images']):
-                    updated_fields['images'] = unique_images
-                    is_updated = True
+    duplicates = collection.aggregate(pipeline)
 
-            # pdfUrl 필드 중복 제거
-            if 'pdfUrl' in document:
-                # pdfUrl은 단일 값이므로 중복 제거는 필요 없지만, 동일한 값이 여러 번 저장되었을 경우를 대비
-                unique_pdf_url = list(set([document['pdfUrl']]))
-                if len(unique_pdf_url) == 1:
-                    updated_fields['pdfUrl'] = unique_pdf_url[0]
-                elif len(unique_pdf_url) > 1:  # 이 경우 중복이 있었다는 뜻
-                    updated_fields['pdfUrl'] = unique_pdf_url[0]
-                    is_updated = True
+    any_duplicates_found = False  # 중복이 발견되었는지 추적
 
-            # 문서 업데이트
-            if is_updated:
-                collection.update_one(
-                    {'_id': document_id},
-                    {'$set': updated_fields}
-                )
-                print(f"Document {document_id} in collection {collection_name} updated.")
+    for duplicate in duplicates:
+        any_duplicates_found = True
+        print(f"Found duplicate documents in collection '{collection_name}':")
+        for doc in duplicate['docs']:
+            print(f"Document ID: {doc['_id']}, Title: {doc['title']}, Date: {doc['date']}, Link: {doc.get('link', 'N/A')}")
 
-# 실행
-deduplicate_urls_in_notices_collections()
+        # 첫 번째 문서를 남겨두고 나머지 중복 문서를 제거
+        ids_to_remove = [doc['_id'] for doc in duplicate['docs'][1:]]  # 첫 번째 문서 제외
+
+        # 중복 문서 삭제
+        result = collection.delete_many({"_id": {"$in": ids_to_remove}})
+        print(f"Removed {result.deleted_count} duplicates from collection '{collection_name}'.\n")
+
+    if not any_duplicates_found:
+        print(f"No duplicates found in collection '{collection_name}'.\n")
+
+print("Finished removing duplicates from all collections.")
