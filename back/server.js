@@ -5,6 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const User = require('./models/user');
 const mongoose = require('mongoose');
 const useragent = require('express-useragent');
 const jwt = require('jsonwebtoken');

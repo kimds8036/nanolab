@@ -274,9 +274,15 @@ def scrape_notice_links():
                         continue
 
                     # Delta 크롤링: 이미 수집된 링크인지 확인
-                    if notice_date > latest_date:
+                    if notice_date >= latest_date:  # 오늘 날짜와 같은 공지도 포함하기 위해 >= 사용
                         try:
-                            existing_notice = notice_links_collection.find_one({'link': notice['link']})
+                            # 제목과 날짜로 중복 체크
+                            existing_notice = notice_links_collection.find_one({
+                                'title': notice['title'], 
+                                'date': notice['date'],
+                                'category': notice['category']
+                            })
+
                             if not existing_notice:
                                 notice_links_collection.insert_one(notice)
                                 print(f"New notice added: {notice['title']}")
@@ -284,7 +290,7 @@ def scrape_notice_links():
                                 # 중요도가 바뀌었을 수 있으므로 항상 중요도로 업데이트
                                 if notice['type'] == 'important':
                                     notice_links_collection.update_one(
-                                        {'link': notice['link']},
+                                        {'title': notice['title'], 'date': notice['date'], 'category': notice['category']},
                                         {'$set': {'type': 'important'}}
                                     )
                                     print(f"Notice importance updated: {notice['title']}")
@@ -292,7 +298,7 @@ def scrape_notice_links():
                             print(f"Error saving notice {notice['title']}: {e}")
                     else:
                         print(f"Skipping old notice: {notice['title']}, date: {notice['date']}")
-                        break
+                        continue  # break 대신 continue를 사용하여 다음 공지를 확인 확인
 scrape_notice_links()
 
 
