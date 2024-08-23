@@ -5,8 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const User = require('./models/user');
-
+const mongoose = require('mongoose');
 const useragent = require('express-useragent');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
@@ -25,6 +24,15 @@ app.use(useragent.express());
 
 // 데이터베이스 연결
 connectDB();
+
+// 공지사항 스키마 및 모델 정의
+const noticeSchema = new mongoose.Schema({
+  title: String,
+  date: String,
+  content: String,
+});
+
+const Notice = mongoose.model('Notice', noticeSchema);
 
 // 루트 경로 핸들러 추가
 app.get('/', (req, res) => {
@@ -104,13 +112,12 @@ app.post('/auth/login', async (req, res) => {
     }
 
     // JWT 토큰 생성
-    // JWT 토큰 생성
     const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     console.log('Generated token:', token);
 
-
     res.status(200).json({ token, email: user.email });
- // 선택 사항: 토큰을 검증하여 디코딩
+
+    // 선택 사항: 토큰을 검증하여 디코딩
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       console.log('Decoded token:', decoded); // 디코딩된 내용 확인 (선택 사항)
@@ -119,15 +126,11 @@ app.post('/auth/login', async (req, res) => {
       return res.status(500).json({ message: 'Internal server error: JWT verification failed' });
     }
 
-
-    // 클라이언트에게 토큰과 이메일 반환
-    
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 // 프로필 조회 라우트
 app.get('/auth/profile', authMiddleware, (req, res) => {
@@ -143,7 +146,6 @@ app.get('/auth/profile', authMiddleware, (req, res) => {
 app.post('/auth/change-password', authMiddleware, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const email = req.user.email; // `authMiddleware`가 설정한 사용자 이메일
-
 
   try {
     const user = await User.findOne({ email });
@@ -196,6 +198,21 @@ app.get('/api/notices', async (req, res) => {
   }
 });
 
+// 공지사항 카테고리별 조회 라우트
+app.get('/api/notices/:category', async (req, res) => {
+  const { category } = req.params;
+  const collectionName = `notices_${category}`; // 카테고리에 따른 컬렉션 이름 설정
+  console.log(`Fetching notices for category: ${category}`);
+
+  try {
+    const notices = await mongoose.connection.db.collection(collectionName).find({}).toArray();
+    res.json(notices);
+  } catch (error) {
+    console.error(`Error fetching notices for category ${category}:`, error);
+    res.status(500).json({ message: 'Error fetching notices', error });
+  }
+});
+
 // D-Day 계산 함수
 const extractDeadline = (text) => {
   const deadlinePattern = /(?:기간|신청기간|등록기간|접수기간)\s*:\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\(\S+\))\s*~\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\(\S+\))/;
@@ -215,6 +232,7 @@ const calculateDDay = (deadline) => {
   return dDay;
 };
 
+// 서버 시작
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
