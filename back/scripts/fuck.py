@@ -1,6 +1,5 @@
 import requests
 import time
-import pymongo
 from bs4 import BeautifulSoup, Comment
 from pymongo import MongoClient
 from urllib.parse import urljoin
@@ -44,41 +43,6 @@ def get_notice_links(db):
     notice_links_list = list(cursor)
     print(f"Number of notice links found: {len(notice_links_list)}")
     return notice_links_list
-
-
-def get_today_notice_links(db):
-    today_date_dash = datetime.now().strftime('%Y-%m-%d')
-    today_date_dot = datetime.now().strftime('%Y.%m.%d')
-
-    cursor = db.noticelinks.find({
-        '$or': [
-            {'date': today_date_dash},
-            {'date': today_date_dot}
-        ]
-    })
-    
-    notice_links_list = list(cursor)
-    print(f"Number of today's notice links found: {len(notice_links_list)}")
-    return notice_links_list
-
-def get_existing_importance(db, link):
-    notice_link = db.noticelinks.find_one({'link': link})
-    if notice_link:
-        return notice_link.get('importance', 'general')
-    return 'general'
-
-def update_importance_if_changed(db, notice_link):
-    existing_importance = get_existing_importance(db, notice_link['link'])
-    new_importance = notice_link.get('importance', 'general')
-    
-    if existing_importance != new_importance:
-        db.noticelinks.update_one(
-            {'link': notice_link['link']},
-            {'$set': {'importance': new_importance}}
-        )
-        print(f"Updated importance for {notice_link['link']} from {existing_importance} to {new_importance}")
-    else:
-        print(f"No change in importance for {notice_link['link']}")
 
 # 공지사항 저장 및 업데이트
 def save_or_update_notice(db, category, notice_data):
@@ -138,23 +102,15 @@ categories = [
     {'name': '혁신공유대학', 'baseUrl': 'https://healingbio.kku.ac.kr', 'type': 'second'}
 ]
 
-
-def get_latest_notice_date(db, category):
-    # 카테고리별로 가장 최근에 저장된 공지사항 날짜 가져오기
-    collection_name = f'notices_{category}'
-    collection = db[collection_name]
-    latest_notice = collection.find_one(sort=[("date", pymongo.DESCENDING)])
-    return latest_notice['date'] if latest_notice else '1970-01-01'
 # 공지사항 크롤링 및 저장
-
 def scrape_and_save_notices():
     db = connect_to_mongodb()
 
-    print("Fetching all notice links...")
-    all_notice_links = get_notice_links(db)
-    print(f"Fetched {len(all_notice_links)} notice links.")
+    print("Fetching notice links...")
+    notice_links = get_notice_links(db)
+    print(f"Fetched {len(notice_links)} notice links.")
 
-    for notice_link in all_notice_links:
+    for notice_link in notice_links:
         print(f"Processing link: {notice_link['link']}")
         link = notice_link['link']
         category = notice_link['category']
@@ -166,8 +122,6 @@ def scrape_and_save_notices():
             print(f'Unrecognized category: {category}')
             continue
 
-    # 이후의 로직은 동일합니다.
-
         start_time = time.time()
         try:
             response = requests.get(link, headers=headers)
@@ -175,10 +129,13 @@ def scrape_and_save_notices():
             soup = BeautifulSoup(response.text, 'html.parser')
 
             if category == '의예과':
-                title = notice_link.get('title', '제목 없음')
-                date = notice_link.get('date', '날짜 없음')
+                title_element = soup.select_one('h4 strong')
+                title = title_element.get_text(strip=True) if title_element else '제목 없음'
+                date_element = soup.select_one('div.pull-right.text-right span i.fa-clock-o')
+                date = date_element.parent.get_text(strip=True).replace('날짜 없음', '').strip() if date_element else '날짜 없음'
 
-                
+                if date != '날짜 없음':
+                    date = datetime.strptime(date, "%Y-%m-%d %H:%M").strftime("%Y-%m-%d")
 
                 content_element = soup.select_one('.board-view-con')
                 if content_element:
@@ -221,6 +178,7 @@ def scrape_and_save_notices():
                     'files': all_files,
                     'extractedText': extracted_text,
                     'images': image_urls,
+                    #'links': valid_links,
                     'pdfUrl': pdf_url,
                     'type': notice_link.get('type', {})
                 }
@@ -231,8 +189,8 @@ def scrape_and_save_notices():
             valid_links = []  # valid_links를 처음에 초기화
 
             if matching_category['type'] == 'first':
-                title = notice_link.get('title', '제목 없음')
-                date = notice_link.get('date', '날짜 없음')
+                title = soup.select_one('h4').get_text(strip=True).replace('제목\t :', '').strip() or '제목 없음'
+                date = soup.select_one('span.detail_info_date + span.detail_info_after').get_text(strip=True) or '날짜 없음'
                 content_element = soup.select_one('#board_contents')
 
                 all_files = []
@@ -246,8 +204,8 @@ def scrape_and_save_notices():
                         valid_links.append(urljoin(link, href))
 
             elif matching_category['type'] == 'second':
-                title = notice_link.get('title', '제목 없음')
-                date = notice_link.get('date', '날짜 없음')
+                title = soup.select_one('table.grid .subject').get_text(strip=True) or '제목 없음'
+                date = soup.select_one('table.grid th:contains("작성일") + td').get_text(strip=True) or '날짜 없음'
                 content_element = soup.select_one('#post_view_txt')
 
                 all_files = []
@@ -259,9 +217,7 @@ def scrape_and_save_notices():
                         all_files.append(file_url)
                     else:
                         valid_links.append(urljoin(link, href))
-                image_urls = []
-                
-            pdf_url = []
+
             if content_element:
                 clean_content(soup, content_element)
 
@@ -280,31 +236,17 @@ def scrape_and_save_notices():
                 pdf_url = None
                 iframe_element = content_element.select_one('iframe')
                 if iframe_element:
-                    # PDF URL 절대 경로로 변환
                     pdf_url = urljoin(link, iframe_element['src'])
                     pdf_embed_code = f'<iframe src="{pdf_url}" width="100%" height="800px"></iframe>'
-                    # 기존 iframe 요소를 새로 만든 임베드 코드로 대체
                     content = content_element.prettify().replace(str(iframe_element), pdf_embed_code)
                 else:
                     content = content_element.prettify()
 
-                # 본문 내 모든 링크와 이미지에 도메인 추가
-                for tag in content_element.find_all(['a', 'img', 'iframe'], src=True):
-                    tag['src'] = urljoin(link, tag['src'])
-
-                for tag in content_element.find_all('a', href=True):
-                    tag['href'] = urljoin(link, tag['href'])
-
-                # prettify를 통해 HTML 문자열로 변환
-                content = content_element.prettify()
-
                 extracted_text = content_element.get_text(strip=True)
+            else:
+                content = ''
+                extracted_text = ''
 
-                # 결과 확인
-                print("PDF URL:", pdf_url)
-                print("Content with domain:", content)
-                print("Extracted Text:", extracted_text)
-            
             result = {
                 'title': title,
                 'date': date,
@@ -312,11 +254,14 @@ def scrape_and_save_notices():
                 'files': all_files,
                 'extractedText': extracted_text,
                 'images': image_urls,
+                #'links': valid_links,  # 링크를 links 필드에 저장 (이 줄 주석처리 유지)
                 'pdfUrl': pdf_url,
                 'type': notice_link.get('type', {})
             }
 
             print(f"Processed notice: {result}")
+
+
 
         except Exception as e:
             print(f'Error scraping notice content for category {category}:', e)
@@ -325,10 +270,6 @@ def scrape_and_save_notices():
         print(f"Time taken to fetch and process page for {category}: {elapsed_time} seconds")
 
         if result:
-            # 중요도 업데이트 확인 및 적용
-            update_importance_if_changed(db, notice_link)
-
-            # 변경된 중요도를 포함하여 저장
             save_or_update_notice(db, category, result)
 
     db.client.close()

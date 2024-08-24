@@ -1,12 +1,16 @@
 import pymongo
 from pymongo import MongoClient
+from datetime import datetime, timedelta
 
 # MongoDB 연결 설정
 client = MongoClient('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0')
 db = client['nanolabmeta']
 
-# 모든 컬렉션 이름 가져오기
-collection_names = db.list_collection_names()
+# 오늘 날짜로부터 2년 전의 날짜 계산
+two_years_ago = (datetime.now() - timedelta(days=2*365)).strftime('%Y-%m-%d')
+
+# notice로 시작하는 모든 컬렉션 이름 가져오기
+collection_names = [name for name in db.list_collection_names() if name.startswith('notices_')]
 
 for collection_name in collection_names:
     collection = db[collection_name]
@@ -38,7 +42,7 @@ for collection_name in collection_names:
         any_duplicates_found = True
         print(f"Found duplicate documents in collection '{collection_name}':")
         for doc in duplicate['docs']:
-            print(f"Document ID: {doc['_id']}, Title: {doc['title']}, Date: {doc['date']}, Link: {doc.get('link', 'N/A')}")
+            print(f"Document ID: {doc['_id']}, Title: {doc.get('title', 'Untitled')}, Date: {doc.get('date', 'N/A')}, Link: {doc.get('link', 'N/A')}")
 
         # 첫 번째 문서를 남겨두고 나머지 중복 문서를 제거
         ids_to_remove = [doc['_id'] for doc in duplicate['docs'][1:]]  # 첫 번째 문서 제외
@@ -50,4 +54,8 @@ for collection_name in collection_names:
     if not any_duplicates_found:
         print(f"No duplicates found in collection '{collection_name}'.\n")
 
-print("Finished removing duplicates from all collections.")
+    # 2년 전의 게시글 삭제
+    delete_result = collection.delete_many({"date": {"$lt": two_years_ago}})
+    print(f"Removed {delete_result.deleted_count} documents older than {two_years_ago} from collection '{collection_name}'.\n")
+
+print("Finished removing duplicates and old documents from all collections.")
