@@ -177,16 +177,49 @@ app.get('/api/notices_:category', async (req, res) => {
   const { category } = req.params;
 
   try {
+    // 동적으로 컬렉션 이름을 지정
     const collectionName = `notices_${category}`;
     const noticesCollection = mongoose.connection.collection(collectionName);
-    const notices = await noticesCollection.find({}).project({ title: 1, date: 1 }).toArray();
-
+    
+    // 해당 컬렉션에서 데이터를 가져옴
+    const notices = await noticesCollection.find({})
+      .project({ title: 1, date: 1 })  // title과 date 필드만 선택
+      .toArray();  // 결과를 배열로 변환
+    
     res.json(notices);
   } catch (error) {
     console.error('Error fetching notices:', error);
-    res.status(500).json({ message: 'Server error occurred', error });
+    res.status(500).json({ message: '서버 오류 발생', error });
   }
 });
+app.get('/api/noticeDetail', async (req, res) => {
+  let { category, title } = req.query; // 쿼리 파라미터에서 category와 title 가져오기
+
+  // category를 사용하여 동적으로 컬렉션 이름을 생성
+  const collectionName = `notices_${category}`;
+
+  console.log('Decoded collection:', collectionName);
+  console.log('Decoded title:', title);
+
+  if (!collectionName) {
+    return res.status(400).json({ message: 'Collection not specified or invalid.' });
+  }
+
+  try {
+    const noticesCollection = mongoose.connection.collection(collectionName);
+    const notice = await noticesCollection.findOne({ title });
+
+    if (notice) {
+      res.json(notice);
+    } else {
+      res.status(404).json({ message: 'Notice not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching notice detail:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 // 공지사항 검색 및 D-Day 계산 라우트
 app.get('/api/noticelinks', async (req, res) => {
