@@ -222,6 +222,72 @@ const calculateDDay = (deadline) => {
   return dDay;
 };
 
+// 키워드 저장 라우트
+app.post('/keywords', async (req, res) => {
+  const { email, keyword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    if (user.keywords.includes(keyword)) {
+      return res.status(400).json({ message: 'Keyword already exists' });
+    }
+
+    user.keywords.push(keyword);
+    await user.save();
+
+    res.status(200).json({ message: 'Keyword added successfully' });
+  } catch (error) {
+    console.error('Error adding keyword:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// 키워드 조회 라우트
+app.get('/keywords', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ keywords: user.keywords });
+  } catch (error) {
+    console.error('Error fetching keywords:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// 키워드 삭제 라우트
+app.delete('/keywords', async (req, res) => {
+  const { email, keyword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    const keywordIndex = user.keywords.indexOf(keyword);
+    if (keywordIndex === -1) {
+      return res.status(400).json({ message: 'Keyword not found' });
+    }
+
+    user.keywords.splice(keywordIndex, 1); // 키워드 삭제
+    await user.save();
+
+    res.status(200).json({ message: 'Keyword deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting keyword:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // 서버 시작
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
