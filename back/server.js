@@ -15,6 +15,29 @@ const authMiddleware = require('./middleware/authMiddleware');
 const User = require('./models/user');
 const NoticeLink = require('./models/NoticeLink');
 const Notice = require('./models/Notice');
+const admin = require('firebase-admin');
+
+// 환경 변수에서 민감한 정보 불러오기
+const serviceAccount = {
+  type: "service_account",
+  project_id: "nanolab-4529f",
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),  // 줄바꿈 변환 다시 추가
+  client_email: "firebase-adminsdk-bdkv6@nanolab-4529f.iam.gserviceaccount.com",
+  client_id: "102222030477520768885",
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-bdkv6@nanolab-4529f.iam.gserviceaccount.com",
+  universe_domain: "googleapis.com"
+};
+console.log("FIREBASE_PRIVATE_KEY:", process.env.FIREBASE_PRIVATE_KEY);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://nanolab-4529f.firebaseio.com' // Firebase 프로젝트 URL
+});
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -154,16 +177,49 @@ app.get('/api/notices_:category', async (req, res) => {
   const { category } = req.params;
 
   try {
+    // 동적으로 컬렉션 이름을 지정
     const collectionName = `notices_${category}`;
     const noticesCollection = mongoose.connection.collection(collectionName);
-    const notices = await noticesCollection.find({}).project({ title: 1, date: 1 }).toArray();
-
+    
+    // 해당 컬렉션에서 데이터를 가져옴
+    const notices = await noticesCollection.find({})
+      .project({ title: 1, date: 1 })  // title과 date 필드만 선택
+      .toArray();  // 결과를 배열로 변환
+    
     res.json(notices);
   } catch (error) {
     console.error('Error fetching notices:', error);
-    res.status(500).json({ message: 'Server error occurred', error });
+    res.status(500).json({ message: '서버 오류 발생', error });
   }
 });
+app.get('/api/noticeDetail', async (req, res) => {
+  let { category, title } = req.query; // 쿼리 파라미터에서 category와 title 가져오기
+
+  // category를 사용하여 동적으로 컬렉션 이름을 생성
+  const collectionName = `notices_${category}`;
+
+  console.log('Decoded collection:', collectionName);
+  console.log('Decoded title:', title);
+
+  if (!collectionName) {
+    return res.status(400).json({ message: 'Collection not specified or invalid.' });
+  }
+
+  try {
+    const noticesCollection = mongoose.connection.collection(collectionName);
+    const notice = await noticesCollection.findOne({ title });
+
+    if (notice) {
+      res.json(notice);
+    } else {
+      res.status(404).json({ message: 'Notice not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching notice detail:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 // 공지사항 검색 및 D-Day 계산 라우트
 app.get('/api/noticelinks', async (req, res) => {
@@ -239,6 +295,130 @@ app.delete('/auth/delete-user', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// 키워드 저장 라우트
+app.post('/keywords', async (req, res) => {
+  const { email, keyword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    if (user.keywords.includes(keyword)) {
+      return res.status(400).json({ message: 'Keyword already exists' });
+    }
+
+    user.keywords.push(keyword);
+    await user.save();
+
+    res.status(200).json({ message: 'Keyword added successfully' });
+  } catch (error) {
+    console.error('Error adding keyword:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// 키워드 조회 라우트
+app.get('/keywords', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ keywords: user.keywords });
+  } catch (error) {
+    console.error('Error fetching keywords:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// 키워드 삭제 라우트
+app.delete('/keywords', async (req, res) => {
+  const { email, keyword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    const keywordIndex = user.keywords.indexOf(keyword);
+    if (keywordIndex === -1) {
+      return res.status(400).json({ message: 'Keyword not found' });
+    }
+
+    user.keywords.splice(keywordIndex, 1); // 키워드 삭제
+    await user.save();
+
+    res.status(200).json({ message: 'Keyword deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting keyword:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// 공지사항 키워드 알림 라우트
+app.get('/api/notify', async (req, res) => {
+  try {
+    // 오늘 날짜 가져오기
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // 하루의 시작 시간
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // 하루의 종료 시간
+
+    // MongoDB에서 오늘 날짜에 해당하는 공지사항 가져오기
+    const todaysNotices = await NoticeLink.find({
+      date: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    });
+
+    // 모든 사용자 가져오기
+    const users = await User.find();
+
+    // 사용자별로 키워드와 공지사항 제목 비교
+    for (const user of users) {
+      const { keywords } = user;
+
+      for (const notice of todaysNotices) {
+        for (const keyword of keywords) {
+          if (notice.title.includes(keyword)) {
+            // 키워드가 포함된 경우 Firebase로 알림 전송
+            await sendFirebaseNotification(user, notice);
+          }
+        }
+      }
+    }
+
+    res.status(200).json({ message: '알림 전송이 완료되었습니다.' });
+  } catch (error) {
+    console.error('Error fetching notices or sending notifications:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Firebase 알림 전송 함수
+async function sendFirebaseNotification(user, notice) {
+  const message = {
+    notification: {
+      title: '새로운 공지사항',
+      body: `새로운 공지사항이 등록되었습니다: ${notice.title}`,
+    },
+    token: user.firebaseToken // 사용자의 Firebase 토큰
+  };
+
+  try {
+    const response = await admin.messaging().send(message);
+    console.log('Successfully sent message:', response);
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+}
 
 // 서버 시작
 app.listen(PORT, () => {

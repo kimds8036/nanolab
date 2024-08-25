@@ -31,6 +31,10 @@ const userSchema = new Schema({
   language: String,
   location: {
     type: String
+  },
+  keywords: {   // 키워드 필드 추가
+    type: [String],
+    default: []
   }
 });
 
