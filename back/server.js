@@ -15,15 +15,24 @@ const authMiddleware = require('./middleware/authMiddleware');
 const User = require('./models/user');
 const NoticeLink = require('./models/NoticeLink');
 const Notice = require('./models/Notice');
+const admin = require('firebase-admin');
+const serviceAccount = require('./.env'); // 서비스 계정 키 파일 경로
+  
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://<nanolab-4529f>.firebaseio.com' // 자신의 Firebase 프로젝트 URL로 대체
+  });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const GEOLOCATION_API_KEY = process.env.GEOLOCATION_API_KEY;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+const Notice = require('./models/Notice');
 app.use(cors());
 app.use(bodyParser.json());
 app.use(useragent.express());
+
 
 // MongoDB 연결
 connectDB();
@@ -287,6 +296,64 @@ app.delete('/keywords', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// 공지사항 키워드 알림 라우트
+app.get('/api/notify', async (req, res) => {
+  try {
+    // 오늘 날짜 가져오기
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // 하루의 시작 시간
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // 하루의 종료 시간
+
+    // MongoDB에서 오늘 날짜에 해당하는 공지사항 가져오기
+    const todaysNotices = await NoticeLink.find({
+      date: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    });
+
+    // 모든 사용자 가져오기
+    const users = await User.find();
+
+    // 사용자별로 키워드와 공지사항 제목 비교
+    for (const user of users) {
+      const { keywords } = user;
+
+      for (const notice of todaysNotices) {
+        for (const keyword of keywords) {
+          if (notice.title.includes(keyword)) {
+            // 키워드가 포함된 경우 Firebase로 알림 전송
+            await sendFirebaseNotification(user, notice);
+          }
+        }
+      }
+    }
+
+    res.status(200).json({ message: '알림 전송이 완료되었습니다.' });
+  } catch (error) {
+    console.error('Error fetching notices or sending notifications:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Firebase 알림 전송 함수
+async function sendFirebaseNotification(user, notice) {
+  const message = {
+    notification: {
+      title: '새로운 공지사항',
+      body: `새로운 공지사항이 등록되었습니다: ${notice.title}`,
+    },
+    token: user.firebaseToken // 사용자의 Firebase 토큰
+  };
+
+  try {
+    const response = await admin.messaging().send(message);
+    console.log('Successfully sent message:', response);
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+}
 
 // 서버 시작
 app.listen(PORT, () => {

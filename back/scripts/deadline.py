@@ -11,13 +11,13 @@ import tempfile
 import os
 from dotenv import load_dotenv
 
+dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
+load_dotenv(dotenv_path)
+
 # Tesseract 경로 설정
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # .env 파일에서 환경 변수 로드
-load_dotenv()
-
-# OpenAI API 키 설정
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # MongoDB 연결
@@ -71,68 +71,104 @@ def extract_deadline_from_text(text):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "Extract and provide the most important deadline with time from the following text in the format 'YYYY, M, D, H, M' (year, month, day, hour, minute)."},
+            {"role": "system", "content": "From the following text, prioritize extracting deadlines related to '접수기간', '신청기한', or similar terms indicating application periods. Extract the most important deadline in the format 'YYYY, M, D' (year, month, day)."},
             {"role": "user", "content": text},
         ]
     )
     deadline = response['choices'][0]['message']['content'].strip()
-    return deadline
+    
+    # 날짜만 추출 (시간 제거)
+    date_pattern = re.compile(r'(\d{4}),\s*(\d{1,2}),\s*(\d{1,2})')
+    match = date_pattern.search(deadline)
+    if match:
+        year, month, day = match.groups()
+        formatted_date = f"{year}-{int(month):02d}-{int(day):02d}"  # YYYY-MM-DD 형식으로 변환
+        return formatted_date
+    
+    return None
+
+def preprocess_vertical_text(ocr_text):
+    lines = ocr_text.splitlines()
+    processed_lines = []
+    current_block = []
+
+    for line in lines:
+        stripped_line = line.strip()
+        if stripped_line:
+            current_block.append(stripped_line)
+        else:
+            if current_block:
+                processed_lines.append(" ".join(current_block))
+                current_block = []
+
+    if current_block:
+        processed_lines.append(" ".join(current_block))
+
+    return "\n".join(processed_lines)
 
 def process_image(image_url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Referer": "https://www.kku.ac.kr/"
+    }
+    
     try:
-        response = requests.get(image_url, stream=True)
+        response = requests.get(image_url, headers=headers, stream=True)
         response.raise_for_status()
+
+        content_type = response.headers.get('Content-Type', '')
+        if 'image' not in content_type:
+            print(f"Invalid content type: {content_type} for URL: {image_url}")
+            return ""
 
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as temp_file:
             temp_file.write(response.content)
             temp_file_path = temp_file.name
 
-        text = pytesseract.image_to_string(Image.open(temp_file_path), lang='kor+eng')
+        raw_text = pytesseract.image_to_string(Image.open(temp_file_path), lang='kor+eng')
+
+        processed_text = preprocess_vertical_text(raw_text)
+
         os.remove(temp_file_path)
-        return text
+
+        return processed_text
 
     except (requests.RequestException, UnidentifiedImageError) as e:
         print(f"Error processing image from {image_url}: {e}")
         return ""
 
-def parse_date_from_text(text):
-    date_time_pattern = re.compile(r'\b(\d{4})[,.년\s-]*(\d{1,2})[,.월\s-]*(\d{1,2})(?:[,.일\s-]*(\d{1,2})[:시\s]*(\d{1,2}))?\b')
-    match = date_time_pattern.search(text)
-    return match.groups() if match else None
-
-def process_collection(collection_name):
+def process_collection_images(collection_name):
     collection = db[collection_name]
-    notices = collection.find({'date': {'$gte': '2024-07-01'}})
+    
+    notices = collection.find({'date': {'$gte': '2024-08-01'}})
 
     for doc in notices:
+        deadline = None
         extracted_text = doc.get('extractedText', '')
-        deadline = extract_deadline_from_text(extracted_text)
 
-        if 'images' in doc:
+        if extracted_text:
+            print(f"Extracted text from document ID {doc['_id']}: {extracted_text[:100]}...")
+            deadline = extract_deadline_from_text(extracted_text)
+
+        if not deadline and 'images' in doc:
             for image_url in doc['images']:
                 ocr_text = process_image(image_url)
                 if ocr_text:
-                    ocr_deadline = extract_deadline_from_text(ocr_text)
-                    ocr_parsed_date_time = parse_date_from_text(ocr_deadline)
-
-                    if ocr_parsed_date_time:
-                        year, month, day = int(ocr_parsed_date_time[0]), int(ocr_parsed_date_time[1]), int(ocr_parsed_date_time[2])
-                        hour = int(ocr_parsed_date_time[3]) if ocr_parsed_date_time[3] else 0
-                        minute = int(ocr_parsed_date_time[4]) if ocr_parsed_date_time[4] else 0
-
-                        ocr_date_time = datetime(year, month, day, hour, minute)
-                        deadline_date_time = datetime.strptime(deadline, '%Y, %m, %d, %H, %M') if deadline else None
-
-                        if not deadline_date_time or ocr_date_time > deadline_date_time:
-                            deadline = f"{year}, {month}, {day}, {hour}, {minute}"
+                    print(f"OCR text from image URL {image_url}: {ocr_text[:100]}...")
+                    deadline = extract_deadline_from_text(ocr_text)
+                    if deadline:
+                        break
 
         if deadline:
+            print(f"Document ID {doc['_id']} will be updated with new deadline: {deadline}")
             collection.update_one({'_id': doc['_id']}, {'$set': {'deadline': deadline}})
+        else:
+            print(f"No deadline found for document ID {doc['_id']}")
 
 def main():
     for collection_name in db.list_collection_names():
         if collection_name.startswith('notices_'):
-            process_collection(collection_name)
+            process_collection_images(collection_name)
 
 if __name__ == "__main__":
     main()
