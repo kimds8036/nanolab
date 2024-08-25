@@ -22,7 +22,7 @@ const serviceAccount = {
   type: "service_account",
   project_id: "nanolab-4529f",
   private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-  private_key: process.env.FIREBASE_PRIVATE_KEY,  // 줄바꿈 변환 필요 없음
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),  // 줄바꿈 변환 다시 추가
   client_email: "firebase-adminsdk-bdkv6@nanolab-4529f.iam.gserviceaccount.com",
   client_id: "102222030477520768885",
   auth_uri: "https://accounts.google.com/o/oauth2/auth",
