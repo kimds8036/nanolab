@@ -36,15 +36,6 @@ const noticeSchema = new mongoose.Schema({
 
 const Notice = mongoose.model('Notice', noticeSchema);
 
-// 이메일 전송 설정
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
 // 루트 경로 핸들러 추가
 app.get('/', (req, res) => {
   res.send('Welcome to the API');

@@ -1,51 +1,51 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// GlobalContext 생성
 const GlobalContext = createContext();
 
-// Provider 컴포넌트 정의
 const GlobalProvider = ({ children }) => {
   // 상태 정의
   const [isDepartmentRegistered, setIsDepartmentRegistered] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [darkMode, setDarkMode] = useState(false); // 어두운 모드 여부
-  const [user, setUser] = useState(null); // 로그인한 사용자 정보
+  const [darkMode, setDarkMode] = useState(false);
+  const [isPersistentLogin, setIsPersistentLogin] = useState(false);
+  const [user, setUser] = useState(null); // user 상태 추가
 
-  // 사용자 로그인 상태를 업데이트하는 함수
-  const loginUser = (userInfo) => {
-    setUser(userInfo);
-  };
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const persistentLogin = await AsyncStorage.getItem('isPersistentLogin');
+        if (persistentLogin !== null) {
+          setIsPersistentLogin(JSON.parse(persistentLogin));
+        }
 
-  // 사용자 로그아웃 함수
-  const logoutUser = () => {
-    setUser(null);
-  };
+        const storedUser = await AsyncStorage.getItem('user'); // 저장된 유저 정보 불러오기
+        if (storedUser) {
+          setUser(JSON.parse(storedUser)); // user 상태 업데이트
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    };
 
-  // Dark Mode 설정을 토글하는 함수
-  const toggleDarkMode = () => {
-    setDarkMode(prevMode => !prevMode);
-  };
-
-  // Context를 통해 제공할 값
-  const contextValue = {
-    isDepartmentRegistered,
-    setIsDepartmentRegistered,
-    selectedCollege,
-    setSelectedCollege,
-    selectedDepartment,
-    setSelectedDepartment,
-    darkMode,
-    setDarkMode,
-    user, // 유저 정보 상태
-    setUser, // 유저 정보 상태를 업데이트하는 함수
-    loginUser, // 사용자 로그인 함수
-    logoutUser, // 사용자 로그아웃 함수
-    toggleDarkMode, // Dark Mode 토글 함수
-  };
+    loadSettings();
+  }, []);
 
   return (
-    <GlobalContext.Provider value={contextValue}>
+    <GlobalContext.Provider value={{ 
+      isDepartmentRegistered, 
+      setIsDepartmentRegistered, 
+      selectedCollege, 
+      setSelectedCollege, 
+      selectedDepartment, 
+      setSelectedDepartment,
+      darkMode, 
+      setDarkMode,
+      isPersistentLogin,
+      user, // user 상태 제공
+      setUser, // setUser 함수 제공
+    }}>
       {children}
     </GlobalContext.Provider>
   );

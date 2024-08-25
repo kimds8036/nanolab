@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pymongo
 from urllib.parse import urljoin
 import re
+from datetime import datetime
 
 # MongoDB 연결 설정
 client = pymongo.MongoClient('mongodb+srv://nanolaebmeta:skshfoqapxk2024!@cluster0.vydwyas.mongodb.net/nanolabmeta?retryWrites=true&w=majority&appName=Cluster0')
@@ -183,6 +184,19 @@ def extract_notice_links(url, category):
 
     return notice_links
 
+def update_importance_flags(category):
+    """
+    카테고리 내 모든 공지를 일반 공지로 초기화한 후,
+    크롤링한 중요 공지에 대해 중요도로 업데이트합니다.
+    """
+    # 카테고리 내 모든 공지를 일반 공지로 초기화
+    result = notice_links_collection.update_many(
+        {'category': category},
+        {'$set': {'type': 'general'}}
+    )
+    print(f"All notices in category '{category}' set to general: {result.modified_count} updated.")
+
+
 def scrape_notice_links():
     # 카테고리 배열은 여기에 추가
     categories = [
@@ -226,6 +240,26 @@ def scrape_notice_links():
 ]
     
     for category in categories:
+        update_importance_flags(category['name'])  # 모든 공지를 일반 공지로 초기화
+
+        latest_notice = notice_links_collection.find_one(
+            {'category': category['name']}, 
+            sort=[("date", pymongo.DESCENDING)]
+        )
+
+        # 'date'가 None일 경우에 대한 처리
+        if latest_notice and latest_notice.get('date'):
+            latest_date = latest_notice['date']
+        else:
+            latest_date = '1970-01-01'  # 기본 날짜 설정
+
+        try:
+            # 날짜를 datetime 형식으로 변환
+            latest_date = datetime.strptime(latest_date, "%Y-%m-%d")
+        except ValueError as e:
+            print(f"Error parsing latest date: {e}. Setting default date.")
+            latest_date = datetime(1970, 1, 1)  # 기본값으로 설정
+
         for url in category['urls']:
             max_page = 3 if category['name'] in ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'] else 1
             for page in range(1, max_page + 1):
@@ -234,12 +268,37 @@ def scrape_notice_links():
 
                 for notice in notice_links:
                     try:
-                        existing_notice = notice_links_collection.find_one({'link': notice['link']})
-                        if not existing_notice:
-                            notice_links_collection.insert_one(notice)
-                    except Exception as e:
-                        print(f"Error saving notice {notice['title']}: {e}")
+                        notice_date = datetime.strptime(notice['date'], "%Y-%m-%d")
+                    except ValueError:
+                        print(f"Skipping notice with invalid date format: {notice['title']}, date: {notice['date']}")
+                        continue
 
+                    # Delta 크롤링: 이미 수집된 링크인지 확인
+                    if notice_date >= latest_date:  # 오늘 날짜와 같은 공지도 포함하기 위해 >= 사용
+                        try:
+                            # 제목과 날짜로 중복 체크
+                            existing_notice = notice_links_collection.find_one({
+                                'title': notice['title'], 
+                                'date': notice['date'],
+                                'category': notice['category']
+                            })
+
+                            if not existing_notice:
+                                notice_links_collection.insert_one(notice)
+                                print(f"New notice added: {notice['title']}")
+                            else:
+                                # 중요도가 바뀌었을 수 있으므로 항상 중요도로 업데이트
+                                if notice['type'] == 'important':
+                                    notice_links_collection.update_one(
+                                        {'title': notice['title'], 'date': notice['date'], 'category': notice['category']},
+                                        {'$set': {'type': 'important'}}
+                                    )
+                                    print(f"Notice importance updated: {notice['title']}")
+                        except Exception as e:
+                            print(f"Error saving notice {notice['title']}: {e}")
+                    else:
+                        print(f"Skipping old notice: {notice['title']}, date: {notice['date']}")
+                        continue  # break 대신 continue를 사용하여 다음 공지를 확인 확인
 scrape_notice_links()
 
 

@@ -1,19 +1,29 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Switch, ScrollView, ImageBackground } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, Switch, ScrollView, StyleSheet, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { GlobalContext } from './GlobalContext'; // GlobalContext를 가져옴
+import { GlobalContext } from './GlobalContext';
 
 const MyPage = () => {
   const navigation = useNavigation();
-  const [userData, setUserData] = useState({ email: '' });
-  
-  const { darkMode, setDarkMode } = useContext(GlobalContext);
-  const { user } = useContext(GlobalContext);
+  const { darkMode, setDarkMode, user,setUser, selectedDepartment } = useContext(GlobalContext);
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // 예시: AsyncStorage 또는 API 호출을 통해 유저 정보를 불러옵니다.
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (error) {
+        console.error('Failed to load user data:', error);
+      }
+    };
 
-  const { selectedDepartment } = useContext(GlobalContext); // GlobalContext에서 selectedDepartment 값을 가져옴
+    loadUserData();
+  }, [setUser]);
 
   const toggleSwitch = () => setDarkMode(previousState => !previousState);
-  console.log(darkMode);
+
 
   const dynamicStyles = {
     container:{
@@ -115,76 +125,77 @@ const MyPage = () => {
     ? require('../assets/image/dark/logout.png')
     : require('../assets/image/light/logout.png');
 
-  return (
-    <View style={[styles.container,dynamicStyles.container]}>
-      <View style={[styles.bar,dynamicStyles.bar]}></View>
-      <ScrollView style={styles.innercontainer}>
-        <View style={[styles.header, dynamicStyles.header]}>
-          <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
-            <Image source={back} style={styles.backIcon} />
-          </TouchableOpacity>
-          <View style={styles.headerTitleContainer}>
-            <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>마이페이지</Text>
-          </View>
-        </View>
-
-        <View style={[styles.profileSection, dynamicStyles.profileSection]}>
-          <Image
-            source={require('../assets/image/light/profile.png')} // 기본 프로필 이미지 경로 설정
-            style={styles.profileImage}
-          />
-          <Text 
-            style={[styles.nickname, dynamicStyles.nickname,
-              { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' },
-              selectedDepartment && dynamicStyles.menuText // selectedDepartment가 true일 때 dynamicStyles.menuText를 추가
-            ]}  >
-            {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
-          </Text> 
-          <TouchableOpacity style={[styles.editButton,dynamicStyles.editButton]} onPress={() => { navigation.navigate('Myinform'); }}>
-            <Text style={[styles.editButtonText,dynamicStyles.editButtonText]}>내 정보 수정</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={[styles.menuSection, dynamicStyles.menuSection]}>
-          <View style={[styles.emailpart, dynamicStyles.emailPart]}>
-            <Text style={[styles.email, dynamicStyles.email]}>{userData.email || 'konkukuniv@kku.ac.kr'}</Text>
-          </View>
-          <ImageBackground source={background2} style={styles.menupart}>
-            <View style={styles.menuItem1}>
-              <Text style={[styles.menuText, dynamicStyles.menuText]}>다크모드</Text>
-              <Switch
-                onValueChange={toggleSwitch}
-                value={darkMode}
-                style={styles.switch}
-              />
+    return (
+      <View style={dynamicStyles.container}>
+        <View style={dynamicStyles.bar}></View>
+        <ScrollView>
+          <View style={dynamicStyles.header}>
+            <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
+              <Image source={back} style={{ width: 20, height: 20 }} />
+            </TouchableOpacity>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={dynamicStyles.headerTitle}>마이페이지</Text>
             </View>
-            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
-              <Text style={[styles.menuText, dynamicStyles.menuText]}>키워드 알림 설정</Text>
-              <Image source={keyword} style={styles.menuIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
-              <Text style={[styles.menuText, dynamicStyles.menuText]}>보관함</Text>
-              <Image source={save} style={styles.menuIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Feedback');}}>
-              <Text style={[styles.menuText, dynamicStyles.menuText]}>피드백</Text>
-              <Image source={feedback} style={styles.menuIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Login');}}>
-              <Text style={[styles.menuText, dynamicStyles.menuText]}>로그아웃</Text>
-              <Image source={logout} style={styles.menuIcon} />
-            </TouchableOpacity>
-          </ImageBackground>
-          <View style={styles.inform}>
-            <Text style={styles.informtext}>Developed by 윤창배, 이태성, 임연서, 강민채, 김수현, 김은채</Text>
-            <Text style={styles.informtext}>Managed by 김동석</Text>
-            <Text style={styles.informtext}>Designed by 김영은</Text>
           </View>
-        </View>
-      </ScrollView>
-    </View>
-  );
-};
+  
+          <View style={dynamicStyles.profileSection}>
+            <Image
+              source={require('../assets/image/light/profile.png')} // 기본 프로필 이미지 경로 설정
+              style={{ width: 100, height: 100, borderRadius: 50, marginBottom: 20 }}
+            />
+            <Text 
+              style={[dynamicStyles.nickname,
+                { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' },
+                selectedDepartment && dynamicStyles.menuText // selectedDepartment가 true일 때 dynamicStyles.menuText를 추가
+              ]}  >
+              {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
+            </Text> 
+            <TouchableOpacity style={dynamicStyles.editButton} onPress={() => { navigation.navigate('Myinform'); }}>
+              <Text style={dynamicStyles.editButtonText}>내 정보 수정</Text>
+            </TouchableOpacity>
+          </View>
+  
+          <View style={dynamicStyles.menuSection}>
+            <View style={dynamicStyles.emailPart}>
+              <Text style={dynamicStyles.email}>{user?.email || 'konkukuniv@kku.ac.kr'}</Text>
+            </View>
+            <ImageBackground source={background2} style={{ width: '100%', height: 400, alignSelf: 'center', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', borderRadius: 20, marginTop: 20, overflow: 'hidden' }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 30, borderTopWidth: 1, borderTopColor: '#C4C4C4', borderBottomWidth: 1, borderBottomColor: '#C4C4C4', width: '90%' }}>
+                <Text style={dynamicStyles.menuText}>다크모드</Text>
+                <Switch
+                  onValueChange={toggleSwitch}
+                  value={darkMode}
+                  style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }], left: 5 }}
+                />
+              </View>
+              <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 30, borderBottomWidth: 1, borderBottomColor: '#C4C4C4', width: '90%' }} onPress={() => { navigation.navigate('Keyword'); }}>
+                <Text style={dynamicStyles.menuText}>키워드 알림 설정</Text>
+                <Image source={keyword} style={{ width: 35, height: 35 }} />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 30, borderBottomWidth: 1, borderBottomColor: '#C4C4C4', width: '90%' }} onPress={() => { navigation.navigate('Keyword'); }}>
+                <Text style={dynamicStyles.menuText}>보관함</Text>
+                <Image source={save} style={{ width: 35, height: 35 }} />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 30, borderBottomWidth: 1, borderBottomColor: '#C4C4C4', width: '90%' }} onPress={() => { navigation.navigate('Feedback'); }}>
+                <Text style={dynamicStyles.menuText}>피드백</Text>
+                <Image source={feedback} style={{ width: 35, height: 35 }} />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 30, borderBottomWidth: 1, borderBottomColor: '#C4C4C4', width: '90%' }} onPress={() => { navigation.navigate('Login'); }}>
+                <Text style={dynamicStyles.menuText}>로그아웃</Text>
+                <Image source={logout} style={{ width: 35, height: 35 }} />
+              </TouchableOpacity>
+            </ImageBackground>
+            <View style={{ marginBottom: 20, marginTop: 20 }}>
+              <Text style={{ color: 'grey' }}>Developed by 윤창배, 이태성, 임연서, 강민채, 김수현, 김은채</Text>
+              <Text style={{ color: 'grey' }}>Managed by 김동석</Text>
+              <Text style={{ color: 'grey' }}>Designed by 김영은</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  };
+
 
 
 const styles = StyleSheet.create({

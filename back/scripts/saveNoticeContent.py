@@ -102,6 +102,13 @@ categories = [
     {'name': '혁신공유대학', 'baseUrl': 'https://healingbio.kku.ac.kr', 'type': 'second'}
 ]
 
+
+def get_latest_notice_date(db, category):
+    # 카테고리별로 가장 최근에 저장된 공지사항 날짜 가져오기
+    collection_name = f'notices_{category}'
+    collection = db[collection_name]
+    latest_notice = collection.find_one(sort=[("date", pymongo.DESCENDING)])
+    return latest_notice['date'] if latest_notice else '1970-01-01'
 # 공지사항 크롤링 및 저장
 def scrape_and_save_notices():
     db = connect_to_mongodb()
@@ -120,6 +127,14 @@ def scrape_and_save_notices():
         matching_category = next((c for c in categories if c['name'] == category), None)
         if not matching_category:
             print(f'Unrecognized category: {category}')
+            continue
+
+        latest_date = get_latest_notice_date(db, category)
+        notice_date = datetime.strptime(notice_link['date'], "%Y-%m-%d")
+
+        # 이전에 저장된 공지사항 이후의 것만 처리
+        if notice_date <= datetime.strptime(latest_date, "%Y-%m-%d"):
+            print(f"Skipping notice from {notice_date}, as it's not newer than the latest saved date {latest_date}")
             continue
 
         start_time = time.time()
