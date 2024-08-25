@@ -31,6 +31,7 @@ const serviceAccount = {
   client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-bdkv6@nanolab-4529f.iam.gserviceaccount.com",
   universe_domain: "googleapis.com"
 };
+console.log("FIREBASE_PRIVATE_KEY:", process.env.FIREBASE_PRIVATE_KEY);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
