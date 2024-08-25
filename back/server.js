@@ -17,7 +17,6 @@ const NoticeLink = require('./models/NoticeLink');
 const Notice = require('./models/Notice');
 const admin = require('firebase-admin');
 
-// FIREBASE_CONFIG 환경 변수에서 JSON 문자열을 가져와서 파싱
 // 환경 변수에서 민감한 정보 불러오기
 const serviceAccount = {
   type: "service_account",
@@ -32,6 +31,11 @@ const serviceAccount = {
   client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-bdkv6@nanolab-4529f.iam.gserviceaccount.com",
   universe_domain: "googleapis.com"
 };
+
+// private_key 확인
+if (!serviceAccount.private_key) {
+  throw new Error("FIREBASE_PRIVATE_KEY is not defined or empty in environment variables");
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
