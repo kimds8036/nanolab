@@ -1,11 +1,10 @@
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '.env') });  // .env 파일의 절대경로 설정
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const User = require('./models/user');
 const mongoose = require('mongoose');
 const useragent = require('express-useragent');
 const jwt = require('jsonwebtoken');
@@ -13,7 +12,10 @@ const axios = require('axios');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
 const connectDB = require('./config/db');
-const authMiddleware = require('./middleware/authMiddleware');  // 추가된 미들웨어 파일 불러오기
+const authMiddleware = require('./middleware/authMiddleware');
+const User = require('./models/user');
+const NoticeLink = require('./models/NoticeLink');
+const Notice = require('./models/Notice');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,19 +26,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(useragent.express());
 
-// 데이터베이스 연결
+// MongoDB 연결
 connectDB();
 
-// 공지사항 스키마 및 모델 정의
-const noticeSchema = new mongoose.Schema({
-  title: String,
-  date: String,
-  content: String,
-});
-
-const Notice = mongoose.model('Notice', noticeSchema);
-
-// 루트 경로 핸들러 추가
 app.get('/', (req, res) => {
   res.send('Welcome to the API');
 });
@@ -63,7 +55,7 @@ app.post('/auth/register', async (req, res) => {
   const referrer = req.headers['referer'] || req.headers['referrer'];
   const language = req.headers['accept-language'];
 
-  console.log(`Received registration request: ${email}, ${password}, IP: ${ipAddress}, OS: ${operatingSystem}, Browser: ${browser}, Platform: ${platform}`);
+  console.log(`Received registration request: ${email}, IP: ${ipAddress}`);
 
   try {
     const userExists = await User.findOne({ email });
@@ -75,7 +67,7 @@ app.post('/auth/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const geoResponse = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${GEOLOCATION_API_KEY}&ip=${ipAddress}`);
-    const location = geoResponse.data.country_name + ', ' + geoResponse.data.city;
+    const location = `${geoResponse.data.country_name}, ${geoResponse.data.city}`;
 
     const newUser = new User({
       email,
@@ -133,7 +125,6 @@ app.post('/auth/register', authMiddleware, async (req, res) => {
 });
 
 // 로그인 라우트
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
   console.log(`Login attempt for email: ${email}`);
@@ -141,58 +132,58 @@ app.post('/auth/login', async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      console.log('User not found');
-      return res.status(400).json({ message: '아이디와 비밀번호를 확인해 주세요' });
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('Password does not match');
-      return res.status(400).json({ message: '아이디와 비밀번호를 확인해 주세요' });
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // JWT_SECRET 확인
     if (!JWT_SECRET) {
       console.error('JWT_SECRET is not defined');
       return res.status(500).json({ message: 'Internal server error: JWT_SECRET is not defined' });
     }
 
-    // JWT 토큰 생성
     const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     console.log('Generated token:', token);
 
     res.status(200).json({ token, email: user.email });
-
-    // 선택 사항: 토큰을 검증하여 디코딩
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      console.log('Decoded token:', decoded); // 디코딩된 내용 확인 (선택 사항)
-    } catch (error) {
-      console.error('Token verification error:', error.message);
-      return res.status(500).json({ message: 'Internal server error: JWT verification failed' });
-    }
-
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+<<<<<<< HEAD
 // 3. 비밀번호 변경 기능 추가
+=======
+// 프로필 조회 라우트
+app.get('/auth/profile', authMiddleware, (req, res) => {
+  try {
+    const { email, location, language, platform } = req.user;
+    res.status(200).json({ email, location, language, platform });
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving profile information' });
+  }
+});
+
+// 비밀번호 변경 라우트
+>>>>>>> origin/master
 app.post('/auth/change-password', authMiddleware, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  const email = req.user.email; // `authMiddleware`가 설정한 사용자 이메일
+  const email = req.user.email;
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: '사용자를 찾을 수 없습니다.' });
+      return res.status(400).json({ message: 'User not found' });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: '현재 비밀번호가 일치하지 않습니다.' });
+      return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
@@ -200,10 +191,26 @@ app.post('/auth/change-password', authMiddleware, async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({ message: '비밀번호가 성공적으로 변경되었습니다.' });
+    res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
     console.error('Password change error:', error);
-    res.status(500).json({ message: '비밀번호 변경 중 오류가 발생했습니다.' });
+    res.status(500).json({ message: 'Error changing password' });
+  }
+});
+
+// 공지사항 조회 라우트
+app.get('/api/notices_:category', async (req, res) => {
+  const { category } = req.params;
+
+  try {
+    const collectionName = `notices_${category}`;
+    const noticesCollection = mongoose.connection.collection(collectionName);
+    const notices = await noticesCollection.find({}).project({ title: 1, date: 1 }).toArray();
+
+    res.json(notices);
+  } catch (error) {
+    console.error('Error fetching notices:', error);
+    res.status(500).json({ message: 'Server error occurred', error });
   }
 });
 
@@ -218,25 +225,23 @@ app.get('/auth/profile', authMiddleware, (req, res) => {
 });
 
 // 공지사항 검색 및 D-Day 계산 라우트
-app.get('/api/notices', async (req, res) => {
-  const searchQuery = req.query.q;
+app.get('/api/noticelinks', async (req, res) => {
+  const searchQuery = req.query.query || '';
   console.log(`Search query received: ${searchQuery}`);
+
   try {
-    const notices = await NoticeLink.find({
-      title: new RegExp(searchQuery, 'i')
-    });
+    const filter = searchQuery ? { title: new RegExp(searchQuery, 'i') } : {};
+    const notices = await NoticeLink.find(filter);
 
     const updatedNotices = notices.map(notice => {
       const deadline = extractDeadline(notice.content);
       if (deadline) {
         const dDay = calculateDDay(deadline);
-        console.log(`Calculated D-Day for notice "${notice.title}": ${dDay}`);
         return { ...notice.toObject(), dDay };
       }
       return notice.toObject();
     });
 
-    console.log(`Search results: ${updatedNotices.length} notices found`);
     res.json(updatedNotices);
   } catch (error) {
     console.error('Error fetching notices:', error);
@@ -247,7 +252,7 @@ app.get('/api/notices', async (req, res) => {
 // 공지사항 카테고리별 조회 라우트
 app.get('/api/notices/:category', async (req, res) => {
   const { category } = req.params;
-  const collectionName = `notices_${category}`; // 카테고리에 따른 컬렉션 이름 설정
+  const collectionName = `notices_${category}`;
   console.log(`Fetching notices for category: ${category}`);
 
   try {
@@ -264,7 +269,6 @@ const extractDeadline = (text) => {
   const deadlinePattern = /(?:기간|신청기간|등록기간|접수기간)\s*:\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\(\S+\))\s*~\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\(\S+\))/;
   const match = deadlinePattern.exec(text);
   if (match) {
-    console.log('Deadline extracted:', match[2]);
     return match[2];
   }
   return null;
@@ -274,7 +278,6 @@ const calculateDDay = (deadline) => {
   const endDate = moment(deadline, "YYYY. M. D. (dd)");
   const today = moment();
   const dDay = endDate.diff(today, 'days');
-  console.log('Calculated D-Day:', dDay);
   return dDay;
 };
 

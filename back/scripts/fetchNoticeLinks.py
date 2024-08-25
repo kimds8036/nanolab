@@ -34,104 +34,69 @@ def extract_notice_links(url, category):
     notice_links = []
 
     if category in ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전']:
-        # 중요 공지사항 추출
-        for element in soup.select('td.b_num .box_notice'):
-            tr_element = element.find_parent('tr')
-            link_element = tr_element.select_one('td.ta_left.b_title a')
+        # 공지사항 추출
+        for element in soup.select('tr'):
+            is_important = element.select_one('span.box_notice') is not None  # 중요 공지 여부 확인
+            type_field = 'important' if is_important else 'general'
+
+            link_element = element.select_one('td.ta_left.b_title a')
             href = link_element.get('href') if link_element else None
             if href:
                 full_url = 'https://m.kku.ac.kr/user/' + href
                 title = link_element.get_text(strip=True) or '제목 없음'
-                date_element = tr_element.select_one('td.b_date')
+                
+                # 날짜 요소 찾기
+                date_element = element.select_one('td.b_date') or element.select_one('td.b_etc')
                 date = date_element.get_text(strip=True) if date_element else '날짜 없음'
-                #views_element = tr_element.select_one('td.b_count')
-                #views = views_element.get_text(strip=True) if views_element else '0'
+                date = convert_date(date)
 
                 notice_links.append({
                     'title': title,
                     'date': date,
                     'link': full_url,
-                    #'views': views,
-                    'type': 'important',
-                    'category': category
-                })
-
-        # 일반 공지사항 추출
-        for element in soup.select('td.ta_left.b_title a'):
-            tr_element = element.find_parent('tr')
-            href = element.get('href')
-            if href:
-                full_url = 'https://m.kku.ac.kr/user/' + href
-                title = element.get_text(strip=True) or '제목 없음'
-                
-                # 날짜 추출
-                date_element = tr_element.select_one('td.b_etc:nth-child(1)')
-                date = date_element.get_text(strip=True) if date_element else '날짜 없음'
-                
-                # 조회수 추출
-                #views_element = tr_element.select_one('td.b_etc:nth-child(2)')
-                #views = views_element.get_text(strip=True) if views_element else '0'
-                
-                notice_links.append({
-                    'title': title,
-                    'date': date,
-                    'link': full_url,
-                    #'views': views,
-                    'type': 'general',
+                    'type': type_field,
                     'category': category
                 })
 
     if category == '의예과':
-        # 중요한 공지사항 추출
         for element in soup.select('tr.board-notice'):
             link_element = element.select_one('a[data-itsp-view-link]')
             if link_element:
                 seq = link_element.get('data-itsp-view-link')
-                # strong 태그 안의 텍스트 추출
                 title = link_element.select_one('strong').get_text(strip=True) or '제목 없음'
                 
-                # 날짜 및 조회수 추출
                 date_element = element.find_next_sibling('tr', class_='td-mobile').select_one('i.fa-clock-o')
                 date = date_element.find_parent().get_text(strip=True) if date_element else '날짜 없음'
-                
-                #views_element = element.find_next_sibling('tr', class_='td-mobile').select_one('i.fa-eye')
-                #views = views_element.find_parent().get_text(strip=True) if views_element else '0'
+                date = convert_date(date)
                 
                 full_url = f"https://medicine.kku.ac.kr/PostView.do?boardSeq=26&menuSeq=72&seq={seq}"
                 notice_links.append({
                     'title': title,
                     'date': date,
                     'link': full_url,
-                    #'views': views,
                     'type': 'important',
                     'category': category
                 })
 
-        # 일반 공지사항 추출
         for element in soup.select('tr.hidden-xs'):
             link_element = element.select_one('a[data-itsp-view-link]')
             if link_element:
                 seq = link_element.get('data-itsp-view-link')
                 title = link_element.get_text(strip=True) or '제목 없음'
                 
-                # 날짜 및 조회수 추출
                 date = element.select_one('td.td-date').get_text(strip=True) or '날짜 없음'
-                #views = element.select_one('td.td-num').get_text(strip=True) or '0'
+                date = convert_date(date)
                 
                 full_url = f"https://medicine.kku.ac.kr/PostView.do?boardSeq=26&menuSeq=72&seq={seq}"
                 notice_links.append({
                     'title': title,
                     'date': date,
                     'link': full_url,
-                    #'views': views,
                     'type': 'general',
                     'category': category
                 })
 
-
-    
     else:
-        # 학과 홈페이지의 중요 및 일반 공지사항 추출
         for element in soup.select('tr.note_box'):
             link_element = element.select_one('.subject_click')
             if link_element:
@@ -147,16 +112,15 @@ def extract_notice_links(url, category):
                     full_url = f"{url.split('/noticeList.do')[0]}/noticeView.do?siteId={site_id}&boardSeq={board_seq}&menuSeq={menu_seq}&seq={seq}"
                     title = link_element.get_text(strip=True) or '제목 없음'
                     date = element.select_one('td:nth-child(4)').get_text(strip=True) or '날짜 없음'
-                    #views = element.select_one('td:nth-child(5)').get_text(strip=True) or '0'
+                    date = convert_date(date)
                     notice_links.append({
                         'title': title,
                         'date': date,
                         'link': full_url,
-                        #'views': views,
                         'type': 'important',
                         'category': category
                     })
-                    # 일반 공지사항 추출
+        
         for element in soup.select('#dispList tr'):
             link_element = element.select_one('.subject_click')
             if link_element:
@@ -172,30 +136,17 @@ def extract_notice_links(url, category):
                     full_url = f"{url.split('/noticeList.do')[0]}/noticeView.do?siteId={site_id}&boardSeq={board_seq}&menuSeq={menu_seq}&seq={seq}"
                     title = link_element.get_text(strip=True) or '제목 없음'
                     date = element.select_one('td:nth-child(4)').get_text(strip=True) or '날짜 없음'
+                    date = convert_date(date)
 
                     notice_links.append({
                         'title': title,
                         'date': date,
                         'link': full_url,
-                        'type': 'general',  # 일반 공지사항
+                        'type': 'general',
                         'category': category
                     })
 
-
     return notice_links
-
-def update_importance_flags(category):
-    """
-    카테고리 내 모든 공지를 일반 공지로 초기화한 후,
-    크롤링한 중요 공지에 대해 중요도로 업데이트합니다.
-    """
-    # 카테고리 내 모든 공지를 일반 공지로 초기화
-    result = notice_links_collection.update_many(
-        {'category': category},
-        {'$set': {'type': 'general'}}
-    )
-    print(f"All notices in category '{category}' set to general: {result.modified_count} updated.")
-
 
 def scrape_notice_links():
     # 카테고리 배열은 여기에 추가
@@ -240,26 +191,6 @@ def scrape_notice_links():
 ]
     
     for category in categories:
-        update_importance_flags(category['name'])  # 모든 공지를 일반 공지로 초기화
-
-        latest_notice = notice_links_collection.find_one(
-            {'category': category['name']}, 
-            sort=[("date", pymongo.DESCENDING)]
-        )
-
-        # 'date'가 None일 경우에 대한 처리
-        if latest_notice and latest_notice.get('date'):
-            latest_date = latest_notice['date']
-        else:
-            latest_date = '1970-01-01'  # 기본 날짜 설정
-
-        try:
-            # 날짜를 datetime 형식으로 변환
-            latest_date = datetime.strptime(latest_date, "%Y-%m-%d")
-        except ValueError as e:
-            print(f"Error parsing latest date: {e}. Setting default date.")
-            latest_date = datetime(1970, 1, 1)  # 기본값으로 설정
-
         for url in category['urls']:
             max_page = 3 if category['name'] in ['학사공지', '장학공지', '취업/창업공지', '국제/교류공지', '일반공지', '채용공지', '외부행사/공모전'] else 1
             for page in range(1, max_page + 1):
@@ -268,37 +199,28 @@ def scrape_notice_links():
 
                 for notice in notice_links:
                     try:
-                        notice_date = datetime.strptime(notice['date'], "%Y-%m-%d")
-                    except ValueError:
-                        print(f"Skipping notice with invalid date format: {notice['title']}, date: {notice['date']}")
-                        continue
+                        # 동일한 링크가 DB에 있는지 확인 후, 존재하면 삭제하고 새로운 데이터로 추가
+                        existing_notice = notice_links_collection.find_one({'link': notice['link']})
+                        if existing_notice:
+                            notice_links_collection.delete_one({'_id': existing_notice['_id']})
+                        
+                        # 새롭게 추가
+                        notice_links_collection.insert_one(notice)
+                        print(f"Notice saved or updated: {notice['title']}")
+                    except Exception as e:
+                        print(f"Error processing notice {notice['title']}: {e}")
 
-                    # Delta 크롤링: 이미 수집된 링크인지 확인
-                    if notice_date >= latest_date:  # 오늘 날짜와 같은 공지도 포함하기 위해 >= 사용
-                        try:
-                            # 제목과 날짜로 중복 체크
-                            existing_notice = notice_links_collection.find_one({
-                                'title': notice['title'], 
-                                'date': notice['date'],
-                                'category': notice['category']
-                            })
+def convert_date(date_str):
+    for fmt in ('%Y-%m-%d', '%Y.%m.%d', '%y.%m.%d', '%Y.%m.%d'):
+        try:
+            return datetime.strptime(date_str, fmt).strftime('%Y-%m-%d')
+        except ValueError:
+            continue
+    return date_str
 
-                            if not existing_notice:
-                                notice_links_collection.insert_one(notice)
-                                print(f"New notice added: {notice['title']}")
-                            else:
-                                # 중요도가 바뀌었을 수 있으므로 항상 중요도로 업데이트
-                                if notice['type'] == 'important':
-                                    notice_links_collection.update_one(
-                                        {'title': notice['title'], 'date': notice['date'], 'category': notice['category']},
-                                        {'$set': {'type': 'important'}}
-                                    )
-                                    print(f"Notice importance updated: {notice['title']}")
-                        except Exception as e:
-                            print(f"Error saving notice {notice['title']}: {e}")
-                    else:
-                        print(f"Skipping old notice: {notice['title']}, date: {notice['date']}")
-                        continue  # break 대신 continue를 사용하여 다음 공지를 확인 확인
+scrape_notice_links()
+
+
 scrape_notice_links()
 
 
