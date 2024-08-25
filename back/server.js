@@ -18,11 +18,24 @@ const Notice = require('./models/Notice');
 const admin = require('firebase-admin');
 
 // FIREBASE_CONFIG 환경 변수에서 JSON 문자열을 가져와서 파싱
-const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+// 환경 변수에서 민감한 정보 불러오기
+const serviceAccount = {
+  type: "service_account",
+  project_id: "nanolab-4529f",
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),  // 줄바꿈 변환
+  client_email: "firebase-adminsdk-bdkv6@nanolab-4529f.iam.gserviceaccount.com",
+  client_id: "102222030477520768885",
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-bdkv6@nanolab-4529f.iam.gserviceaccount.com",
+  universe_domain: "googleapis.com"
+};
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://nanolab-4529f.firebaseio.com' // 자신의 Firebase 프로젝트 URL로 대체
+  databaseURL: 'https://nanolab-4529f.firebaseio.com' // Firebase 프로젝트 URL
 });
 
 const app = express();
