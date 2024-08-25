@@ -15,5 +15,5 @@ node_modules
 node_modules
 node_modules
 node_modules
-.env
-firebase-adminsdk.json
+/back/.env
+/back/firebase-adminsdk.json

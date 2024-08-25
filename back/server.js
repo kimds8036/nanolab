@@ -14,7 +14,7 @@ const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/authMiddleware');
 const User = require('./models/user');
 const NoticeLink = require('./models/NoticeLink');
-const Notice = require('./models/Notice');
+
 const admin = require('firebase-admin');
 const serviceAccount = require('./.env'); // 서비스 계정 키 파일 경로
   
