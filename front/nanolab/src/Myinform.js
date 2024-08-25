@@ -264,7 +264,6 @@ const styles = StyleSheet.create({
     color: '#0E664F',
   },
   infoContainer: { // 프로필 카드와 이름 사이 공백
-  infoContainer: { // 프로필 카드와 이름 사이 공백
     marginTop: 50,
   },
   separator: {

@@ -103,7 +103,7 @@ const RecentNotices = () => {
       padding: 20,
       borderRadius: 20,
       width: 250,
-      marginRight: 10,
+      marginRight: 10,   
       height: 250,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 5 },

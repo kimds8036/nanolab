@@ -24,7 +24,6 @@ const Noticelist = ({ route }) => {
   const fetchNotices = async () => {
     try {
       const response = await axios.get('https://nanolab-production-6aa7.up.railway.app/api/notices'); // API 엔드포인트를 여기에 넣으세요
-      console.log('서버 응답 데이터:', response.data);
       setNoticesData(response.data);
     } catch (error) {
       console.error('데이터를 가져오는데 실패했습니다:', error);
