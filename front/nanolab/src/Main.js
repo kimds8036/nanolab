@@ -49,7 +49,7 @@ const Header = ({ onMenuPress }) => {
         <TouchableOpacity onPress={() => {navigation.navigate('Search');}}>
           <Image source={search} style={styles.icon} />  
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => alert('Details')}>
+        <TouchableOpacity onPress={() => {navigation.navigate('Alert');}}>
           <Image source={alert} style={styles.icon} />  
         </TouchableOpacity>
         <TouchableOpacity onPress={onMenuPress}>
@@ -473,7 +473,7 @@ const MenuBar = ({ onClose, navigation }) => {
         </View>
       </View>
       <ScrollView style={[styles.menu,dynamicStyles.menu]}>
-        {['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업 / 창업', '공모전', '국제 교류', '모시래 식단', '해오름 식단'].map((text, index) => (
+        {['학과 공지', '학사 공지', '장학 공지', '일반 공지', '취업 / 창업', '공모전', '국제 교류'].map((text, index) => (
           <TouchableOpacity
             key={text}
             style={[styles.menuItem,dynamicStyles.menuItem]}

@@ -272,7 +272,7 @@ const MyPage = () => {
                 style={styles.switch}
               />
             </View>
-            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Keyword');}}>
+            <TouchableOpacity style={styles.menuItem} onPress={()=>{navigation.navigate('Save');}}>
               <Text style={[styles.menuText, dynamicStyles.menuText]}>보관함</Text>
               <Image source={save} style={styles.menuIcon} />
             </TouchableOpacity>

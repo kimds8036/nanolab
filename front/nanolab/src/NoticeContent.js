@@ -61,24 +61,6 @@ const NoticeContent = () => {
     ? require('../assets/image/dark/back.png')
     : require('../assets/image/light/back.png');
 
-  if (!notice) {
-    return (
-      <View style={[styles.container, dynamicStyles.container]}>
-        <View style={[styles.bar, dynamicStyles.bar]}></View>
-        <View style={[styles.header, dynamicStyles.header]}>
-          <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
-            <Image source={back} style={styles.backIcon} />
-          </TouchableOpacity>
-          <View style={styles.headerTitleContainer}>
-            <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>공지사항</Text>
-          </View>
-        </View>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
-      </View>
-    );
-  }
 
   return (
     <View style={[styles.container, dynamicStyles.container]}>

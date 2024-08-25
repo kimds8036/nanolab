@@ -18,6 +18,8 @@ import Feedback from './src/Feedback';
 import Test from './src/Test';
 import Search from './src/Search';
 import NoticeContent from './src/NoticeContent';
+import Alert from './src/Alert';
+import Save from './src/Save';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +34,7 @@ function App() {
     <GlobalProvider>
       <NavigationContainer>
         {isSplashFinished ? (
-          <Stack.Navigator initialRouteName="Login">
+          <Stack.Navigator initialRouteName="Alert">
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
             <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
@@ -47,6 +49,8 @@ function App() {
             <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
             <Stack.Screen name="Search" component={Search} options={{ headerShown: false }} />
             <Stack.Screen name="NoticeContent" component={NoticeContent} options={{ headerShown: false }} />
+            <Stack.Screen name="Alert" component={Alert} options={{ headerShown: false }} />
+            <Stack.Screen name="Save" component={Save} options={{ headerShown: false }} />
           </Stack.Navigator>
         ) : (
           <SplashScreenComponent onFinish={handleSplashFinish} />

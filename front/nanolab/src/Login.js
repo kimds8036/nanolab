@@ -31,7 +31,8 @@ function Login({ navigation }) {
         if (isPersistentLogin) {
           console.log('Attempting to save token:', data.token);  // 저장 전 로그
           await AsyncStorage.setItem('token', data.token);
-          console.log('Token saved to AsyncStorage');
+          await AsyncStorage.setItem('isPersistentLogin', JSON.stringify(isPersistentLogin)); // 자동 로그인 유지 상태 저장
+          console.log('Token and isPersistentLogin saved to AsyncStorage');
         } else {
           // isPersistentLogin이 false인 경우에도 토큰을 임시로 저장
           await AsyncStorage.setItem('temporary_token', data.token);
@@ -58,27 +59,6 @@ function Login({ navigation }) {
     } catch (error) {
       console.error('Login error:', error);
       Alert.alert('로그인 오류', '서버와의 통신 중 오류가 발생했습니다.');
-    }
-
-    if (response.ok) {
-      // 로그인 성공 시
-      if (isPersistentLogin) {
-        await AsyncStorage.setItem('token', data.token);
-        await AsyncStorage.setItem('isPersistentLogin', JSON.stringify(isPersistentLogin));
-      } else {
-        await AsyncStorage.setItem('temporary_token', data.token);
-      }
-  
-      // 로그인 성공 시 유저 정보 설정
-      setUser({
-        email: form.email,
-        token: data.token,
-      });
-  
-      // 메인 화면으로 이동
-      navigation.navigate('Main');
-    } else {
-      // 로그인 실패 처리
     }
   };
   
@@ -190,7 +170,11 @@ function Login({ navigation }) {
               </View>
 
               <View style={styles.checkboxContainer}>
-                <Switch style={styles.checkbox} value={isPersistentLogin} onValueChange={(value) => setIsPersistentLogin(value)} />
+              <Switch
+                  style={styles.checkbox}
+                  value={isPersistentLogin} // Switch의 상태와 isPersistentLogin 상태를 연결
+                  onValueChange={(value) => setIsPersistentLogin(value)} // Switch 상태 변경 시 isPersistentLogin 값도 변경
+                />
                 <Text style={[styles.checkboxLabel,dynamicStyles.checkboxLabel]}>자동 로그인 유지</Text>
               </View>
 
