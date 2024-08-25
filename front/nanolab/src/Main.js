@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, viewCount } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Dimensions, alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GlobalContext } from './GlobalContext';
 

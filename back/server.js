@@ -10,7 +10,6 @@ const useragent = require('express-useragent');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const moment = require('moment');
-const nodemailer = require('nodemailer');
 const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/authMiddleware');
 const User = require('./models/user');
@@ -33,18 +32,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the API');
 });
 
-// 사용자 이메일 가져오는 함수
-const getUserEmail = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    return user.email;
-  } catch (error) {
-    console.error('User email fetch error:', error);
-    throw new Error('사용자 이메일을 찾을 수 없습니다.');
-  }
-};
-
-// 1. 이메일 중복 확인 및 인증 이메일 발송 기능 추가 (회원가입 라우트 수정)
+// 회원가입 라우트
 app.post('/auth/register', async (req, res) => {
   const { email, password } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -79,48 +67,15 @@ app.post('/auth/register', async (req, res) => {
       platform,
       referrer,
       language,
-      location,
-      emailVerified: false // 이메일 인증 플래그 추가
+      location
     });
 
     await newUser.save();
 
-    // 인증 이메일 전송
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: '이메일 인증을 완료해주세요',
-      text: `아래 링크를 클릭하여 이메일 인증을 완료하세요: \n\nhttps://yourdomain.com/verify-email?token=${newUser._id}`
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).json({ message: 'Registration successful. Please verify your email.' });
+    res.status(200).json({ message: 'Registration successful' });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// 피드백 전송 라우트
-app.post('/auth/register', authMiddleware, async (req, res) => {
-  const { feedback } = req.body;
-
-  try {
-    const email = await getUserEmail(req.user.id);  // 사용자 이메일 가져오기
-    
-    const mailOptions = {
-      from: email,
-      to: 'kimds8036@naver.com', // 피드백을 받을 이메일 주소
-      subject: '새로운 피드백이 도착했습니다!',
-      text: `사용자 이메일: ${email}\n\n피드백 내용:\n${feedback}`,
-    };
-
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: '피드백이 성공적으로 전송되었습니다.' });
-  } catch (error) {
-    console.error('피드백 전송 오류:', error);
-    res.status(500).json({ message: '피드백 전송 중 오류가 발생했습니다.' });
   }
 });
 
@@ -155,9 +110,6 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// 3. 비밀번호 변경 기능 추가
-=======
 // 프로필 조회 라우트
 app.get('/auth/profile', authMiddleware, (req, res) => {
   try {
@@ -169,7 +121,6 @@ app.get('/auth/profile', authMiddleware, (req, res) => {
 });
 
 // 비밀번호 변경 라우트
->>>>>>> origin/master
 app.post('/auth/change-password', authMiddleware, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const email = req.user.email;
@@ -211,16 +162,6 @@ app.get('/api/notices_:category', async (req, res) => {
   } catch (error) {
     console.error('Error fetching notices:', error);
     res.status(500).json({ message: 'Server error occurred', error });
-  }
-});
-
-// 프로필 조회 라우트
-app.get('/auth/profile', authMiddleware, (req, res) => {
-  try {
-    const { email, location, language, platform } = req.user;
-    res.status(200).json({ email, location, language, platform });
-  } catch (error) {
-    res.status(500).json({ message: '프로필 정보를 가져오는 중 오류가 발생했습니다.' });
   }
 });
 
@@ -280,6 +221,24 @@ const calculateDDay = (deadline) => {
   const dDay = endDate.diff(today, 'days');
   return dDay;
 };
+
+// 사용자 삭제 라우트 추가
+app.delete('/auth/delete-user', authMiddleware, async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOneAndDelete({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 // 서버 시작
 app.listen(PORT, () => {

@@ -59,6 +59,27 @@ function Login({ navigation }) {
       console.error('Login error:', error);
       Alert.alert('로그인 오류', '서버와의 통신 중 오류가 발생했습니다.');
     }
+
+    if (response.ok) {
+      // 로그인 성공 시
+      if (isPersistentLogin) {
+        await AsyncStorage.setItem('token', data.token);
+        await AsyncStorage.setItem('isPersistentLogin', JSON.stringify(isPersistentLogin));
+      } else {
+        await AsyncStorage.setItem('temporary_token', data.token);
+      }
+  
+      // 로그인 성공 시 유저 정보 설정
+      setUser({
+        email: form.email,
+        token: data.token,
+      });
+  
+      // 메인 화면으로 이동
+      navigation.navigate('Main');
+    } else {
+      // 로그인 실패 처리
+    }
   };
   
 
@@ -169,12 +190,8 @@ function Login({ navigation }) {
               </View>
 
               <View style={styles.checkboxContainer}>
-                <Switch
-                  value={isPersistentLogin}
-                  onValueChange={setIsPersistentLogin}
-                  style={styles.checkbox}
-                />
-                <Text style={[styles.checkboxLabel, dynamicStyles.checkboxLabel]}>자동 로그인 유지</Text>
+                <Switch style={styles.checkbox} value={isPersistentLogin} onValueChange={(value) => setIsPersistentLogin(value)} />
+                <Text style={[styles.checkboxLabel,dynamicStyles.checkboxLabel]}>자동 로그인 유지</Text>
               </View>
 
               <View style={styles.formAction}>
