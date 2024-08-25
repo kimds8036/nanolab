@@ -9,15 +9,12 @@ from io import BytesIO
 from datetime import datetime, timedelta
 import tempfile
 import os
-from dotenv import load_dotenv
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
-load_dotenv(dotenv_path)
+# Tesseract 경로 설정 (Railway에서는 경로를 설정할 필요가 없을 수 있음)
+if os.getenv('RAILWAY_ENVIRONMENT') is None:  # 로컬 환경에서만 설정
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-# Tesseract 경로 설정
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-# .env 파일에서 환경 변수 로드
+# Railway 환경 변수를 사용하여 API 키 및 MongoDB URI 설정
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # MongoDB 연결

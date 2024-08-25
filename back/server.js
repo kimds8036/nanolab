@@ -14,21 +14,33 @@ const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/authMiddleware');
 const User = require('./models/user');
 const NoticeLink = require('./models/NoticeLink');
-
+const Notice = require('./models/Notice');
 const admin = require('firebase-admin');
-const serviceAccount = require('./.env'); // 서비스 계정 키 파일 경로
-  
+
+const serviceAccount = {
+  type: 'service_account',
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+};
+
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://<nanolab-4529f>.firebaseio.com' // 자신의 Firebase 프로젝트 URL로 대체
-  });
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://<nanolab-4529f>.firebaseio.com' // 자신의 Firebase 프로젝트 URL로 대체
+});
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const GEOLOCATION_API_KEY = process.env.GEOLOCATION_API_KEY;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const Notice = require('./models/Notice');
 app.use(cors());
 app.use(bodyParser.json());
 app.use(useragent.express());
