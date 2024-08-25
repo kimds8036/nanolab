@@ -62,10 +62,12 @@ def get_today_notice_links(db):
     return notice_links_list
 
 def get_existing_importance(db, link):
-    notice_link = db.noticelinks.find_one({'link': link})
+    # importance 필드만 가져오도록 최적화
+    notice_link = db.noticelinks.find_one({'link': link}, {'importance': 1})
     if notice_link:
         return notice_link.get('importance', 'general')
     return 'general'
+
 
 def update_importance_if_changed(db, notice_link):
     existing_importance = get_existing_importance(db, notice_link['link'])
@@ -80,26 +82,46 @@ def update_importance_if_changed(db, notice_link):
     else:
         print(f"No change in importance for {notice_link['link']}")
 
-# 공지사항 저장 및 업데이트
+
+
 def save_or_update_notice(db, category, notice_data):
     try:
         collection_name = f'notices_{category}'
         print(f"Saving to collection: {collection_name}")
         collection = db[collection_name]
+
+        # 링크를 기준으로 중복 검사
+        #existing_notice = collection.find_one({'link': notice_data['link']})
         existing_notice = collection.find_one({'title': notice_data['title'], 'date': notice_data['date']})
         if existing_notice:
-            print(f"Notice already exists in {collection_name}: {notice_data['title']}")
-            return
-        collection.update_one(
-            {'title': notice_data['title'], 'date': notice_data['date']},
-            {'$set': notice_data},
-            upsert=True
-        )
-        print(f"Notice saved or updated in {collection_name}: {notice_data['title']}")
+            # 중요도를 비교하여 'important'를 우선으로 함
+            existing_importance = existing_notice.get('type', 'general')
+            new_importance = notice_data.get('type', 'general')
+
+            if existing_importance == "important" and new_importance != "important":
+                # 기존 공지사항이 'important'이고 새로운 공지사항이 그렇지 않은 경우, 업데이트하지 않음
+                print(f"Notice already exists and is marked as important: {notice_data['title']}")
+                return
+            elif new_importance == "important":
+                # 새로운 공지사항이 'important'인 경우, 업데이트 수행
+                collection.update_one(
+                    {'_id': existing_notice['_id']},
+                    {'$set': notice_data}
+                )
+                print(f"Notice updated to important in {collection_name}: {notice_data['title']}")
+            else:
+                # 중요도가 동일한 경우, 업데이트 수행
+                collection.update_one(
+                    {'_id': existing_notice['_id']},
+                    {'$set': notice_data}
+                )
+                print(f"Notice updated in {collection_name}: {notice_data['title']}")
+        else:
+            # 새 공지사항 추가
+            collection.insert_one(notice_data)
+            print(f"New notice saved in {collection_name}: {notice_data['title']}")
     except Exception as e:
         print('Error saving or updating notice in category collection:', e)
-
-
 
 categories = [
     {'name': '신문방송학과', 'baseUrl': 'https://masscom.kku.ac.kr', 'type': 'second'},
@@ -151,11 +173,16 @@ def scrape_and_save_notices():
     db = connect_to_mongodb()
 
     print("Fetching all notice links...")
-    all_notice_links = get_notice_links(db)
+    all_notice_links = get_notice_links(db)  # 모든 공지사항 링크를 가져옴
     print(f"Fetched {len(all_notice_links)} notice links.")
 
     for notice_link in all_notice_links:
-        print(f"Processing link: {notice_link['link']}")
+        #print(f"Processing link: {notice_link['link']}")
+        update_importance_if_changed(db, notice_link)
+        # 나머지 로직 생략 가능...
+
+
+    
         link = notice_link['link']
         category = notice_link['category']
         result = None  # 초기화
