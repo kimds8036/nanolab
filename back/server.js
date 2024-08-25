@@ -6,11 +6,12 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const User = require('./models/user');
-
+const mongoose = require('mongoose');
 const useragent = require('express-useragent');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const moment = require('moment');
+const nodemailer = require('nodemailer');
 const connectDB = require('./config/db');
 const authMiddleware = require('./middleware/authMiddleware');  // 추가된 미들웨어 파일 불러오기
 
@@ -26,12 +27,41 @@ app.use(useragent.express());
 // 데이터베이스 연결
 connectDB();
 
+// 공지사항 스키마 및 모델 정의
+const noticeSchema = new mongoose.Schema({
+  title: String,
+  date: String,
+  content: String,
+});
+
+const Notice = mongoose.model('Notice', noticeSchema);
+
+// 이메일 전송 설정
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 // 루트 경로 핸들러 추가
 app.get('/', (req, res) => {
   res.send('Welcome to the API');
 });
 
-// 회원가입 라우트
+// 사용자 이메일 가져오는 함수
+const getUserEmail = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    return user.email;
+  } catch (error) {
+    console.error('User email fetch error:', error);
+    throw new Error('사용자 이메일을 찾을 수 없습니다.');
+  }
+};
+
+// 1. 이메일 중복 확인 및 인증 이메일 발송 기능 추가 (회원가입 라우트 수정)
 app.post('/auth/register', async (req, res) => {
   const { email, password } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -66,19 +96,53 @@ app.post('/auth/register', async (req, res) => {
       platform,
       referrer,
       language,
-      location
+      location,
+      emailVerified: false // 이메일 인증 플래그 추가
     });
 
     await newUser.save();
 
-    res.status(200).json({ message: 'Registration successful' });
+    // 인증 이메일 전송
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: '이메일 인증을 완료해주세요',
+      text: `아래 링크를 클릭하여 이메일 인증을 완료하세요: \n\nhttps://yourdomain.com/verify-email?token=${newUser._id}`
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'Registration successful. Please verify your email.' });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+// 피드백 전송 라우트
+app.post('/auth/register', authMiddleware, async (req, res) => {
+  const { feedback } = req.body;
+
+  try {
+    const email = await getUserEmail(req.user.id);  // 사용자 이메일 가져오기
+    
+    const mailOptions = {
+      from: email,
+      to: 'kimds8036@naver.com', // 피드백을 받을 이메일 주소
+      subject: '새로운 피드백이 도착했습니다!',
+      text: `사용자 이메일: ${email}\n\n피드백 내용:\n${feedback}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: '피드백이 성공적으로 전송되었습니다.' });
+  } catch (error) {
+    console.error('피드백 전송 오류:', error);
+    res.status(500).json({ message: '피드백 전송 중 오류가 발생했습니다.' });
+  }
+});
+
 // 로그인 라우트
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
   console.log(`Login attempt for email: ${email}`);
@@ -96,33 +160,37 @@ app.post('/auth/login', async (req, res) => {
       return res.status(400).json({ message: '아이디와 비밀번호를 확인해 주세요' });
     }
 
+    // JWT_SECRET 확인
     if (!JWT_SECRET) {
       console.error('JWT_SECRET is not defined');
       return res.status(500).json({ message: 'Internal server error: JWT_SECRET is not defined' });
     }
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    // JWT 토큰 생성
+    const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+    console.log('Generated token:', token);
 
-    res.status(200).json({ token, email: user.email });  // 이메일도 함께 전달
+    res.status(200).json({ token, email: user.email });
+
+    // 선택 사항: 토큰을 검증하여 디코딩
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      console.log('Decoded token:', decoded); // 디코딩된 내용 확인 (선택 사항)
+    } catch (error) {
+      console.error('Token verification error:', error.message);
+      return res.status(500).json({ message: 'Internal server error: JWT verification failed' });
+    }
+
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// 프로필 조회 라우트
-app.get('/auth/profile', authMiddleware, (req, res) => {
-  try {
-    const { email, location, language, platform } = req.user;
-    res.status(200).json({ email, location, language, platform });
-  } catch (error) {
-    res.status(500).json({ message: '프로필 정보를 가져오는 중 오류가 발생했습니다.' });
-  }
-});
-
-// 비밀번호 변경 라우트
+// 3. 비밀번호 변경 기능 추가
 app.post('/auth/change-password', authMiddleware, async (req, res) => {
-  const { email, currentPassword, newPassword } = req.body;
+  const { currentPassword, newPassword } = req.body;
+  const email = req.user.email; // `authMiddleware`가 설정한 사용자 이메일
 
   try {
     const user = await User.findOne({ email });
@@ -145,6 +213,16 @@ app.post('/auth/change-password', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Password change error:', error);
     res.status(500).json({ message: '비밀번호 변경 중 오류가 발생했습니다.' });
+  }
+});
+
+// 프로필 조회 라우트
+app.get('/auth/profile', authMiddleware, (req, res) => {
+  try {
+    const { email, location, language, platform } = req.user;
+    res.status(200).json({ email, location, language, platform });
+  } catch (error) {
+    res.status(500).json({ message: '프로필 정보를 가져오는 중 오류가 발생했습니다.' });
   }
 });
 
@@ -175,6 +253,21 @@ app.get('/api/notices', async (req, res) => {
   }
 });
 
+// 공지사항 카테고리별 조회 라우트
+app.get('/api/notices/:category', async (req, res) => {
+  const { category } = req.params;
+  const collectionName = `notices_${category}`; // 카테고리에 따른 컬렉션 이름 설정
+  console.log(`Fetching notices for category: ${category}`);
+
+  try {
+    const notices = await mongoose.connection.db.collection(collectionName).find({}).toArray();
+    res.json(notices);
+  } catch (error) {
+    console.error(`Error fetching notices for category ${category}:`, error);
+    res.status(500).json({ message: 'Error fetching notices', error });
+  }
+});
+
 // D-Day 계산 함수
 const extractDeadline = (text) => {
   const deadlinePattern = /(?:기간|신청기간|등록기간|접수기간)\s*:\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\(\S+\))\s*~\s*([0-9]{4}\.\s*[0-9]{1,2}\.\s*[0-9]{1,2}\.\(\S+\))/;
@@ -194,6 +287,7 @@ const calculateDDay = (deadline) => {
   return dDay;
 };
 
+// 서버 시작
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

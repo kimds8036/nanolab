@@ -132,7 +132,7 @@ function Enter({ navigation }) {
       elevation: 5,
     },
     buttonInactive: {
-      backgroundColor: '#505050',
+      backgroundColor: darkMode ? '#505050':'#ffffff',
       borderWidth: 1,
       borderColor: '#A9A9A9',
     },

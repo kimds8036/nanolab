@@ -1,12 +1,34 @@
-import React, { useContext } from 'react';
+import axios from 'axios';
+import React, { useContext, useState } from 'react';
 import { Keyboard, StyleSheet, Text, View, TouchableOpacity, Image, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GlobalContext } from './GlobalContext';
 
 const Feedback = () => {
-    const navigation = useNavigation();
-    const { darkMode } = useContext(GlobalContext);
-    const { user } = useContext(GlobalContext);
+  const navigation = useNavigation();
+  const { darkMode } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
+
+  // 피드백 입력 값을 저장할 상태
+  const [feedback, setFeedback] = useState('');
+
+  // 피드백 전송 함수
+  const handleSubmit = async () => {
+      try {
+          const response = await axios.post('https://nanolab-production-6aa7.up.railway.app/auth/register', {
+              feedback,
+          }, {
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+          alert(response.data.message);
+          setFeedback(''); // 성공적으로 전송 후 입력창 비우기
+      } catch (error) {
+          console.error('피드백 전송 오류:', error);
+          alert('피드백 전송 중 오류가 발생했습니다.');
+      }
+  };
 
     const dynamicStyles={
       container:{
@@ -76,39 +98,45 @@ const Feedback = () => {
     : require('../assets/image/light/feedbackpaper.png');
 
     return (
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
-            <View style={[styles.container,dynamicStyles.container]}>
-                <View style={styles.bar}></View>
-                  <View style={styles.innercontainer}>
-                    <View style={[styles.header, dynamicStyles.header]}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
+          <View style={[styles.container, dynamicStyles.container]}>
+              <View style={styles.bar}></View>
+              <View style={styles.innercontainer}>
+                  <View style={[styles.header, dynamicStyles.header]}>
                       <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
-                        <Image source={back} style={styles.backIcon} />
+                          <Image source={back} style={styles.backIcon} />
                       </TouchableOpacity>
                       <View style={styles.headerTitleContainer}>
-                        <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>피드백 보내기</Text>
+                          <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>피드백 보내기</Text>
                       </View>
-                    </View>
+                  </View>
 
-                    <View style={styles.feedbackSection}>
-                        <Image source={feedbackpaper} style={styles.feedbackpaper}/>
-                        <Text style={[styles.feedbacktext,dynamicStyles.feedbacktext]}>피드백을 보내 주시면</Text>
-                        <Text style={[styles.feedbacktext,dynamicStyles.feedbacktext]}>앱 성장에 많은 도움이 돼요</Text>
+                  <View style={styles.feedbackSection}>
+                      <Image source={feedbackpaper} style={styles.feedbackpaper}/>
+                      <Text style={[styles.feedbacktext, dynamicStyles.feedbacktext]}>피드백을 보내 주시면</Text>
+                      <Text style={[styles.feedbacktext, dynamicStyles.feedbacktext]}>앱 성장에 많은 도움이 돼요</Text>
 
-                        <TextInput 
-                            style={[styles.textinput,dynamicStyles.textinput]} 
-                            placeholder='5글자 이상 입력해 주세요'
-                            placeholderTextColor={darkMode ? '#8B8B8B' : '#c2c2c2'}
-                            multiline={true}
-                        />
-                        <TouchableOpacity style={[styles.submitbutton,dynamicStyles.submitbutton]}>
-                            <Text style={styles.submittext}>피드백 보내기</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </TouchableWithoutFeedback>
-    );
+                      <TextInput 
+                          style={[styles.textinput, dynamicStyles.textinput]} 
+                          placeholder='5글자 이상 입력해 주세요'
+                          placeholderTextColor={darkMode ? '#8B8B8B' : '#c2c2c2'}
+                          multiline={true}
+                          value={feedback}
+                          onChangeText={setFeedback} // 입력값 업데이트
+                      />
+                      <TouchableOpacity 
+                          style={[styles.submitbutton, dynamicStyles.submitbutton]} 
+                          onPress={handleSubmit} // 버튼 클릭 시 피드백 전송
+                      >
+                          <Text style={styles.submittext}>피드백 보내기</Text>
+                      </TouchableOpacity>
+                  </View>
+              </View>
+          </View>
+      </TouchableWithoutFeedback>
+  );
 };
+
 
 const styles = StyleSheet.create({
     container: {
