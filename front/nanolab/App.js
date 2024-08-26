@@ -15,7 +15,6 @@ import Keywordhelp from './src/Keywordhelp';
 import Department from './src/Department';
 import Departmenthelp from './src/Departmenthelp';
 import Feedback from './src/Feedback';
-import Test from './src/Test';
 import Search from './src/Search';
 import NoticeContent from './src/NoticeContent';
 import Alert from './src/Alert';
@@ -34,7 +33,7 @@ function App() {
     <GlobalProvider>
       <NavigationContainer>
         {isSplashFinished ? (
-          <Stack.Navigator initialRouteName="Alert">
+          <Stack.Navigator initialRouteName="Noticelist">
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="Enter" component={Enter} options={{ headerShown: false }} />
             <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
@@ -46,7 +45,6 @@ function App() {
             <Stack.Screen name="Department" component={Department} options={{ headerShown: false }} />
             <Stack.Screen name="Departmenthelp" component={Departmenthelp} options={{ headerShown: false }} />
             <Stack.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
-            <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
             <Stack.Screen name="Search" component={Search} options={{ headerShown: false }} />
             <Stack.Screen name="NoticeContent" component={NoticeContent} options={{ headerShown: false }} />
             <Stack.Screen name="Alert" component={Alert} options={{ headerShown: false }} />

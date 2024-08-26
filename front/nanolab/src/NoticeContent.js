@@ -1,35 +1,62 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { GlobalContext } from './GlobalContext'; // GlobalContext를 가져옴
 
+// HTML 태그를 제거하고 공백과 줄바꿈을 정리하는 함수
+const cleanText = (html) => {
+  const withoutTags = html.replace(/<\/?[^>]+(>|$)/g, ""); // HTML 태그 제거
+  const withoutExtraSpaces = withoutTags.replace(/\s+/g, " "); // 다중 공백을 하나의 공백으로
+  return withoutExtraSpaces.trim(); // 앞뒤 공백 제거
+};
+
 const NoticeContent = () => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { noticeId } = route.params;
-  
-  const { darkMode } = useContext(GlobalContext);
-  const [notice, setNotice] = useState(null);
+  const { darkMode, views, setViews } = useContext(GlobalContext);
   const [isStarFilled, setIsStarFilled] = useState(false);
+  const [notice, setNotice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const route = useRoute();
+  const { category, title } = route.params; // category와 title을 받아옴
+  const noticeId = route.params.id; // 공지 ID를 받아옴
+  const noticeIndex = route.params.index; // 공지 배열에서의 인덱스
+  
 
   useEffect(() => {
     const fetchNoticeDetail = async () => {
       try {
-        // 공지 ID를 사용해 서버에서 상세 정보를 가져옴
-        const response = await axios.get(`http://mydatabase.com/notice/${noticeId}`);
-        setNotice(response.data);
+        const response = await axios.get('https://nanolab-production-6aa7.up.railway.app/api/noticeDetail', {
+          params: { category, title }  // 쿼리 파라미터로 전달
+        });
+
+        // HTML 태그 제거 후 공백과 줄바꿈 정리
+        const cleanContent = cleanText(response.data.content);
+
+        setNotice({ ...response.data, content: cleanContent });
+
+        
       } catch (error) {
-        console.error('공지사항을 가져오는데 실패했습니다:', error);
+        console.error('Error fetching notice detail:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchNoticeDetail();
-  }, [noticeId]);
+  }, [category, title, noticeIndex, noticeId]);
 
   const handleStarPress = () => {
     setIsStarFilled(!isStarFilled); // 클릭 시 이미지 상태를 변경
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0E664F" />
+      </View>
+    );
+  }
 
   const dynamicStyles = {
     container: {
@@ -61,16 +88,15 @@ const NoticeContent = () => {
     ? require('../assets/image/dark/back.png')
     : require('../assets/image/light/back.png');
 
-
   return (
     <View style={[styles.container, dynamicStyles.container]}>
       <View style={[styles.bar, dynamicStyles.bar]}></View>
       <View style={[styles.header, dynamicStyles.header]}>
-        <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
+        <TouchableOpacity onPress={() => { navigation.pop(); }}>
           <Image source={back} style={styles.backIcon} />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>{notice.title}</Text>
+          <Text style={[styles.headerTitle, dynamicStyles.headerTitle]}>{notice.category}</Text>
         </View>
       </View>
       
@@ -85,7 +111,7 @@ const NoticeContent = () => {
                 </View>
                 <View style={styles.click}>
                     <Text style={styles.subtitle}>조회수ㅣ</Text>
-                    <Text style={styles.subtext}>{notice.views}</Text>
+                    <Text style={styles.subtext}>{views[noticeIndex] || 0}</Text>
                 </View>
             </View>
             <TouchableOpacity onPress={handleStarPress}>
@@ -109,6 +135,7 @@ const NoticeContent = () => {
     </View>
   );
 };
+
 
 
 const styles = StyleSheet.create({
