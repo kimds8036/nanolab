@@ -16,7 +16,7 @@ const User = require('./models/user');
 const NoticeLink = require('./models/NoticeLink');
 const Notice = require('./models/Notice');
 const admin = require('firebase-admin');
-const User = require('./models/user');
+
 
 // 환경 변수에서 민감한 정보 불러오기
 const serviceAccount = {
