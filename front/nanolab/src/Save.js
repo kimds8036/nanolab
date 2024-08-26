@@ -1,14 +1,55 @@
-import React, { useContext } from 'react';
-import { ScrollView, View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; // useNavigation import
 import { GlobalContext } from './GlobalContext';
-import { useNavigation } from '@react-navigation/native';
 
-export default function Save() {
-  const { darkMode } = useContext(GlobalContext);
-  const navigation = useNavigation();
+const Save = () => {
+  const [savedNotices, setSavedNotices] = useState([]);
+  const navigation = useNavigation(); // 네비게이션 객체 생성
+const { darkMode } = useContext(GlobalContext);
   const { user } = useContext(GlobalContext);
 
-  const dynamicStyles ={
+
+  useEffect(() => {
+    const loadSavedNotices = async () => {
+      try {
+        const storedNotices = await AsyncStorage.getItem('savedNotices');
+        if (storedNotices) {
+          setSavedNotices(JSON.parse(storedNotices));
+        }
+      } catch (error) {
+        console.error('Error loading saved notices:', error);
+      }
+    };
+
+    loadSavedNotices();
+  }, []);
+
+  const handleRemoveNotice = async (noticeId) => {
+    try {
+      const updatedNotices = savedNotices.filter((notice) => notice._id !== noticeId);
+      setSavedNotices(updatedNotices);
+      await AsyncStorage.setItem('savedNotices', JSON.stringify(updatedNotices));
+      Alert.alert('공지사항이 보관함에서 삭제되었습니다.');
+    } catch (error) {
+      console.error('Error removing notice:', error);
+      Alert.alert('공지사항 삭제에 실패했습니다.');
+    }
+  };
+
+  const handleNoticePress = (notice) => {
+    if (notice.category && notice.title) {
+      navigation.navigate('NoticeDetail', {
+        category: notice.category,
+        title: notice.title,
+      });
+    } else {
+      Alert.alert('잘못된 데이터', '해당 공지사항의 정보가 불완전하여 상세 내용을 불러올 수 없습니다.');
+    }
+  };
+
+const dynamicStyles ={
     container: {
       flex: 1,
       backgroundColor: darkMode ? '#2f2f2f' : '#FFFFFF',
@@ -30,45 +71,39 @@ export default function Save() {
   const back = darkMode 
     ? require('../assets/image/dark/back.png')
     : require('../assets/image/light/back.png');
+
   
-    return (
-      <SafeAreaView style={[styles.container,dynamicStyles.container]}>
+
+  return (
+<SafeAreaView style={[styles.container,dynamicStyles.container]}>
         <View style={[styles.bar,dynamicStyles.bar]}></View>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => { navigation.navigate('Keyword'); }}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
             <Image source={back} style={styles.backIcon} />
           </TouchableOpacity>
           <View style={styles.titleContainer}>
             <Text style={[styles.title,dynamicStyles.title]}>보관함</Text>
           </View>
         </View>
-      
-        <ScrollView contentContainerStyle={styles.contentContainer}>
-            <TouchableOpacity style={styles.content}>
-                <Text style={styles.category}>학사공지</Text>
-                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {savedNotices.length === 0 ? (
+          <Text style={styles.emptyText}>보관된 공지사항이 없습니다.</Text>
+        ) : (
+          savedNotices.map((notice) => (
+            <TouchableOpacity key={notice._id} style={styles.content} onPress={() => handleNoticePress(notice)}>
+                <Text style={styles.category}>{notice.category || '공지'}</Text>
+                <Text style={styles.title}>{notice.title}</Text>
+
                 <View style={[styles.date]}>
                     <Text style={styles.datetext}>D-1</Text>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.content}>
-                <Text style={styles.category}>학사공지</Text>
-                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
-                <View style={[styles.date]}>
-                    <Text style={styles.datetext}>D-1</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.content}>
-                <Text style={styles.category}>학사공지</Text>
-                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
-                <View style={[styles.date]}>
-                    <Text style={styles.datetext}>D-1</Text>
-                </View>
-            </TouchableOpacity>
-        </ScrollView>
+          ))
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -141,3 +176,6 @@ const styles = StyleSheet.create({
     fontSize:12,
   },
 });
+
+
+export default Save;

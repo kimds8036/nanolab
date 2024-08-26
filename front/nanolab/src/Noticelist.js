@@ -1,66 +1,59 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { GlobalContext } from './GlobalContext'; // GlobalContext 불러오기
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage import
 
 const Noticelist = ({ route }) => {
-  const { isDepartmentRegistered, darkMode, user, views, setViews } = useContext(GlobalContext);
+  const { isDepartmentRegistered, darkMode, selectedDepartment } = useContext(GlobalContext); // department 대신 selectedDepartment 사용
   const [activeTab, setActiveTab] = useState(route.params?.activeTab || 0);
   const [currentPage, setCurrentPage] = useState(0);
   const [noticesData, setNoticesData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [favoriteNotices, setFavoriteNotices] = useState([]);
   const navigation = useNavigation();
-
-  const daysLeft = 1;
-  
-  const getDateStyle = () => {
-    if (daysLeft <= 0) {
-      return styles.dateBlack;
-    } else if (daysLeft <= 3) {
-      return styles.dateRed;
-    } else if (daysLeft <= 5) {
-      return styles.dateGreen;
-    } else {
-      return styles.dateLightGreen;
-    }
-  };
-
-  const getDateText = () => {
-    if (daysLeft <= 0) {
-      return '마감';
-    } else {
-      return `D-${daysLeft}`;
-    }
-  };
 
   const tabs = [
     '학과공지',
     '학사공지',
     '장학공지',
     '일반공지',
-    '취업/창업',
-    '채용공지',
+    '취업/창업공지',
     '외부행사/공모전',
+    '국제/교류공지',
+    '채용공지',
+
+    
   ];
 
   useEffect(() => {
     const fetchNotices = async () => {
       setLoading(true);
       try {
+        let url;
         const tabName = tabs[activeTab];
-        const encodedTabName = encodeURIComponent(tabName);
-        const url = `https://nanolab-production-6aa7.up.railway.app/api/notices_${encodedTabName}`;
+
+        if (tabName === '학과공지' && isDepartmentRegistered && selectedDepartment) {
+          // 학과 공지 탭이 선택되었고, 학과가 등록된 경우
+          console.log('Selected Department:', selectedDepartment); // 학과명 로그 출력
+          const encodedDepartment = encodeURIComponent(selectedDepartment);
+          url = `http://118.91.15.85:5000/api/notices_${encodedDepartment}`; // 학과에 맞는 공지사항을 가져옴
+        } else {
+          // 다른 탭의 경우 기존 방식대로
+          const encodedTabName = encodeURIComponent(tabName);
+          url = `http://118.91.15.85:5000/api/notices_${encodedTabName}`;
+        }
+
         console.log('Request URL:', url);
         const response = await axios.get(url);
         console.log('Fetched notices:', response.data);
 
-        const noticesWithViews = response.data.map(notice => ({
-          ...notice,
-          views: views[notice._id] || 0, // 전역 상태에서 조회수 가져오기, 없으면 0으로 초기화
-        }));
+        setNoticesData(response.data); // 서버 응답 데이터를 설정
 
-        setNoticesData(noticesWithViews); // 서버 응답 데이터를 설정
+        // 저장된 즐겨찾기 공지 로드
+        const storedFavorites = await AsyncStorage.getItem('savedNotices');
+        setFavoriteNotices(storedFavorites ? JSON.parse(storedFavorites) : []);
       } catch (error) {
         console.error('Error fetching notices:', error);
       } finally {
@@ -69,7 +62,7 @@ const Noticelist = ({ route }) => {
     };
 
     fetchNotices();
-  }, [activeTab, views]);
+  }, [activeTab, isDepartmentRegistered, selectedDepartment]);
 
   const itemsPerPage = 15;
   const totalPages = Math.ceil(noticesData.length / itemsPerPage);
@@ -81,18 +74,39 @@ const Noticelist = ({ route }) => {
     setCurrentPage(page);
   };
 
-  const handleNoticePress = (title, id) => {
-    const category = tabs[activeTab];
-    console.log('Navigating to NoticeContent with category:', category, 'and title:', title);
-
-    // 조회수 증가
-    setViews(prevViews => ({
-      ...prevViews,
-      [id]: (prevViews[id] || 0) + 1,
-    }));
-
-    navigation.navigate('NoticeContent', { category, title });
+  const handleNoticePress = (title) => {
+    const category = tabs[activeTab]; // 탭에서 선택된 카테고리를 기반으로 category 설정
+    console.log('Navigating to NoticeDetail with category:', category, 'and title:', title);
+    navigation.navigate('NoticeDetail', { category, title }); // category와 title 전달
   };
+
+  const handleStarPress = async (notice) => {
+    try {
+      let storedNotices = await AsyncStorage.getItem('savedNotices');
+      storedNotices = storedNotices ? JSON.parse(storedNotices) : [];
+  
+      const isAlreadySaved = storedNotices.some((n) => n._id === notice._id);
+  
+      if (isAlreadySaved) {
+        // 이미 저장된 공지인 경우, 삭제
+        const updatedNotices = storedNotices.filter((n) => n._id !== notice._id);
+        setFavoriteNotices(updatedNotices);
+        await AsyncStorage.setItem('savedNotices', JSON.stringify(updatedNotices));
+        Alert.alert('공지사항이 보관함에서 삭제되었습니다.');
+      } else {
+        // 저장되지 않은 경우, category 정보를 포함하여 추가
+        const noticeToSave = { ...notice, category: tabs[activeTab] }; // category 추가
+        storedNotices.push(noticeToSave);
+        setFavoriteNotices(storedNotices);
+        await AsyncStorage.setItem('savedNotices', JSON.stringify(storedNotices));
+        Alert.alert('공지사항이 보관함에 저장되었습니다.');
+      }
+    } catch (error) {
+      console.error('Error saving notice:', error);
+      Alert.alert('공지사항 저장에 실패했습니다.');
+    }
+  };
+  
 
   const dynamicStyles = {
     container: {
@@ -112,10 +126,6 @@ const Noticelist = ({ route }) => {
   const enroll = darkMode
     ? require('../assets/image/dark/enroll.png')
     : require('../assets/image/light/enroll.png');
-  
-  const back = darkMode 
-    ? require('../assets/image/dark/back.png')
-    : require('../assets/image/light/back.png');
 
   if (loading) {
     return (
@@ -128,10 +138,7 @@ const Noticelist = ({ route }) => {
   return (
     <View style={[styles.container, dynamicStyles.container]}>
       <View style={styles.bar}></View>
-      <View style={[styles.header, { flexDirection: 'row' }]}>
-        <TouchableOpacity onPress={() => { navigation.navigate('Main', { isMenuVisible: true }); }}>
-            <Image source={back} style={styles.backIcon} />
-        </TouchableOpacity>
+      <View style={[styles.header, { flexDirection: 'column' }]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -144,7 +151,7 @@ const Noticelist = ({ route }) => {
               onPress={() => setActiveTab(index)}
               style={[styles.tab, index === activeTab && styles.activeTab]}
             >
-              <Text style={[styles.tabText, index === activeTab ? styles.activeTabText : null]}>
+              <Text style={[styles.tabText, dynamicStyles.tabText, index === activeTab && styles.activeTabText, dynamicStyles.activeTabText]}>
                 {tab}
               </Text>
             </TouchableOpacity>
@@ -163,20 +170,22 @@ const Noticelist = ({ route }) => {
           </View>
         ) : (
           activeNotices.map((notice) => (
-            <TouchableOpacity
-              key={notice._id}
-              onPress={() => handleNoticePress(notice.title, notice._id)}
-              style={styles.noticeItem}
-            >
-              <Text style={styles.noticeTitle}>{notice.title}</Text>
-              <Text style={styles.noticeDate}>{notice.date}</Text>
-              <View style={styles.detailsContainer}>
-                <Text style={[styles.details, dynamicStyles.details]}>조회수: {notice.views}</Text>
-                <View style={[styles.date, getDateStyle()]}>
-                    <Text style={styles.datetext}>{getDateText()}</Text>
-                  </View>
-              </View>
-            </TouchableOpacity>
+            <View key={notice._id} style={styles.noticeItem}>
+              <TouchableOpacity onPress={() => handleNoticePress(notice.title)} style={{ flex: 1 }}>
+                <Text style={styles.noticeTitle}>{notice.title}</Text>
+                <Text style={styles.noticeDate}>{notice.date}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleStarPress(notice)} style={styles.starButton}>
+                <Image
+                  source={
+                    favoriteNotices.some((n) => n._id === notice._id)
+                      ? require('../assets/image/light/filled-star.png') // 속이 노란 별 이미지
+                      : require('../assets/image/light/empty-star.png') // 속이 빈 별 이미지
+                  }
+                  style={styles.starIcon}
+                />
+              </TouchableOpacity>
+            </View>
           ))
         )}
 
@@ -200,7 +209,6 @@ const Noticelist = ({ route }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -213,12 +221,6 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 10,
     height: 50,
-  },
-  backIcon: {
-    width: 25,
-    height: 25,
-    marginTop:7,
-    marginRight:5,
   },
   tabsContainer: {
     flexDirection: 'row',
@@ -253,6 +255,7 @@ const styles = StyleSheet.create({
   },
   noticesContentContainer: {
     padding: 6,
+    marginTop: 10,
   },
   noticeItem: {
     backgroundColor: '#FFFFFF',
@@ -263,19 +266,32 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     height: 90,
     position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   noticeTitle: {
     fontFamily: 'NanumGothic',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 12,
     color: '#000000',
     marginBottom: 3,
   },
   noticeDate: {
     fontFamily: 'NanumGothic',
-    fontSize: 12,
+    fontWeight: 'bold',
+    fontSize: 10,
     color: 'rgba(0, 0, 0, 0.8)',
     marginRight: 0,
+  },
+  starButton: {
+    position: 'absolute',
+    right: 15,
+    bottom: 10, // 하단에 배치
+    padding: 5,
+  },
+  starIcon: {
+    width: 20, // 별 크기 줄임
+    height: 20, // 별 크기 줄임
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -326,47 +342,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
-  },
-  date: {
-    marginTop: 5,
-    backgroundColor:'red',
-    borderRadius:10,
-    width:60,
-    height:20,
-    alignSelf:'flex-end',
-  },
-  datetext:{
-    textAlign: 'center',
-    color:'white',
-    lineHeight:20,
-    fontSize:12,
-  },
-  detailsContainer:{
-    flexDirection:"row",
-    justifyContent:'space-between',
-  },
-  details:{
-    fontFamily: 'NanumGothic',
-    fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.8)',
-    marginRight: 0,
-    marginTop:3,
-  },
-  dateLightGreen: {
-    backgroundColor: '#9DC284',
-    
-  },
-  dateGreen: {
-    backgroundColor: '#0E664F',
-    
-  },
-  dateRed: {
-    backgroundColor: '#C28484',
-    
-  },
-  dateBlack: {
-    backgroundColor: 'black',
-    
   },
 });
 

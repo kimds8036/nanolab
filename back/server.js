@@ -16,6 +16,7 @@ const User = require('./models/user');
 const NoticeLink = require('./models/NoticeLink');
 const Notice = require('./models/Notice');
 const admin = require('firebase-admin');
+const User = require('./models/user');
 
 // 환경 변수에서 민감한 정보 불러오기
 const serviceAccount = {
@@ -247,19 +248,56 @@ app.get('/api/noticelinks', async (req, res) => {
 });
 
 // 공지사항 카테고리별 조회 라우트
-app.get('/api/notices/:category', async (req, res) => {
+app.get('/api/notices_:category', async (req, res) => {
   const { category } = req.params;
-  const collectionName = `notices_${category}`;
-  console.log(`Fetching notices for category: ${category}`);
 
   try {
-    const notices = await mongoose.connection.db.collection(collectionName).find({}).toArray();
+    // 동적으로 컬렉션 이름을 지정
+    const collectionName = `notices_${category}`;
+    const noticesCollection = mongoose.connection.collection(collectionName);
+    
+    // 해당 컬렉션에서 데이터를 가져옴
+    const notices = await noticesCollection.find({})
+      .project({ title: 1, date: 1 })  // title과 date 필드만 선택
+      .toArray();  // 결과를 배열로 변환
+    
     res.json(notices);
   } catch (error) {
-    console.error(`Error fetching notices for category ${category}:`, error);
-    res.status(500).json({ message: 'Error fetching notices', error });
+    console.error('Error fetching notices:', error);
+    res.status(500).json({ message: '서버 오류 발생', error });
   }
 });
+app.get('/api/noticeDetail', async (req, res) => {
+  let { category, title } = req.query;
+
+  const collectionName = `notices_${category}`;
+
+  if (!collectionName) {
+    return res.status(400).json({ message: 'Collection not specified or invalid.' });
+  }
+
+  try {
+    const noticesCollection = mongoose.connection.collection(collectionName);
+    const notice = await noticesCollection.findOne({ title });
+
+    if (notice) {
+      // 파일 정보가 누락되지 않도록 확인
+      const files = notice.files || [];
+      res.json({
+        title: notice.title,
+        date: notice.date,
+        content: notice.content,
+        files: files  // 파일 정보 추가
+      });
+    } else {
+      res.status(404).json({ message: 'Notice not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching notice detail:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 // D-Day 계산 함수
 const extractDeadline = (text) => {
