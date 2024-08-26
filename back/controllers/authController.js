@@ -88,3 +88,33 @@ exports.changePassword = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+exports.deleteUser = async (req, res) => {
+    // 인증 토큰에서 사용자 정보를 추출합니다
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        // JWT 토큰을 검증하여 사용자 ID를 얻습니다
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        // 사용자가 존재하는지 확인합니다
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // 사용자 삭제
+        await User.findByIdAndDelete(userId);
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Deletion error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

@@ -148,7 +148,7 @@ export default function HelpScreen() {
             </View>
             <Text style={[styles.sectionText1,dynamicStyles.sectionText1]}>키워드 등록 팁!</Text>
             <Text style={[styles.sectionText,dynamicStyles.sectionText]}> - 등록된 키워드를 삭제하고 싶다면 키워드 우측의 삭제 버튼을 통해 삭제가 가능해요.</Text>
-            <Text style={[styles.sectionText,dynamicStyles.sectionText]}>- 최근 본 키워드의 플러스 버튼을 통해 키워드를 등록할 수 있어요.</Text>
+            <Text style={[styles.sectionText,dynamicStyles.sectionText]}>- 삭제된 키워드를 되돌리고 싶다면 하단의 삭제된 키워드 버튼을 통해 재등록이 가능해요.</Text>
             <View style={[styles.photo,dynamicStyles.photo]}>
               <Image source={help4} style={[styles.help, styles.helpMargin]}></Image>
               <Image source={help6} style={styles.help}></Image>

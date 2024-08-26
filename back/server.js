@@ -278,6 +278,24 @@ const calculateDDay = (deadline) => {
   return dDay;
 };
 
+// 사용자 삭제 라우트 추가
+app.delete('/auth/delete-user', authMiddleware, async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOneAndDelete({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // 키워드 저장 라우트
 app.post('/keywords', async (req, res) => {
   const { email, keyword } = req.body;

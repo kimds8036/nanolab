@@ -11,4 +11,7 @@ router.post('/login', authController.login);
 // 비밀번호 변경 엔드포인트 추가
 router.post('/change-password', authController.changePassword);
 
+// 탈퇴 엔드포인트 추가
+router.post('/delete-user', authController.deleteUser);
+
 module.exports = router;

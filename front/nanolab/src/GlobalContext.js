@@ -4,12 +4,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const GlobalContext = createContext();
 
 const GlobalProvider = ({ children }) => {
+  // 상태 정의
   const [isDepartmentRegistered, setIsDepartmentRegistered] = useState(false);
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
   const [isPersistentLogin, setIsPersistentLogin] = useState(false);
   const [user, setUser] = useState(null); // user 상태 추가
+  const [views, setViews] = useState([]);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -44,6 +46,8 @@ const GlobalProvider = ({ children }) => {
       isPersistentLogin,
       user, // user 상태 제공
       setUser, // setUser 함수 제공
+      views,
+      setViews,
     }}>
       {children}
     </GlobalContext.Provider>

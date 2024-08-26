@@ -100,7 +100,7 @@ const Department = ({ navigation }) => {
       <SafeAreaView style={styles.innerContainer}>
         <View style={[styles.bar,dynamicStyles.bar]}></View>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => { navigation.navigate('Myinform'); }}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
             <Image source={back} style={styles.backIcon} />
           </TouchableOpacity>
           <View style={styles.titleContainer}>

@@ -118,9 +118,9 @@ function ProfilePage() {
     : require('../assets/image/light/back.png');
     
   return (
-    <ImageBackground source={background} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={dynamicStyles.bar}></View>
+    <ImageBackground source={background} style={styles.backgroundImage}>
+      <SafeAreaView style={styles.container}>
+        <View style={[styles.bar,dynamicStyles.bar]}></View>
       
         <View style={{ height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ position: 'absolute', left: 10 }}>
@@ -128,45 +128,42 @@ function ProfilePage() {
               <Image source={back} style={{ width: 25, height: 25 }} />
             </TouchableOpacity>
           </View>
-          <Text style={dynamicStyles.headerTitle}>내 정보 수정</Text>
+          <Text style={[styles.headerTitle,dynamicStyles.headerTitle]}>내 정보 수정</Text>
         </View>
-        
-        <View style={{ alignItems: 'center', marginTop: 80 }}>
-          <View style={dynamicStyles.profileCard}>
-            <View style={{ marginRight: 20, marginLeft: 30 }}>
+
+        <View style={styles.profileContainer}>
+          <View style={[styles.profileCard,dynamicStyles.profileCard]}>
+            <View style={styles.imageContainer}>
               <Image source={require('../assets/image/light/profile.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
             </View>
-            <View style={{ flexDirection: 'column' }}>
-              <Text style={[dynamicStyles.profileDepartment,
-                { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' },
-                selectedDepartment && dynamicStyles.profileDepartment]}>
-                {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}
-              </Text>
-              <Text style={dynamicStyles.profileEmail}>
-                {user?.email || '이메일이 없습니다.'}
-              </Text>
+            <View style={styles.textContainer}>
+              <Text style={[styles.profileDepartment, dynamicStyles.profileDepartment,
+                    { color: selectedDepartment && typeof selectedDepartment === 'string' ? 'black' : 'gray' },
+                  selectedDepartment && dynamicStyles.profileDepartment]}>
+                {selectedDepartment && typeof selectedDepartment === 'string' ? selectedDepartment : 'user'}</Text>
+              <Text style={[styles.profileEmail,dynamicStyles.profileEmail]}>{user?.email || '이메일이 없습니다.'}</Text>
             </View>
           </View>
         </View>
 
-        <View style={{ marginTop: 50 }}>
-          <TouchableOpacity onPress={() => setPasswordModalVisible(true)} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }}>
-            <Text style={dynamicStyles.infoLabel}>비밀번호 변경</Text>
+        <View style={styles.infoContainer}>
+          <TouchableOpacity onPress={() => setPasswordModalVisible(true)} style={styles.infoRow}>
+            <Text style={[styles.infoLabel,dynamicStyles.infoLabel]}>비밀번호 변경</Text>
             <Image source={require('../assets/image/light/password.png')} style={{ width: 30, height: 30 }} />
           </TouchableOpacity>
-          <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }} onPress={() => { navigation.navigate('Department'); }}>
-            <Text style={dynamicStyles.infoLabel}>학과 등록</Text>
+          <TouchableOpacity style={styles.infoRow} onPress={() => { navigation.navigate('Department'); }}>
+            <Text style={[styles.infoLabel,dynamicStyles.infoLabel]}>학과 등록</Text>
             <Image source={require('../assets/image/light/subject.png')} style={{ width: 30, height: 30 }} />
           </TouchableOpacity>
-          <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'center', width: '80%', borderTopWidth: 2, borderBottomWidth: 2, borderColor: '#E5E3E3', height: 70, paddingHorizontal: 10 }} onPress={() => { navigation.navigate('Department'); }}>
-            <Text style={dynamicStyles.infoLabel}>탈퇴</Text>
+          <TouchableOpacity style={styles.infoRow1} onPress={() => { navigation.navigate('Department'); }}>
+            <Text style={[styles.infoLabel,dynamicStyles.infoLabel]}>탈퇴</Text>
             <Image source={require('../assets/image/light/exit.png')} style={{ width: 30, height: 30 }} />
           </TouchableOpacity>
         </View>
 
         <Modal visible={isPasswordModalVisible} transparent={true} animationType="slide">
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-            <View style={dynamicStyles.modalContent}>
+          <View style={styles.modalContainer}>
+            <View style={[styles.modalContent,dynamicStyles.modalContent]}>
               <TextInput
                 placeholder="기존 비밀번호"
                 secureTextEntry
@@ -183,9 +180,9 @@ function ProfilePage() {
                 onChangeText={(text) => setForm({ ...form, newPassword: text })}
                 placeholderTextColor="grey"
               />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 10 }}>
-                <View style={{ borderWidth: 1, borderColor: '#C4C4C4', borderRadius: 8, width: '45%' }}>
-                  <Button title="확인" color={darkMode ? '#9DC284' : '#0E664F'} onPress={handlePasswordChange} />
+              <View style={styles.buttonContainer}>
+                <View style={styles.button}>
+                  <Button title="확인" color={darkMode ? '#9DC284':'#0E664F'} onPress={handlePasswordChange} />
                 </View>
                 <View style={{ borderWidth: 1, borderColor: '#C4C4C4', borderRadius: 8, width: '45%' }}>
                   <Button title="취소" color={darkMode ? 'white' : 'black'} onPress={() => setPasswordModalVisible(false)} />
@@ -213,7 +210,10 @@ const styles = StyleSheet.create({
   bar: {
     backgroundColor:'#9DC284',
     width:'100%',
+    backgroundColor:'#9DC284',
+    width:'100%',
     height: 50,
+    position:'absolute',
     position:'absolute',
   },
   header: {
@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     marginBottom:5,
+    marginBottom:5,
   },
   profileEmail: {
     fontSize: 16,
@@ -270,16 +271,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#ababab',
     marginVertical: 5,
     marginHorizontal: 40, // 양쪽 마진
+    marginHorizontal: 40, // 양쪽 마진
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf:'center',
+    alignSelf:'center',
     width: '80%',
     borderTopWidth:2,
     borderColor:'#E5E3E3',
+    borderTopWidth:2,
+    borderColor:'#E5E3E3',
     height: 70,
+    paddingHorizontal:10,
     paddingHorizontal:10,
   },
   infoRow1: {
@@ -287,11 +293,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf:'center',
+    alignSelf:'center',
     width: '80%',
     borderTopWidth:2,
     borderBottomWidth:2,
     borderColor:'#E5E3E3',
+    borderTopWidth:2,
+    borderBottomWidth:2,
+    borderColor:'#E5E3E3',
     height: 70,
+    paddingHorizontal:10,
     paddingHorizontal:10,
   },
   infoLabel: {
@@ -314,6 +325,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
+    marginBottom: 24,  // 여백 추가
     marginBottom: 24,  // 여백 추가
     alignItems: 'center',
     flexDirection: 'row',
@@ -360,8 +372,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     paddingHorizontal:10,
     marginTop:10,
+    paddingHorizontal:10,
+    marginTop:10,
   },
   button: {
+    borderWidth:1,
+    borderColor:'#C4C4C4',
+    borderRadius:8,
+    width:'45%',
     borderWidth:1,
     borderColor:'#C4C4C4',
     borderRadius:8,
