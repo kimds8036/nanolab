@@ -15,7 +15,6 @@ const NoticeContent = () => {
   const { category, title } = route.params; // category와 title을 받아옴
   const noticeId = route.params.id; // 공지 ID를 받아옴
   const noticeIndex = route.params.index; // 공지 배열에서의 인덱스
-  
 
   useEffect(() => {
     const fetchNoticeDetail = async () => {
@@ -119,21 +118,17 @@ const NoticeContent = () => {
             </View>
         </View>
 
-        
         <View style={styles.contentContainer}> 
           <WebView
             originWhitelist={['*']}
             source={{ html: notice.content }}
-            style={{ height: 400 }} 
+            style={styles.webView} // WebView 스타일 수정
           />
         </View>
       </ScrollView>
     </View>
   );
 };
-
-
-
 
 const styles = StyleSheet.create({
     container: {
@@ -162,8 +157,8 @@ const styles = StyleSheet.create({
       height: 20,
     },
     headerTitleContainer: {
-      flex: 1, // 이 뷰가 남은 공간을 차지하게 합니다.
-      justifyContent: 'center', // 이 뷰 안에서 텍스트가 가운데에 위치하도록 합니다.
+      flex: 1,
+      justifyContent: 'center',
       alignItems: 'center',
     },
     headerTitle: {
@@ -174,76 +169,70 @@ const styles = StyleSheet.create({
     titleContainer: {
       paddingHorizontal: 16,
       borderBottomWidth: 1,
-        paddingVertical: 10,
-        borderColor:'#c2c2c2',
+      paddingVertical: 10,
+      borderColor:'#c2c2c2',
     },
     title: {
-      marginBottom:15,
-      marginTop:10,
-      fontWeight:'bold',
+      marginBottom: 15,
+      marginTop: 10,
+      fontWeight: 'bold',
       fontSize: 18,
     },
     subtitleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between', // 왼쪽과 오른쪽에 요소를 배치
-        alignItems: 'center', // 수직 중앙 정렬
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
-    subtitle: {
-      
+    subtitle: {},
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '50%',
     },
-    row:{
-        flexDirection: 'row',
-        justifyContent: 'space-between', // 텍스트 사이에 여백을 추가합니다.
-    width: '50%',
+    subtext: {
+      color: 'gray',
+      lineHeight: 15,
     },
-    subtext:{
-        color:'gray',
-        lineHeight:15,
+    date: {
+      flexDirection: 'row',
+      alignItems: 'center', 
     },
-    date:{
-        flexDirection: 'row',
-    alignItems: 'center', 
-    },
-    click:{
-        flexDirection: 'row',
-    alignItems: 'center', 
+    click: {
+      flexDirection: 'row',
+      alignItems: 'center', 
     },
     contentContainer: {
-        paddingVertical: 16,
-        paddingHorizontal: 16,
+      paddingVertical: 16,
+      paddingHorizontal: 16,
     },
-    content: {
-      fontSize:16,
-    },
-    bottomContainer: {
-      
+    webView: {
+      height: 400, // 원하는 높이로 조정
+      flex: 1, // WebView가 부모 컨테이너의 높이에 맞추어 스크롤됩니다.
     },
     fileContainer: {
-      flexDirection:'row',
-      borderBottomWidth:1,
+      flexDirection: 'row',
+      borderBottomWidth: 1,
       paddingVertical: 10,
       paddingHorizontal: 16,
-      borderColor:'#c2c2c2',
+      borderColor: '#c2c2c2',
     },
-    file:{
-        fontSize:16,
+    file: {
+      fontSize: 16,
     },
-    fileOX:{
-        borderWidth:1,
-        borderRadius:'20',
-        paddingVertical: 3,
+    fileOX: {
+      borderWidth: 1,
+      borderRadius: 20,
+      paddingVertical: 3,
       paddingHorizontal: 10,
     },
-    filetext:{
-        color:'grey',
-        fontSize:12,
-        
+    filetext: {
+      color: 'grey',
+      fontSize: 12,
     },
     like: {
-      width:30,
-      height:30,
+      width: 30,
+      height: 30,
     },
-  });
-  
+});
 
 export default NoticeContent;
