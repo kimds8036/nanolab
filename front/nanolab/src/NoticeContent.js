@@ -3,13 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIn
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { GlobalContext } from './GlobalContext'; // GlobalContext를 가져옴
-
-// HTML 태그를 제거하고 공백과 줄바꿈을 정리하는 함수
-const cleanText = (html) => {
-  const withoutTags = html.replace(/<\/?[^>]+(>|$)/g, ""); // HTML 태그 제거
-  const withoutExtraSpaces = withoutTags.replace(/\s+/g, " "); // 다중 공백을 하나의 공백으로
-  return withoutExtraSpaces.trim(); // 앞뒤 공백 제거
-};
+import { WebView } from 'react-native-webview'; // WebView 추가
 
 const NoticeContent = () => {
   const navigation = useNavigation();
@@ -30,11 +24,7 @@ const NoticeContent = () => {
           params: { category, title }  // 쿼리 파라미터로 전달
         });
 
-        // HTML 태그 제거 후 공백과 줄바꿈 정리
-        const cleanContent = cleanText(response.data.content);
-
-        setNotice({ ...response.data, content: cleanContent });
-
+        setNotice(response.data);
         
       } catch (error) {
         console.error('Error fetching notice detail:', error);
@@ -128,13 +118,20 @@ const NoticeContent = () => {
                 <Text style={styles.filetext}>{notice.attachment || '첨부된 파일이 없습니다.'}</Text>
             </View>
         </View>
+
+        
         <View style={styles.contentContainer}> 
-          <Text style={styles.content}>{notice.content}</Text>
+          <WebView
+            originWhitelist={['*']}
+            source={{ html: notice.content }}
+            style={{ height: 400 }} 
+          />
         </View>
       </ScrollView>
     </View>
   );
 };
+
 
 
 

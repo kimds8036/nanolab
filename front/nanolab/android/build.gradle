@@ -39,3 +39,8 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
+// Add the following to the `dependencies` section to include react-native-webview
+dependencies {
+    implementation project(':react-native-webview')  // <-- Add this line
+}

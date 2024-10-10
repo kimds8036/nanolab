@@ -231,7 +231,7 @@ app.get('/api/noticelinks', async (req, res) => {
     const notices = await NoticeLink.find(filter);
 
     const updatedNotices = notices.map(notice => {
-      const deadline = extractDeadline(notice.content);
+      const deadline = extractDeadline(notice.extractcontent);
       if (deadline) {
         const dDay = calculateDDay(deadline);
         return { ...notice.toObject(), dDay };

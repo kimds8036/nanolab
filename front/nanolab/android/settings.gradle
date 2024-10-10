@@ -19,3 +19,7 @@ includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle
 
 include ':RNMail', ':app'
 project(':RNMail').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-mail/android')
+
+// Add the following lines for react-native-webview
+include ':react-native-webview'
+project(':react-native-webview').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview/android')
