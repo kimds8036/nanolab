@@ -55,53 +55,89 @@ const Alert = () => {
       </View>
       
       <ScrollView style={styles.innerContainer}>
-        <TouchableOpacity style={styles.content}>
+      <TouchableOpacity style={styles.content}>
+          <View style={styles.iconbox}>
             <View style={styles.iconContainer}>
-                <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
+              <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
             </View>
-            <View style={styles.contentContainer}>
-                <Text style={styles.category}>학사공지</Text>
-                <View style={styles.contentTitleContainer}>
-                    <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
-                </View>
-                <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
+          <View style={styles.contentContainer}>
+            <Text style={styles.category}>학사공지</Text>
+            <View style={styles.contentTitleContainer}>
+                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
             </View>
+            <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.content1}>
+          <View style={styles.iconbox}>
             <View style={styles.iconContainer}>
-                <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
+              <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
             </View>
-            <View style={styles.contentContainer}>
-                <Text style={styles.category}>학사공지</Text>
-                <View style={styles.contentTitleContainer}>
-                    <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
-                </View>
-                <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
+          <View style={styles.contentContainer}>
+            <Text style={styles.category}>학사공지</Text>
+            <View style={styles.contentTitleContainer}>
+                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
             </View>
+            <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.content}>
+          <View style={styles.iconbox}>
             <View style={styles.iconContainer}>
-                <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
+              <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
             </View>
-            <View style={styles.contentContainer}>
-                <Text style={styles.category}>학사공지</Text>
-                <View style={styles.contentTitleContainer}>
-                    <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
-                </View>
-                <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
+          <View style={styles.contentContainer}>
+            <Text style={styles.category}>학사공지</Text>
+            <View style={styles.contentTitleContainer}>
+                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
             </View>
+            <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.content1}>
+          <View style={styles.iconbox}>
             <View style={styles.iconContainer}>
-                <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
+              <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
             </View>
-            <View style={styles.contentContainer}>
-                <Text style={styles.category}>학사공지</Text>
-                <View style={styles.contentTitleContainer}>
-                    <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
-                </View>
-                <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
+          <View style={styles.contentContainer}>
+            <Text style={styles.category}>학사공지</Text>
+            <View style={styles.contentTitleContainer}>
+                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
             </View>
+            <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.content}>
+          <View style={styles.iconbox}>
+            <View style={styles.iconContainer}>
+              <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
+            </View>
+          </View>
+          <View style={styles.contentContainer}>
+            <Text style={styles.category}>학사공지</Text>
+            <View style={styles.contentTitleContainer}>
+                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
+            </View>
+            <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.content1}>
+          <View style={styles.iconbox}>
+            <View style={styles.iconContainer}>
+              <Image source={require('../assets/image/light/department.png')} style={styles.icon}></Image>
+            </View>
+          </View>
+          <View style={styles.contentContainer}>
+            <Text style={styles.category}>학사공지</Text>
+            <View style={styles.contentTitleContainer}>
+                <Text style={styles.contentTitle}>2024학년도 2학기 강의시간표 조회, 수강바구니 일정 안내</Text>
+            </View>
+            <Text style={styles.datetext}>2024.08.24</Text>
+          </View>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -158,10 +194,13 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         padding:10,
         paddingVertical:15,
-        
         borderBottomWidth:1,
         borderColor:'#c2c2c2',
         width:'100%',
+    },
+    iconbox:{
+      justifyContent:'center',
+      alignContent:'center',
     },
     iconContainer:{
         borderRadius:50,
@@ -169,11 +208,13 @@ const styles = StyleSheet.create({
         
         height:50,
         backgroundColor:'white',
-        
+        justifyContent:'center',
+        alignContent:'center',
     },
     icon:{
         width:50,
         height:50,
+        
     },
     contentContainer:{
         paddingLeft:10,
@@ -185,7 +226,7 @@ const styles = StyleSheet.create({
     contentTitle:{
         paddingBottom:5,
         paddingTop:5,
-        
+        marginRight:30,
     },
     contentTitleContainer:{
         marginRight:20,

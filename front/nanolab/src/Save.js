@@ -35,7 +35,7 @@ export default function Save() {
       <SafeAreaView style={[styles.container,dynamicStyles.container]}>
         <View style={[styles.bar,dynamicStyles.bar]}></View>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => { navigation.navigate('Keyword'); }}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Mypage'); }}>
             <Image source={back} style={styles.backIcon} />
           </TouchableOpacity>
           <View style={styles.titleContainer}>
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   date: {
     marginTop: 5,
-    backgroundColor:'red',
+    backgroundColor:'#C28484',
     borderRadius:10,
     width:60,
     height:20,

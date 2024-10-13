@@ -1,3 +1,4 @@
 {
-    "emulator.emulatorPath": ""
+    "emulator.emulatorPath": "",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

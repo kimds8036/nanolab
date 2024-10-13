@@ -15,15 +15,22 @@ import com.facebook.soloader.SoLoader
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
+// react-native-webview 패키지 임포트
+import com.reactnativecommunity.webview.RNCWebViewPackage
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
         this,
         object : DefaultReactNativeHost(this) {
           override fun getPackages(): List<ReactPackage> {
-            // Packages that cannot be autolinked yet can be added manually here, for example:
-            // packages.add(new MyReactNativePackage());
-            return PackageList(this).packages
+            // 자동으로 패키지 목록을 가져옴
+            val packages: MutableList<ReactPackage> = PackageList(this).packages.toMutableList()
+
+            // WebView 패키지를 수동으로 추가
+            packages.add(RNCWebViewPackage())
+
+            return packages
           }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
